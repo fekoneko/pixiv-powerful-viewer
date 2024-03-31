@@ -4,6 +4,15 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     '@electron-toolkit/eslint-config-ts/recommended',
-    '@electron-toolkit/eslint-config-prettier',
   ],
+  plugins: ['tailwindcss'],
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    'tailwindcss/enforces-negative-arbitrary-values': 'warn',
+    'tailwindcss/enforces-shorthand': 'warn',
+    'tailwindcss/migration-from-tailwind-2': 'warn',
+    'tailwindcss/no-custom-classname': 'warn',
+    'tailwindcss/no-contradicting-classname': 'warn',
+    'tailwindcss/no-unnecessary-arbitrary-value': 'warn',
+  },
 };
