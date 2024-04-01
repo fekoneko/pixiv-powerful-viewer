@@ -9,7 +9,7 @@ const CollectionSelector = () => {
   };
 
   return (
-    <button onClick={handleSelect} className="border border-black">
+    <button onClick={handleSelect} className="whitespace-nowrap">
       {collection?.name ?? 'Select collection'}
     </button>
   );

@@ -9,6 +9,8 @@ module.exports = {
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    'react/display-name': 'off',
     'tailwindcss/enforces-negative-arbitrary-values': 'warn',
     'tailwindcss/enforces-shorthand': 'warn',
     'tailwindcss/migration-from-tailwind-2': 'warn',
