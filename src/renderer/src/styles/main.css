@@ -23,6 +23,10 @@
     -webkit-text-size-adjust: none;
   }
 
+  * {
+    @apply transition-colors;
+  }
+
   ::-webkit-scrollbar {
     @apply size-1.5;
   }

@@ -5,20 +5,33 @@ import { Work } from '@renderer/lib/Collection';
 
 interface WorkListCardsProps {
   works: Work[];
+  selectWork: (selectedWork: Work) => any;
 }
-const WorkListCards = memo(({ works }: WorkListCardsProps) => {
+const WorkListCards = memo(({ works, selectWork }: WorkListCardsProps) => {
+  const [selectedId, setSelectedId] = useState<number>();
   console.log('render');
 
   return (
     <>
       {works.map((work) => (
-        <WorkCard key={work.id} work={work} />
+        <WorkCard
+          key={work.id}
+          work={work}
+          select={() => {
+            selectWork(work);
+            setSelectedId(work.id);
+          }}
+          active={work.id === selectedId}
+        />
       ))}
     </>
   );
 });
 
-const WorksList = () => {
+interface WorksListProps {
+  selectWork: (selectedWork: Work) => any;
+}
+const WorksList = ({ selectWork }: WorksListProps) => {
   const works = useWorks((error) => console.error(error));
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(true);
@@ -43,7 +56,7 @@ const WorksList = () => {
         }}
       >
         <div className="[direction:ltr] flex flex-col gap-2 py-2">
-          <WorkListCards works={works} />
+          <WorkListCards works={works} selectWork={selectWork} />
         </div>
       </div>
     </div>

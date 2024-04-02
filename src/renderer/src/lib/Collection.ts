@@ -5,6 +5,7 @@ export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 export interface WorkAsset {
   name: string;
   path: string;
+  mediaPath: string;
 }
 
 export interface Work {
@@ -45,7 +46,7 @@ export default class Collection {
   private worksChunks: Work[][] = [];
   private onUpdateActions: OnUpdateAction[] = [];
   private onErrorActions: OnErrorAction[] = [];
-  private static readonly usersInChunk = 25;
+  private static readonly usersInChunk = 50;
 
   constructor(collectionPath: string) {
     this.path = collectionPath;
@@ -128,6 +129,13 @@ export default class Collection {
     const assetsWithMetaFile: WorkAsset[] = rawAssetsWithMetaFile.map((rawAsset) => ({
       name: rawAsset.name,
       path: rawAsset.path + '\\' + rawAsset.name,
+      mediaPath:
+        'media:///' +
+        encodeURI((rawAsset.path + '/' + rawAsset.name).replaceAll('\\', '/'))
+          .replaceAll('#', '%23')
+          .replaceAll('&', '%26')
+          .replaceAll('?', '%3F')
+          .replaceAll('=', '%3D'),
     }));
 
     const assets = assetsWithMetaFile

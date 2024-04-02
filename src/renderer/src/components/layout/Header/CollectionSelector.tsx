@@ -10,7 +10,7 @@ const CollectionSelector = () => {
 
   return (
     <button onClick={handleSelect} className="whitespace-nowrap">
-      {collection?.name ?? 'Select collection'}
+      {collection?.name ?? '< Select collection >'}
     </button>
   );
 };
