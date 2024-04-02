@@ -16,7 +16,7 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
           <div className="absolute flex h-full w-[9999px] justify-center">
             <img
               src={work.assets[currentPage]?.mediaPath}
-              className="h-full blur-md [transform:scale(1.2)]"
+              className="h-full blur-md [transform:scale(1.3)]"
             />
             <div className="absolute size-full bg-background/30" />
           </div>

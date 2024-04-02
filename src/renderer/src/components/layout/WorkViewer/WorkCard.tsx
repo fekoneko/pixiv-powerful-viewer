@@ -45,7 +45,7 @@ const WorkCard = ({ work, select, active }: WorkCardProps) => {
               <wbr />
               <span>{tag}</span>
             </Fragment>
-          )) ?? <p>no tags</p>}
+          )) ?? <span>no tags</span>}
         </p>
       </div>
     </button>

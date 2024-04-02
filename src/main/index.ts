@@ -1,7 +1,7 @@
-import { app, shell, BrowserWindow, ipcMain, protocol, net } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, protocol, net, dialog } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import icon from '../../resources/icon.png';
+import icon from '../../resources/icon.png?asset';
 
 const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
@@ -30,6 +30,14 @@ const createWindow = (): void => {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
+
+  ipcMain.handle('dialog:openDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    });
+    if (canceled) return;
+    else return filePaths[0];
+  });
 };
 
 app.whenReady().then(() => {
@@ -39,13 +47,15 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'));
-
   createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+
+  protocol.handle('media', (req) => {
+    const pathToMedia = new URL(req.url).pathname;
+    return net.fetch(`file://${pathToMedia}`);
   });
 });
 
@@ -54,8 +64,6 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-// Protocols
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -67,10 +75,3 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ]);
-
-app.whenReady().then(() => {
-  protocol.handle('media', (req) => {
-    const pathToMedia = new URL(req.url).pathname;
-    return net.fetch(`file://${pathToMedia}`);
-  });
-});
