@@ -1,7 +1,8 @@
 import useWorks from '../../../hooks/useWorks';
-import { memo, useState } from 'react';
+import { memo, useCallback, useContext, useState } from 'react';
 import WorkCard from './WorkCard';
 import { Work } from '@renderer/lib/Collection';
+import SearchContext from '@renderer/contexts/SearchContext';
 
 interface WorkListCardsProps {
   works: Work[];
@@ -9,13 +10,12 @@ interface WorkListCardsProps {
 }
 const WorkListCards = memo(({ works, selectWork }: WorkListCardsProps) => {
   const [selectedId, setSelectedId] = useState<number>();
-  console.log('render');
 
   return (
     <>
       {works.map((work) => (
         <WorkCard
-          key={work.id}
+          key={work.path}
           work={work}
           select={() => {
             selectWork(work);
@@ -32,7 +32,11 @@ interface WorksListProps {
   selectWork: (selectedWork: Work) => any;
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
-  const works = useWorks((error) => console.error(error));
+  const { search } = useContext(SearchContext);
+  const works = useWorks(
+    search,
+    useCallback((error) => console.error(error), []),
+  );
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(true);
 
@@ -62,4 +66,4 @@ const WorksList = ({ selectWork }: WorksListProps) => {
     </div>
   );
 };
-export default memo(WorksList);
+export default WorksList;

@@ -11,7 +11,7 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
     <div className="rounded-xl relative border-2 border-text/30 my-2 shadow-lg overflow-hidden flex items-center justify-center">
       {work?.assets?.length ? (
         <>
-          <img src={work.assets[currentPage].mediaPath} className="max-w-full max-h-full" />
+          <img src={work.assets[currentPage]?.mediaPath} className="max-w-full max-h-full" />
           <button
             className="absolute left-0 text-3xl p-4 h-full text-white"
             onClick={() =>

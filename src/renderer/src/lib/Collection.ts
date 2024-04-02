@@ -2,6 +2,13 @@ import { Dirent } from 'fs';
 
 export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
+export type SearchMode = 'all' | 'works' | 'users';
+
+export interface Search {
+  request: string;
+  mode: SearchMode;
+}
+
 export interface WorkAsset {
   name: string;
   path: string;
@@ -9,15 +16,16 @@ export interface WorkAsset {
 }
 
 export interface Work {
+  path: string;
+  title: string;
+  userName: string;
   id?: number;
+  userId?: number;
   pageUrl?: string;
   imageUrl?: string;
   thumbnailUrl?: string;
   ageRestriction?: WorkAgeRestriction;
   ai?: boolean;
-  userName?: string;
-  userId?: number;
-  title?: string;
   description?: string;
   tags?: string[];
   dimensions?: { h: number; v: number };
@@ -55,11 +63,55 @@ export default class Collection {
     this.loadWorksFromCollection();
   }
 
-  public subscribeToWorks(onUpdate: OnUpdate, onError?: OnError): CleanupFunction {
+  public subscribeToWorks(
+    search: Search | undefined,
+    onUpdate: OnUpdate,
+    onError?: OnError,
+  ): CleanupFunction {
+    const searchedChunks: Work[][] = [];
     const onUpdateAction = () => {
-      const works = this.worksChunks.flat();
-      onUpdate(works);
+      if (!search?.request) {
+        const works = this.worksChunks.flat();
+        onUpdate(works);
+        return;
+      }
+      // Search only new chunks
+      const newSearchedChunks = this.worksChunks.slice(searchedChunks.length).map((works) => {
+        let results: Work[] = works;
+        if (search.mode === 'all') {
+          results = results.filter(
+            (work) =>
+              work.title?.includes(search.request) ||
+              work.tags?.some((tag) => search.request.includes(tag)) ||
+              work.userName?.includes(search.request) ||
+              work.description?.includes(search.request) ||
+              work.id?.toString().includes(search.request) ||
+              work.userId?.toString().includes(search.request),
+          );
+        }
+        if (search.mode === 'users') {
+          results = results.filter(
+            (work) =>
+              work.userName?.includes(search.request) ||
+              work.userId?.toString().includes(search.request),
+          );
+        } else if (search.mode === 'works') {
+          results = results.filter(
+            (work) =>
+              work.title?.includes(search.request) ||
+              work.description?.includes(search.request) ||
+              work.tags?.some((tag) => search.request.includes(tag)) ||
+              work.id?.toString().includes(search.request),
+          );
+        }
+        return results;
+      });
+      console.log('r', newSearchedChunks);
+      searchedChunks.push(...newSearchedChunks);
+      onUpdate(searchedChunks.flat());
     };
+    onUpdateAction();
+
     this.onUpdateActions.push(onUpdateAction);
     if (onError) this.onErrorActions.push(onError);
     return () => {
@@ -155,6 +207,7 @@ export default class Collection {
 
     const [title, id] = Collection.splitIntoNameAndId(workDirectory.name);
     const [userName, userId] = Collection.splitIntoNameAndId(userDirectory.name);
+    const path = workDirectory.path + '\\' + workDirectory.name;
     const workData = metaFile ? await this.getWorkDataFromMetaFile(metaFile.path) : {};
 
     return {
@@ -162,6 +215,7 @@ export default class Collection {
       userId,
       userName,
       title,
+      path,
       assets,
       ...workData,
     };
@@ -262,7 +316,7 @@ export default class Collection {
     if (!metaFileBuffer || !this) return {};
 
     const metaFileContents = metaFileBuffer.split('\n');
-    const workData: Work = {};
+    const workData: Partial<Work> = {};
     let currentProperty: MetaFileProperty | undefined;
     let currentIndexInProperty = 0;
 

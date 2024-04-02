@@ -10,14 +10,14 @@ interface HeaderProps {
 const Header = ({ theme, setTheme }: HeaderProps) => {
   return (
     <header className="flex px-[10%] min-h-[3.2rem] bg-primary text-text-header items-center shadow-md gap-2 whitespace-nowrap z-10">
-      <div className="grow flex items-baseline gap-4 font-semibold text-xl">
+      <div className="grow flex items-baseline gap-4 font-semibold text-xl basis-0">
         <h1 role="banner" className="whitespace-nowrap">
           Pixiv Powerful Viewer
         </h1>
         <span>/</span>
         <CollectionSelector />
       </div>
-      <div className="grow">
+      <div className="grow basis-0">
         <Searchbar />
       </div>
       <ThemeButton theme={theme} setTheme={setTheme} />
