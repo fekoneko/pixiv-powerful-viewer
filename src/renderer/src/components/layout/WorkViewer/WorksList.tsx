@@ -45,11 +45,11 @@ const WorksList = ({ selectWork }: WorksListProps) => {
       className={
         (!scrolledToTheTop ? 'work-list-gradient-top ' : '') +
         (!scrolledToTheBottom ? 'work-list-gradient-bottom ' : '') +
-        'grow flex flex-col overflow-hidden'
+        'flex grow flex-col overflow-hidden'
       }
     >
       <div
-        className="overflow-y-scroll pl-2 [direction:rtl] grow"
+        className="grow overflow-y-scroll pl-2 [direction:rtl]"
         onScroll={(e) => {
           const target = e.target as HTMLDivElement;
           if (target.scrollTop < 10) setScrolledToTheTop(true);
@@ -59,7 +59,7 @@ const WorksList = ({ selectWork }: WorksListProps) => {
           else setScrolledToTheBottom(false);
         }}
       >
-        <div className="[direction:ltr] flex flex-col gap-2 py-2">
+        <div className="flex flex-col gap-2 py-2 [direction:ltr]">
           <WorkListCards works={works} selectWork={selectWork} />
         </div>
       </div>

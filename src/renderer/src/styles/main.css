@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Noto Sans JP';
+  font-family: "Noto Sans JP";
   src: url(../assets/fonts/NotoSansJP.ttf);
   unicode-range: U+3000-303f, U+3040-309f, U+30a0-30ff, U+ff00-ffef, U+4e00-9faf;
 }
 @font-face {
-  font-family: 'Segoe UI';
+  font-family: "Segoe UI";
   src: url(../assets/fonts/SegoeUI.ttf);
 }
 
 @layer base {
   :root {
-    font-family: 'Noto Sans JP', 'Segoe UI', Arial, sans-serif;
+    font-family: "Noto Sans JP", "Segoe UI", Arial, sans-serif;
     font-weight: 400;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -31,30 +31,34 @@
     @apply size-1.5;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent m-2;
+    @apply m-2 bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-text/30 rounded-full hover:bg-text/50;
+    @apply rounded-full bg-text/30 hover:bg-text/50;
   }
 }
 
 @layer components {
   .work-list-gradient-top,
   .work-list-gradient-bottom {
-    @apply relative after:content-[''] after:absolute after:top-0 after:left-0 after:size-full after:pointer-events-none;
+    @apply relative after:pointer-events-none after:absolute after:left-0 after:top-0 after:size-full after:content-[''];
   }
   .work-list-gradient-top::before {
-    @apply content-[''] absolute top-0 left-0 size-full pointer-events-none;
+    @apply pointer-events-none absolute left-0 top-0 size-full content-[''];
     z-index: 1;
     background: linear-gradient(
       0,
       transparent calc(100% - 2rem),
-      theme('colors.background') calc(100% - 0.5rem)
+      theme("colors.background") calc(100% - 0.5rem)
     );
   }
   .work-list-gradient-bottom::after {
-    @apply content-[''] absolute top-0 left-0 size-full pointer-events-none;
+    @apply pointer-events-none absolute left-0 top-0 size-full content-[''];
     z-index: 1;
-    background: linear-gradient(0, theme('colors.background') 0.5rem, transparent 2rem);
+    background: linear-gradient(
+      0,
+      theme("colors.background") 0.5rem,
+      transparent 2rem
+    );
   }
 }

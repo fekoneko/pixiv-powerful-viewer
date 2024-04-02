@@ -9,8 +9,8 @@ interface HeaderProps {
 }
 const Header = ({ theme, setTheme }: HeaderProps) => {
   return (
-    <header className="flex px-[10%] min-h-[3.2rem] bg-primary text-text-header items-center shadow-md gap-2 whitespace-nowrap z-10">
-      <div className="grow flex items-baseline gap-4 font-semibold text-xl basis-0">
+    <header className="z-10 flex min-h-[3.2rem] items-center gap-2 whitespace-nowrap bg-primary px-[10%] text-text-header shadow-md">
+      <div className="flex grow items-baseline gap-4 text-xl font-semibold">
         <h1 role="banner" className="whitespace-nowrap">
           Pixiv Powerful Viewer
         </h1>

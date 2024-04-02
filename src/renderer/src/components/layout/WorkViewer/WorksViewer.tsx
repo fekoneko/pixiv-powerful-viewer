@@ -7,7 +7,7 @@ const WorksViewer = () => {
   const [selectedWork, setSelectedWork] = useState<Work>();
 
   return (
-    <div className="grid grid-cols-2 gap-2 size-full">
+    <div className="grid size-full grid-cols-2 gap-2">
       <WorksList selectWork={setSelectedWork} />
       <WorkPreview work={selectedWork} />
     </div>

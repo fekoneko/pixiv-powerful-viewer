@@ -10,11 +10,11 @@ const Searchbar = () => {
   useWanakana(inputRef, {}, kanaConversion);
 
   return (
-    <div className="size-full flex border-2 border-text-header rounded-full overflow-hidden">
+    <div className="flex size-full overflow-hidden rounded-full border-2 border-text-header">
       <input
         ref={inputRef}
         placeholder="Search tags"
-        className="grow bg-transparent placeholder:text-text-header/80 px-3 py-1.5 focus:outline-none"
+        className="grow bg-transparent px-3 py-1.5 placeholder:text-text-header/80 focus:outline-none"
         value={search?.request ?? ''}
         onInput={(e) =>
           setSearch((prev) => ({
@@ -30,13 +30,13 @@ const Searchbar = () => {
             mode: prev?.mode === 'all' ? 'works' : prev?.mode === 'works' ? 'users' : 'all',
           }))
         }
-        className="px-3 rounded-full hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="rounded-full px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
         {search?.mode ?? 'all'}
       </button>
       <button
         onClick={() => setKanaConversion((prev) => !prev)}
-        className="px-3 rounded-full hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="rounded-full px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
         {kanaConversion ? 'カ' : 'A'}
       </button>
