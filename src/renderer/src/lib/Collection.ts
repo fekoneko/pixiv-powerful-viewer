@@ -1,4 +1,5 @@
 import { Dirent } from 'fs';
+import { toHiragana } from 'wanakana';
 
 export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
@@ -75,38 +76,58 @@ export default class Collection {
         onUpdate(works);
         return;
       }
+
+      const searchKeywords = search.request
+        .split(',')
+        .map((keyword) =>
+          keyword
+            .trim()
+            .split(' ')
+            .map((keyword) => keyword.split('　').map((keyword) => keyword.split('、'))),
+        )
+        .flat(3)
+        .map((keyword) => toHiragana(keyword, { passRomaji: true }).toLowerCase());
+
+      const checkProperties = (properties: (string | string[] | undefined)[]) =>
+        searchKeywords.every((keyword) => {
+          return properties.some((property) => {
+            if (!property) return false;
+            if (typeof property === 'object') {
+              return property.some((item) =>
+                toHiragana(item, { passRomaji: true }).toLowerCase().includes(keyword),
+              );
+            } else {
+              return toHiragana(property, { passRomaji: true }).toLowerCase().includes(keyword);
+            }
+          });
+        });
+
       // Search only new chunks
       const newSearchedChunks = this.worksChunks.slice(searchedChunks.length).map((works) => {
         let results: Work[] = works;
         if (search.mode === 'all') {
-          results = results.filter(
-            (work) =>
-              work.title?.includes(search.request) ||
-              work.tags?.some((tag) => search.request.includes(tag)) ||
-              work.userName?.includes(search.request) ||
-              work.description?.includes(search.request) ||
-              work.id?.toString().includes(search.request) ||
-              work.userId?.toString().includes(search.request),
+          results = results.filter((work) =>
+            checkProperties([
+              work.title,
+              work.tags,
+              work.userName,
+              work.description,
+              work.id?.toString(),
+              work.userId?.toString(),
+            ]),
           );
         }
         if (search.mode === 'users') {
-          results = results.filter(
-            (work) =>
-              work.userName?.includes(search.request) ||
-              work.userId?.toString().includes(search.request),
+          results = results.filter((work) =>
+            checkProperties([work.userName, work.userId?.toString()]),
           );
         } else if (search.mode === 'works') {
-          results = results.filter(
-            (work) =>
-              work.title?.includes(search.request) ||
-              work.description?.includes(search.request) ||
-              work.tags?.some((tag) => search.request.includes(tag)) ||
-              work.id?.toString().includes(search.request),
+          results = results.filter((work) =>
+            checkProperties([work.title, work.description, work.tags, work.id?.toString()]),
           );
         }
         return results;
       });
-      console.log('r', newSearchedChunks);
       searchedChunks.push(...newSearchedChunks);
       onUpdate(searchedChunks.flat());
     };
