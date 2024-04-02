@@ -17,12 +17,16 @@ const WorkCard = ({ work, select, active }: WorkCardProps) => {
       }
     >
       {work.assets?.length ? (
-        <div className="relative flex size-full items-center overflow-hidden rounded-lg hover:z-20 hover:overflow-visible hover:shadow-md [&>img]:hover:[transform:scale(1.2)] [&>p]:hover:invisible">
-          <img
-            src={work.assets[0]?.mediaPath}
-            className="absolute w-full rounded-lg transition-transform"
-          />
-          <p className="absolute right-0 top-0 text-white">x{work.assets.length}</p>
+        <div className="relative size-full">
+          <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
+            <img
+              src={work.assets[0]?.mediaPath}
+              className="absolute w-full rounded-lg transition-all [:hover>&]:shadow-md [:hover>&]:[transform:scale(1.2)]"
+            />
+          </div>
+          <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md [:hover>&]:invisible">
+            x{work.assets.length}
+          </p>
         </div>
       ) : (
         <div />
