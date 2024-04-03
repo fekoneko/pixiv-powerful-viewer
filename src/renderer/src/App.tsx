@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Header from './components/layout/Header/Header';
-import WorksViewer from './components/layout/WorkViewer/WorksViewer';
+import WorksViewer from './components/layout/WorksViewer/WorksViewer';
 import { CollectionProvider } from './contexts/CollectionContext';
 import { SearchProvider } from './contexts/SearchContext';
 
