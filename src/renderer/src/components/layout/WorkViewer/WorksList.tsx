@@ -1,27 +1,68 @@
 import useWorks from '../../../hooks/useWorks';
-import { memo, useCallback, useContext, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import WorkCard from './WorkCard';
 import { Work } from '@renderer/lib/Collection';
 import SearchContext from '@renderer/contexts/SearchContext';
+import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 
 interface WorkListCardsProps {
-  works: Work[];
-  selectWork: (selectedWork: Work) => any;
+  selectWork: (selectedWork: Work | undefined) => any;
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
 }
-const WorkListCards = memo(({ works, selectWork }: WorkListCardsProps) => {
-  const [selectedId, setSelectedId] = useState<number>();
+const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsProps) => {
+  const { search } = useContext(SearchContext);
+  const works = useWorks(
+    search,
+    useCallback((error) => console.error(error), []),
+  );
+  const [selectedIndex, setSelectedIndex] = useState<number>();
+
+  useEffect(() => {
+    selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
+  }, [selectedIndex, selectWork]);
+
+  useEffect(() => setSelectedIndex(0), [works]);
+
+  useKeyboardEvent(
+    'keydown',
+    ['ArrowUp', 'KeyW'],
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      setSelectedIndex((prev) => {
+        if (prev === undefined) return 0;
+        return prev <= 0 ? 0 : prev - 1;
+      });
+    },
+    [],
+  );
+
+  useKeyboardEvent(
+    'keydown',
+    ['ArrowDown', 'KeyS'],
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      setSelectedIndex((prev) => {
+        if (prev === undefined) return 0;
+        return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
+      });
+    },
+    [works.length],
+  );
 
   return (
     <>
-      {works.map((work) => (
+      {works.map((work, index) => (
         <WorkCard
           key={work.path}
           work={work}
-          select={() => {
-            selectWork(work);
-            setSelectedId(work.id);
-          }}
-          active={work.id === selectedId}
+          index={index}
+          selectIndex={setSelectedIndex}
+          scrollContainerRef={scrollContainerRef}
+          active={index === selectedIndex}
         />
       ))}
     </>
@@ -29,16 +70,12 @@ const WorkListCards = memo(({ works, selectWork }: WorkListCardsProps) => {
 });
 
 interface WorksListProps {
-  selectWork: (selectedWork: Work) => any;
+  selectWork: (selectedWork: Work | undefined) => any;
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
-  const { search } = useContext(SearchContext);
-  const works = useWorks(
-    search,
-    useCallback((error) => console.error(error), []),
-  );
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
@@ -49,6 +86,7 @@ const WorksList = ({ selectWork }: WorksListProps) => {
       }
     >
       <div
+        ref={scrollContainerRef}
         className="grow overflow-y-scroll pl-2 [direction:rtl]"
         onScroll={(e) => {
           const target = e.target as HTMLDivElement;
@@ -60,7 +98,7 @@ const WorksList = ({ selectWork }: WorksListProps) => {
         }}
       >
         <div className="flex flex-col gap-2 py-2 [direction:ltr]">
-          <WorkListCards works={works} selectWork={selectWork} />
+          <WorkListCards selectWork={selectWork} scrollContainerRef={scrollContainerRef} />
         </div>
       </div>
     </div>

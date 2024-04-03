@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useUserData = <T = any>(
+const useLocalStorage = <T = any>(
   key: string,
   onError?: (error: unknown) => any,
 ): [content: T | undefined, setContent: React.Dispatch<React.SetStateAction<T | undefined>>] => {
@@ -27,4 +27,4 @@ const useUserData = <T = any>(
 
   return [content, setContent];
 };
-export default useUserData;
+export default useLocalStorage;

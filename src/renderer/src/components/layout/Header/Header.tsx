@@ -1,5 +1,5 @@
 import Searchbar from './Searchbar';
-import CollectionSelector from './CollectionSelector';
+import CollectionButton from './CollectionButton';
 import { Theme } from '@renderer/App';
 import ThemeButton from './ThemeButton';
 
@@ -15,7 +15,7 @@ const Header = ({ theme, setTheme }: HeaderProps) => {
           Pixiv Powerful Viewer
         </h1>
         <span>/</span>
-        <CollectionSelector />
+        <CollectionButton />
       </div>
       <div className="grow basis-0">
         <Searchbar />

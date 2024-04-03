@@ -1,19 +1,45 @@
 import { Fragment } from 'react/jsx-runtime';
 import { Work } from '../../../lib/Collection';
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 
 interface WorkCardProps {
   work: Work;
-  select: () => any;
+  index: number;
+  selectIndex: (index: number) => any;
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
   active?: boolean;
 }
-const WorkCard = ({ work, select, active }: WorkCardProps) => {
+const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: WorkCardProps) => {
+  const cardRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!active) return;
+
+    const cardElement = cardRef.current;
+    if (!cardElement) return;
+
+    if (document.activeElement?.tagName !== 'INPUT') {
+      cardElement.focus({ preventScroll: true });
+    }
+
+    const scrollContainerElement = scrollContainerRef.current;
+    if (!scrollContainerElement) return;
+
+    const scrollPosition =
+      cardElement.offsetTop +
+      cardElement.offsetHeight / 2 -
+      scrollContainerElement.offsetHeight / 2;
+    scrollContainerElement.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+  }, [active, cardRef.current, scrollTo]);
+
   return (
     <button
-      onClick={select}
+      ref={cardRef}
+      onClick={() => selectIndex(index)}
+      tabIndex={-1}
       className={
-        'grid grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:border-text/60 focus:outline-none' +
-        (active ? ' bg-text/20' : ' hover:bg-text/10 focus:bg-text/10')
+        'grid grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
+        (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
       }
     >
       {work.assets?.length ? (

@@ -1,13 +1,15 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import CollectionContext from '../../../contexts/CollectionContext';
-import useUserData from '@renderer/hooks/useLocalStorage';
+import useLocalStorage from '@renderer/hooks/useLocalStorage';
+import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 
-const CollectionSelector = () => {
+const CollectionButton = () => {
   const { collection, loadCollection } = useContext(CollectionContext);
-  const [recentPaths, setRecentPaths] = useUserData<string[]>(
+  const [recentPaths, setRecentPaths] = useLocalStorage<string[]>(
     'recentCollections',
     useCallback((error) => console.error(error), []),
   );
+  const recentSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     if (collection || !recentPaths?.length) return;
@@ -24,17 +26,26 @@ const CollectionSelector = () => {
     });
   };
 
-  const handleSelect = async () => {
+  const showPickCollectionDialog = async () => {
     const collectionPath = await window.api.pickDirectory();
     if (!collectionPath) return;
 
     switchCollection(collectionPath);
   };
 
+  useKeyboardEvent('keyup', 'KeyO', showPickCollectionDialog, [], { control: true });
+  useKeyboardEvent(
+    'keyup',
+    'Tab',
+    () => recentSelectRef.current?.focus(),
+    [recentSelectRef.current],
+    { control: true },
+  );
+
   return (
     <div className="flex">
       <button
-        onClick={handleSelect}
+        onClick={showPickCollectionDialog}
         className="whitespace-nowrap rounded-xl px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
         {collection?.name ?? '< Select collection >'}
@@ -42,6 +53,7 @@ const CollectionSelector = () => {
       {recentPaths && (
         <div className="rounded-xl has-[:focus]:bg-text-header/20 has-[:hover]:bg-text-header/20">
           <select
+            ref={recentSelectRef}
             className="mt-0.5 w-[19px] cursor-pointer bg-transparent [zoom:1.4] focus:outline-none"
             onChange={(e) => switchCollection(recentPaths[e.target.selectedIndex])}
           >
@@ -56,4 +68,4 @@ const CollectionSelector = () => {
     </div>
   );
 };
-export default CollectionSelector;
+export default CollectionButton;

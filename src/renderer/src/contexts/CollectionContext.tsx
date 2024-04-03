@@ -1,17 +1,20 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useCallback, useState } from 'react';
 import Collection from '../lib/Collection';
 
 interface CollectionContextValue {
-  collection: Collection | null;
-  loadCollection: React.Dispatch<string>;
+  collection: Collection | undefined;
+  loadCollection: (collectionPath: string) => void;
 }
 const CollectionContext = createContext({} as CollectionContextValue);
 
 export const CollectionProvider = ({ children }: React.PropsWithChildren) => {
-  const [collection, loadCollection] = useReducer(
-    (_prev: Collection | null, collectionPath: string): Collection | null =>
-      new Collection(collectionPath),
-    null,
+  const [collection, setCollection] = useState<Collection>();
+
+  const loadCollection = useCallback(
+    (collectionPath: string) => {
+      setCollection(new Collection(collectionPath));
+    },
+    [setCollection],
   );
 
   return (
