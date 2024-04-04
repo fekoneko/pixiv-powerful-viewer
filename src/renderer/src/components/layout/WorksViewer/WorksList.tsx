@@ -24,7 +24,7 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
   useEffect(() => {
     setSelectedIndex(undefined);
     scrollContainerRef.current?.scrollTo({ top: 0 });
-  }, [works]);
+  }, [works, setSelectedIndex]);
 
   useKeyboardEvent(
     'keydown',
@@ -38,7 +38,7 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         return prev <= 0 ? 0 : prev - 1;
       });
     },
-    [],
+    [setSelectedIndex],
   );
 
   useKeyboardEvent(
@@ -53,7 +53,19 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
       });
     },
-    [works.length],
+    [works.length, setSelectedIndex],
+  );
+
+  useKeyboardEvent(
+    'keyup',
+    'Escape',
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      setSelectedIndex(undefined);
+    },
+    [setSelectedIndex],
   );
 
   return (

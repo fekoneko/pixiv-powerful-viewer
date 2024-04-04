@@ -26,7 +26,7 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
       setShowPageNumber(true);
       updateShowPageNumberTimeout(() => setShowPageNumber(false), pageNumberShowDelay);
     },
-    [work, setPageNumber],
+    [work, setPageNumber, setShowPageNumber, updateShowPageNumberTimeout],
   );
 
   useKeyboardEvent(
@@ -42,7 +42,7 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
       setShowPageNumber(true);
       updateShowPageNumberTimeout(() => setShowPageNumber(false), pageNumberShowDelay);
     },
-    [work, setPageNumber],
+    [work, setPageNumber, setShowPageNumber, updateShowPageNumberTimeout],
   );
 
   useEffect(() => {

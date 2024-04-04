@@ -12,7 +12,10 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
     'keyup',
     'Space',
     (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
       e.preventDefault();
+
+      if (!work) return;
       setExpanded((prev) => !prev);
     },
     [setExpanded],
@@ -62,104 +65,109 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
             {'　'}
             <span className="whitespace-nowrap text-sm opacity-50">(id: {work.userId})</span>
           </p>
-          <div className="mb-1.5 h-[2px] w-2/3 self-center bg-text/50" />
+          <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
 
-          {work.description?.split('\n').map((paragraph, index) => (
-            <Fragment key={index}>
-              {index !== 0 && <br />}
-              <p>{paragraph}</p>
-            </Fragment>
-          ))}
-          {work.description && <div className="mb-1.5 h-[2px] w-2/3 self-center bg-text/50" />}
+          {work.description && (
+            <>
+              <div>
+                {work.description.split('\n').map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+              <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+            </>
+          )}
 
           <table>
-            {work.tags && (
-              <tr>
-                <td className="align-top">tags:　</td>
-                <td className="whitespace-nowrap">
-                  {work.tags.map((tag, index) => (
-                    <Fragment key={index}>
-                      {index !== 0 && <span className="opacity-50">・</span>}
-                      <wbr />
-                      <span>{tag}</span>
-                    </Fragment>
-                  ))}
-                </td>
-              </tr>
-            )}
+            <tbody>
+              {work.tags && (
+                <tr>
+                  <td className="align-top">tags:　</td>
+                  <td className="whitespace-nowrap">
+                    {work.tags.map((tag, index) => (
+                      <Fragment key={index}>
+                        {index !== 0 && <span className="opacity-50">・</span>}
+                        <wbr />
+                        <span>{tag}</span>
+                      </Fragment>
+                    ))}
+                  </td>
+                </tr>
+              )}
 
-            {work.ai !== undefined && (
-              <tr>
-                <td />
-                <td className="align-top">
-                  {work.ai ? (
-                    <strong className="text-red-600">AI-generated</strong>
-                  ) : (
-                    <>
-                      <strong>Not</strong> AI-generated
-                    </>
-                  )}
-                </td>
-              </tr>
-            )}
+              {work.ai !== undefined && (
+                <tr>
+                  <td />
+                  <td className="align-top">
+                    {work.ai ? (
+                      <strong className="text-red-600">AI-generated</strong>
+                    ) : (
+                      <>
+                        <strong>Not</strong> AI-generated
+                      </>
+                    )}
+                  </td>
+                </tr>
+              )}
 
-            {work.dateTime && (
-              <tr>
-                <td className="align-top">uploaded:　</td>
-                <td>
-                  {' '}
-                  <p>{work.dateTime.toDateString()}</p>
-                </td>
-              </tr>
-            )}
+              {work.dateTime && (
+                <tr>
+                  <td className="align-top">uploaded:　</td>
+                  <td>
+                    {' '}
+                    <p>{work.dateTime.toDateString()}</p>
+                  </td>
+                </tr>
+              )}
 
-            {work.bookmarks !== undefined && (
-              <tr>
-                <td className="align-top">bookmarks:　</td>
-                <td>
-                  <p>
-                    {work.bookmarks.toString()} <span className="text-lg">♥️</span>
-                    {'　'}
-                    <span className="whitespace-nowrap text-sm opacity-50">
-                      (before downloaded)
-                    </span>
-                  </p>
-                </td>
-              </tr>
-            )}
+              {work.bookmarks !== undefined && (
+                <tr>
+                  <td className="align-top">bookmarks:　</td>
+                  <td>
+                    <p>
+                      {work.bookmarks.toString()} <span className="text-lg">♥️</span>
+                      {'　'}
+                      <span className="whitespace-nowrap text-sm opacity-50">
+                        (before downloaded)
+                      </span>
+                    </p>
+                  </td>
+                </tr>
+              )}
 
-            {work.pageUrl && (
+              {work.pageUrl && (
+                <tr>
+                  <td />
+                  <td>
+                    <a
+                      href={work.pageUrl}
+                      target="blank"
+                      tabIndex={expanded ? 0 : -1}
+                      className="text-blue-500 hover:underline"
+                    >
+                      Go to Pixiv page
+                    </a>
+                  </td>
+                </tr>
+              )}
+
               <tr>
                 <td />
                 <td>
                   <a
-                    href={work.pageUrl}
-                    target="blank"
+                    href="#"
                     tabIndex={expanded ? 0 : -1}
                     className="text-blue-500 hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.api.showItemInFolder(work.path);
+                    }}
                   >
-                    Go to Pixiv page
+                    Show in file explorer
                   </a>
                 </td>
               </tr>
-            )}
-
-            <tr>
-              <td />
-              <td>
-                <a
-                  href="#"
-                  tabIndex={expanded ? 0 : -1}
-                  className="text-blue-500 hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.api.showItemInFolder(work.path);
-                  }}
-                >
-                  Show in file explorer
-                </a>
-              </td>
-            </tr>
+            </tbody>
           </table>
         </div>
       )}
