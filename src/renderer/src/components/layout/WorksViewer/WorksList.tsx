@@ -44,6 +44,7 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
       updateSmoothScrollTimeout(() => setSmoothScroll(true), 100);
     },
     [setSelectedIndex],
+    { control: false },
   );
 
   useKeyboardEvent(
@@ -61,6 +62,7 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
       updateSmoothScrollTimeout(() => setSmoothScroll(true), 100);
     },
     [works.length, setSelectedIndex],
+    { control: false },
   );
 
   useKeyboardEvent(

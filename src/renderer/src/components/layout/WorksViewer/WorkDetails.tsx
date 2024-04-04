@@ -1,12 +1,13 @@
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 
 interface WorkDetailsProps {
   work: Work | undefined;
 }
 const WorkDetails = ({ work }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useKeyboardEvent(
     'keyup',
@@ -19,6 +20,40 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
       setExpanded((prev) => !prev);
     },
     [setExpanded],
+  );
+
+  useKeyboardEvent(
+    'keydown',
+    ['ArrowUp', 'KeyW'],
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      const scrollContainerElement = scrollContainerRef.current;
+      if (!scrollContainerElement) return;
+
+      const currentScrollTop = scrollContainerElement.scrollTop;
+      scrollContainerElement.scrollTo({ top: currentScrollTop - 100, behavior: 'smooth' });
+    },
+    [scrollContainerRef],
+    { control: true },
+  );
+
+  useKeyboardEvent(
+    'keydown',
+    ['ArrowDown', 'KeyS'],
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      const scrollContainerElement = scrollContainerRef.current;
+      if (!scrollContainerElement) return;
+
+      const currentScrollTop = scrollContainerElement.scrollTop;
+      scrollContainerElement.scrollTo({ top: currentScrollTop + 100, behavior: 'smooth' });
+    },
+    [scrollContainerRef.current],
+    { control: true },
   );
 
   return (
@@ -54,7 +89,7 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
       )}
 
       {work && (
-        <div className="flex flex-col gap-1.5 overflow-y-scroll px-3 pb-5">
+        <div ref={scrollContainerRef} className="flex flex-col gap-1.5 overflow-y-scroll px-3 pb-5">
           <h3 className="text-center text-lg font-semibold text-text-accent">
             {work.title}
             {'　'}
