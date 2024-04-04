@@ -11,15 +11,20 @@ const Searchbar = () => {
 
   useWanakana(inputRef, {}, kanaConversion);
 
-  const toggleSearchMode = () =>
+  const toggleSearchMode = () => {
     setSearch((prev) => ({
       request: prev?.request ?? '',
       mode: prev?.mode === 'all' ? 'works' : prev?.mode === 'works' ? 'users' : 'all',
     }));
+    inputRef.current?.focus();
+  };
 
-  const toggleKanaConversion = () => setKanaConversion((prev) => !prev);
+  const toggleKanaConversion = () => {
+    setKanaConversion((prev) => !prev);
+    inputRef.current?.focus();
+  };
 
-  useKeyboardEvent('keyup', ['Slash', 'Backslash', 'Space'], () => inputRef.current?.focus(), [
+  useKeyboardEvent('keyup', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [
     inputRef.current,
   ]);
 
@@ -28,47 +33,46 @@ const Searchbar = () => {
   useKeyboardEvent('keyup', 'Backquote', toggleKanaConversion, [], { control: true });
 
   return (
-    <div className="flex size-full overflow-hidden rounded-full border-2 border-text-header">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          inputRef.current?.blur();
-        }}
-      >
-        <input
-          ref={inputRef}
-          placeholder={isInputInFocus ? 'Search here' : 'Press / to search'}
-          className="grow bg-transparent px-3 py-1.5 placeholder:text-text-header/80 focus:outline-none"
-          value={search?.request ?? ''}
-          onInput={(e) =>
-            setSearch((prev) => ({
-              request: (e.target as HTMLInputElement).value,
-              mode: prev?.mode ?? 'all',
-            }))
-          }
-          onFocus={() => setIsInputInFocus(true)}
-          onBlur={() => setIsInputInFocus(false)}
-        />
-      </form>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        inputRef.current?.blur();
+      }}
+      className="flex min-w-0 grow basis-40 gap-1 rounded-full border-2 border-text-header"
+    >
+      <input
+        ref={inputRef}
+        placeholder={isInputInFocus ? 'Search here' : 'Press / to search'}
+        className="min-w-0 grow bg-transparent px-3 py-1.5 placeholder:text-text-header/80 focus:outline-none"
+        value={search?.request ?? ''}
+        onInput={(e) =>
+          setSearch((prev) => ({
+            request: (e.target as HTMLInputElement).value,
+            mode: prev?.mode ?? 'all',
+          }))
+        }
+        onFocus={() => setIsInputInFocus(true)}
+        onBlur={() => setIsInputInFocus(false)}
+      />
 
       <button
         onClick={toggleSearchMode}
-        className="rounded-full px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
-        tabIndex={-1}
+        type="button"
+        className="rounded-l-3xl rounded-r-md pl-3 pr-2 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
         title="Toggle search mode"
       >
-        {search?.mode ?? 'all'}
+        {search?.mode === 'works' ? 'Works' : search?.mode === 'users' ? 'Users' : 'All'}
       </button>
-
+      <div className="my-2 w-[3px] rounded-full bg-text-header/40" />
       <button
         onClick={toggleKanaConversion}
-        className="rounded-full px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
-        tabIndex={-1}
+        type="button"
+        className="rounded-l-md rounded-r-3xl pl-2 pr-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
         title="Toggle romaji-to-kana conversion"
       >
         {kanaConversion ? 'カ' : 'A'}
       </button>
-    </div>
+    </form>
   );
 };
 

@@ -21,7 +21,10 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
     selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
   }, [selectedIndex, selectWork]);
 
-  useEffect(() => setSelectedIndex(0), [works]);
+  useEffect(() => {
+    setSelectedIndex(undefined);
+    scrollContainerRef.current?.scrollTo({ top: 0 });
+  }, [works]);
 
   useKeyboardEvent(
     'keydown',
@@ -74,7 +77,7 @@ interface WorksListProps {
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
-  const [scrolledToTheBottom, setScrolledToTheBottom] = useState(true);
+  const [scrolledToTheBottom, setScrolledToTheBottom] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   return (

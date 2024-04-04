@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 const pageNumberShowDelay = 1000;
 
 interface WorkPreviewProps {
-  work?: Work;
+  work: Work | undefined;
 }
 const WorkPreview = ({ work }: WorkPreviewProps) => {
   const [pageNumber, setPageNumber] = useState(0);
@@ -50,7 +50,7 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
   }, [work]);
 
   return (
-    <div className="relative my-2 flex items-center justify-center overflow-hidden rounded-xl border-2 border-text/30 shadow-lg">
+    <div className="relative flex grow basis-0 items-center justify-center overflow-hidden rounded-xl border-2 border-text/30 shadow-lg">
       {work?.assets?.length ? (
         <>
           <img src={work.assets[pageNumber]?.mediaPath} className="z-10 max-h-full max-w-full" />
@@ -64,19 +64,19 @@ const WorkPreview = ({ work }: WorkPreviewProps) => {
           </div>
 
           <button
-            className="absolute left-0 z-20 h-full w-1/3 p-4 text-left text-3xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_0_50%,#33335544,transparent_50%)] hover:opacity-100"
+            className="absolute left-0 z-20 h-full w-1/3 p-4 text-left text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_0_50%,#33335544,transparent_50%)] hover:opacity-100"
             tabIndex={-1}
             onClick={() => setPageNumber((prev) => (prev > 0 ? prev - 1 : work.assets!.length - 1))}
           >
-            {'<'}
+            ❮
           </button>
 
           <button
-            className="absolute right-0 z-20 h-full w-1/3 p-4 text-right text-3xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_100%_50%,#33335544,transparent_50%)] hover:opacity-100"
+            className="absolute right-0 z-20 h-full w-1/3 p-4 text-right text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_100%_50%,#33335544,transparent_50%)] hover:opacity-100"
             tabIndex={-1}
             onClick={() => setPageNumber((prev) => (prev < work.assets!.length - 1 ? prev + 1 : 0))}
           >
-            {'>'}
+            ❯
           </button>
 
           <p

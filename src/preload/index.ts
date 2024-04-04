@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, shell } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 import { readFile, readdir, writeFile } from 'fs/promises';
 
@@ -7,12 +7,14 @@ export interface Api {
   readFile: typeof readFile;
   writeFile: typeof writeFile;
   pickDirectory: () => Promise<string>;
+  showItemInFolder: typeof shell.showItemInFolder;
 }
 const api: Api = {
   readDir: readdir,
   readFile: readFile,
   writeFile: writeFile,
   pickDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
+  showItemInFolder: shell.showItemInFolder,
 };
 
 if (process.contextIsolated) {
