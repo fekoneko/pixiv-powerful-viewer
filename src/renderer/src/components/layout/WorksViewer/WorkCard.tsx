@@ -7,10 +7,22 @@ interface WorkCardProps {
   index: number;
   selectIndex: (index: number) => any;
   scrollContainerRef: React.RefObject<HTMLDivElement>;
+  smoothScroll?: boolean;
+  setSmoothScroll?: React.Dispatch<React.SetStateAction<boolean>>;
   active?: boolean;
 }
-const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: WorkCardProps) => {
+const WorkCard = ({
+  work,
+  index,
+  selectIndex,
+  scrollContainerRef,
+  smoothScroll,
+  setSmoothScroll,
+  active,
+}: WorkCardProps) => {
   const cardRef = useRef<HTMLButtonElement>(null);
+
+  console.log('r');
 
   useEffect(() => {
     if (!active) return;
@@ -29,7 +41,11 @@ const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: Work
       cardElement.offsetTop +
       cardElement.offsetHeight / 2 -
       scrollContainerElement.offsetHeight / 2;
-    scrollContainerElement.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+    scrollContainerElement.scrollTo({
+      top: scrollPosition,
+      behavior: smoothScroll ? 'smooth' : 'instant',
+    });
+    if (setSmoothScroll) setSmoothScroll(false);
   }, [active, cardRef.current, scrollTo]);
 
   return (

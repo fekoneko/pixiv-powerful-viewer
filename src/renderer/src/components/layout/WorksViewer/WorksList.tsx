@@ -4,6 +4,7 @@ import WorkCard from './WorkCard';
 import { Work } from '@renderer/lib/Collection';
 import SearchContext from '@renderer/contexts/SearchContext';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
+import useTimeout from '@renderer/hooks/useTimeout';
 
 interface WorkListCardsProps {
   selectWork: (selectedWork: Work | undefined) => any;
@@ -16,6 +17,8 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
     useCallback((error) => console.error(error), []),
   );
   const [selectedIndex, setSelectedIndex] = useState<number>();
+  const [smoothScroll, setSmoothScroll] = useState(true);
+  const [, updateSmoothScrollTimeout] = useTimeout();
 
   useEffect(() => {
     selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
@@ -37,6 +40,8 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         if (prev === undefined) return 0;
         return prev <= 0 ? 0 : prev - 1;
       });
+
+      updateSmoothScrollTimeout(() => setSmoothScroll(true), 100);
     },
     [setSelectedIndex],
   );
@@ -52,6 +57,8 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         if (prev === undefined) return 0;
         return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
       });
+
+      updateSmoothScrollTimeout(() => setSmoothScroll(true), 100);
     },
     [works.length, setSelectedIndex],
   );
@@ -77,6 +84,8 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
           index={index}
           selectIndex={setSelectedIndex}
           scrollContainerRef={scrollContainerRef}
+          smoothScroll={smoothScroll}
+          setSmoothScroll={setSmoothScroll}
           active={index === selectedIndex}
         />
       ))}
