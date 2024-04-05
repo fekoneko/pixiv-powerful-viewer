@@ -26,7 +26,6 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
     'keydown',
     ['ArrowUp', 'KeyW'],
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
       e.preventDefault();
 
       const scrollContainerElement = scrollContainerRef.current;
@@ -43,7 +42,6 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
     'keydown',
     ['ArrowDown', 'KeyS'],
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
       e.preventDefault();
 
       const scrollContainerElement = scrollContainerRef.current;
@@ -89,7 +87,10 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
       )}
 
       {work && (
-        <div ref={scrollContainerRef} className="flex flex-col gap-1.5 overflow-y-scroll px-3 pb-5">
+        <div
+          ref={scrollContainerRef}
+          className="flex flex-col gap-1.5 overflow-x-hidden overflow-y-scroll px-3 pb-5"
+        >
           <h3 className="text-center text-lg font-semibold text-text-accent">
             {work.title}
             {'　'}
@@ -149,7 +150,6 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
                 <tr>
                   <td className="align-top">uploaded:　</td>
                   <td>
-                    {' '}
                     <p>{work.dateTime.toDateString()}</p>
                   </td>
                 </tr>

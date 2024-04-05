@@ -346,19 +346,23 @@ export default class Collection {
     let currentIndexInProperty = 0;
     let multilinePropertyBuffer: string[] = [];
 
-    metaFileContents.forEach((line) => {
+    metaFileContents.forEach((line, index) => {
       const newProperty = Collection.metaFileProperties.get(line);
-      if (newProperty) {
-        if (currentProperty && !currentProperty.isArray) {
-          const readPropertyValue = multilinePropertyBuffer
-            .slice(0, multilinePropertyBuffer.length - 1)
-            .join('\n');
-          (workData[currentProperty.key] as any) = currentProperty.parser
-            ? currentProperty.parser(readPropertyValue)
-            : readPropertyValue;
-          multilinePropertyBuffer = [];
-        }
+      if (
+        (newProperty || index === metaFileContents.length - 1) &&
+        currentProperty &&
+        !currentProperty.isArray
+      ) {
+        const readPropertyValue = multilinePropertyBuffer
+          .slice(0, multilinePropertyBuffer.length - 1)
+          .join('\n');
+        (workData[currentProperty.key] as any) = currentProperty.parser
+          ? currentProperty.parser(readPropertyValue)
+          : readPropertyValue;
+        multilinePropertyBuffer = [];
+      }
 
+      if (newProperty) {
         currentProperty = newProperty;
         currentIndexInProperty = 0;
       }
