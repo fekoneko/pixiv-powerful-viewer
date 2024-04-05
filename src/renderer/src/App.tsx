@@ -15,7 +15,7 @@ const App = () => {
       <SearchProvider>
         <div
           data-theme={theme}
-          className="flex h-dvh w-screen flex-col overflow-hidden bg-background text-text"
+          className="flex size-full flex-col overflow-hidden bg-background text-text"
         >
           <Header />
           <main className="grow overflow-hidden pl-[calc(10%-1rem)] pr-[10%]">

@@ -20,8 +20,6 @@ const WorkCard = ({
 }: WorkCardProps) => {
   const cardRef = useRef<HTMLButtonElement>(null);
 
-  console.log('r');
-
   useEffect(() => {
     if (!active) return;
 

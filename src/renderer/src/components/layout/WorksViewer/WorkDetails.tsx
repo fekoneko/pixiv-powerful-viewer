@@ -4,8 +4,9 @@ import { Fragment, useRef, useState } from 'react';
 
 interface WorkDetailsProps {
   work: Work | undefined;
+  toggleFullscreenMode: () => any;
 }
-const WorkDetails = ({ work }: WorkDetailsProps) => {
+const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +80,10 @@ const WorkDetails = ({ work }: WorkDetailsProps) => {
               Favorite
             </button>
             <div className="my-2 w-[2px] rounded-full bg-text/40" />
-            <button className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none">
+            <button
+              onClick={() => toggleFullscreenMode()}
+              className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
+            >
               Fullscreen
             </button>
           </div>
