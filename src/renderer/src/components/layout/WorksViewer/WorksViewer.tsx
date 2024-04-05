@@ -88,6 +88,7 @@ const WorksViewer = () => {
     <>
       <div className="grid size-full grid-cols-2 grid-rows-1 gap-2">
         <WorksList selectWork={setSelectedWork} />
+
         <div className="flex flex-col gap-2 py-2">
           <div ref={viewRef} className="grow">
             <animated.div

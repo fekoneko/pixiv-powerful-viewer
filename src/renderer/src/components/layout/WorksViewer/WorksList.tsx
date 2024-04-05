@@ -1,10 +1,12 @@
 import useWorks from '../../../hooks/useWorks';
-import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import WorkCard from './WorkCard';
+import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Work } from '@renderer/lib/Collection';
 import SearchContext from '@renderer/contexts/SearchContext';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import useTimeout from '@renderer/hooks/useTimeout';
+import WorkCard from './WorkCard';
+import RenderInViewport from '@renderer/components/render/RenderInViewport';
+
+const workCardChunkSize = 20;
 
 interface WorkListCardsProps {
   selectWork: (selectedWork: Work | undefined) => any;
@@ -16,9 +18,15 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
     search,
     useCallback((error) => console.error(error), []),
   );
+  const workCardsChunks = useMemo(() => {
+    const result: Work[][] = [];
+    for (let i = 0; i < works.length; i += workCardChunkSize) {
+      result.push(works.slice(i, i + workCardChunkSize));
+    }
+    return result;
+  }, [works]);
+
   const [selectedIndex, setSelectedIndex] = useState<number>();
-  const smoothScrollRef = useRef(true);
-  const [, updateSmoothScrollTimeout] = useTimeout();
 
   useEffect(() => {
     selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
@@ -30,7 +38,7 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
   }, [works, setSelectedIndex]);
 
   useKeyboardEvent(
-    'keydown',
+    'keyup',
     ['ArrowUp', 'KeyW'],
     (e) => {
       if (document.activeElement?.tagName === 'INPUT') return;
@@ -40,15 +48,13 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         if (prev === undefined) return 0;
         return prev <= 0 ? 0 : prev - 1;
       });
-
-      updateSmoothScrollTimeout(() => (smoothScrollRef.current = true), 100);
     },
     [setSelectedIndex],
     { control: false },
   );
 
   useKeyboardEvent(
-    'keydown',
+    'keyup',
     ['ArrowDown', 'KeyS'],
     (e) => {
       if (document.activeElement?.tagName === 'INPUT') return;
@@ -58,8 +64,6 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
         if (prev === undefined) return 0;
         return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
       });
-
-      updateSmoothScrollTimeout(() => (smoothScrollRef.current = true), 100);
     },
     [works.length, setSelectedIndex],
     { control: false },
@@ -79,16 +83,30 @@ const WorkListCards = memo(({ selectWork, scrollContainerRef }: WorkListCardsPro
 
   return (
     <>
-      {works.map((work, index) => (
-        <WorkCard
-          key={work.path}
-          work={work}
-          index={index}
-          selectIndex={setSelectedIndex}
-          scrollContainerRef={scrollContainerRef}
-          smoothScrollRef={smoothScrollRef}
-          active={index === selectedIndex}
-        />
+      {workCardsChunks.map((chunk, chunkIndex) => (
+        <RenderInViewport
+          key={chunkIndex}
+          fallbackHeight={chunk.length * 8 + 'rem'}
+          forceRender={
+            selectedIndex !== undefined &&
+            selectedIndex >= (chunkIndex - 1) * workCardChunkSize &&
+            selectedIndex <= (chunkIndex + 1) * workCardChunkSize
+          }
+        >
+          {chunk.map((work, workIndexInChunk) => {
+            const workIndex = chunkIndex * workCardChunkSize + workIndexInChunk;
+            return (
+              <WorkCard
+                key={workIndexInChunk}
+                work={work}
+                index={workIndex}
+                selectIndex={setSelectedIndex}
+                scrollContainerRef={scrollContainerRef}
+                active={workIndex === selectedIndex}
+              />
+            );
+          })}
+        </RenderInViewport>
       ))}
     </>
   );

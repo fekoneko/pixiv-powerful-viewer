@@ -2,22 +2,14 @@ import { Fragment } from 'react/jsx-runtime';
 import { Work } from '../../../lib/Collection';
 import { memo, useEffect, useRef } from 'react';
 
-interface WorkCardProps {
+export interface WorkCardProps {
   work: Work;
   index: number;
   selectIndex: (index: number) => any;
   scrollContainerRef: React.RefObject<HTMLDivElement>;
-  smoothScrollRef?: React.MutableRefObject<boolean>;
   active?: boolean;
 }
-const WorkCard = ({
-  work,
-  index,
-  selectIndex,
-  scrollContainerRef,
-  smoothScrollRef,
-  active,
-}: WorkCardProps) => {
+const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: WorkCardProps) => {
   const cardRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -39,10 +31,9 @@ const WorkCard = ({
       scrollContainerElement.offsetHeight / 2;
     scrollContainerElement.scrollTo({
       top: scrollPosition,
-      behavior: !smoothScrollRef || smoothScrollRef.current ? 'smooth' : 'instant',
+      behavior: 'smooth',
     });
-    if (smoothScrollRef) smoothScrollRef.current = false;
-  }, [active, cardRef.current, smoothScrollRef?.current]);
+  }, [active, cardRef.current]);
 
   return (
     <button
@@ -50,7 +41,7 @@ const WorkCard = ({
       onClick={() => selectIndex(index)}
       tabIndex={-1}
       className={
-        'grid grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
+        'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
         (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
       }
     >

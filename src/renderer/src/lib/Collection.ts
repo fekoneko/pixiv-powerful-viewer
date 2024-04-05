@@ -55,7 +55,7 @@ export default class Collection {
   private worksChunks: Work[][] = [];
   private onUpdateActions: OnUpdateAction[] = [];
   private onErrorActions: OnErrorAction[] = [];
-  private static readonly usersInChunk = 50;
+  private static readonly usersInChunk = 100;
 
   constructor(collectionPath: string) {
     this.path = collectionPath;

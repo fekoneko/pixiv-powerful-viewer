@@ -25,6 +25,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@react-spring/web": "^9.7.3",
     "electron-updater": "^6.1.7",
+    "react-in-viewport": "^1.0.0-alpha.30",
     "wanakana": "^5.3.1"
   },
   "devDependencies": {
