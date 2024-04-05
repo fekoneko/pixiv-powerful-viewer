@@ -68,7 +68,7 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
             onClick={() => setExpanded((prev) => !prev)}
             className="flex min-w-1 grow gap-1 focus:outline-none"
           >
-            <div className="items-center rounded-md px-2 py-1 text-sm [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
+            <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
               {expanded ? '▼' : '▲'}
             </div>
             <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">

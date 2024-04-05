@@ -76,7 +76,7 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
 
           <button
             className={
-              'absolute left-0 z-40 h-full w-1/3 max-w-80 p-4 text-left text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_0_50%,#55556634,transparent_50%)] focus:outline-none' +
+              'absolute left-0 z-40 h-full w-1/3 max-w-60 p-4 text-left text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_0_50%,#55556634,transparent_50%)] focus:outline-none' +
               (controlsShown ? ' hover:opacity-100' : ' cursor-none')
             }
             tabIndex={-1}
@@ -90,7 +90,7 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
 
           <button
             className={
-              'absolute right-0 z-40 h-full w-1/3 max-w-80 p-4 text-right text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_100%_50%,#55556634,transparent_50%)] focus:outline-none' +
+              'absolute right-0 z-40 h-full w-1/3 max-w-60 p-4 text-right text-2xl text-white opacity-0 transition-opacity [background:radial-gradient(farthest-side_at_100%_50%,#55556634,transparent_50%)] focus:outline-none' +
               (controlsShown ? ' hover:opacity-100' : ' cursor-none')
             }
             tabIndex={-1}

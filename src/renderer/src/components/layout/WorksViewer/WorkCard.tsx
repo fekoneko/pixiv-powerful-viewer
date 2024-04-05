@@ -62,7 +62,7 @@ const WorkCard = ({
               className="absolute w-full rounded-lg transition-all [:hover>&]:shadow-md [:hover>&]:[transform:scale(1.2)]"
             />
           </div>
-          <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md [:hover>&]:invisible">
+          <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
             x{work.assets.length}
           </p>
         </div>
