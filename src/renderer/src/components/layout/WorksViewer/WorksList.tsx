@@ -47,7 +47,7 @@ const WorkListCards = memo(
       if (!canSelectWithKeyboardRef.current) return false;
 
       canSelectWithKeyboardRef.current = false;
-      updateKeyboardSelectionTimeout(() => (canSelectWithKeyboardRef.current = true), 100);
+      updateKeyboardSelectionTimeout(() => (canSelectWithKeyboardRef.current = true), 150);
       return true;
     }, [updateKeyboardSelectionTimeout, canSelectWithKeyboardRef]);
 
