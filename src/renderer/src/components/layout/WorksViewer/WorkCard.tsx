@@ -1,56 +1,20 @@
 import { Fragment } from 'react/jsx-runtime';
 import { Work } from '../../../lib/Collection';
 import { memo, useEffect, useRef } from 'react';
+import { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
 
-export interface WorkCardProps {
+interface WorkCardContents {
   work: Work;
-  index: number;
-  selectIndex: (index: number) => any;
-  scrollContainerRef: React.RefObject<HTMLDivElement>;
-  active?: boolean;
 }
-const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: WorkCardProps) => {
-  const cardRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!active) return;
-
-    const cardElement = cardRef.current;
-    if (!cardElement) return;
-
-    if (document.activeElement?.tagName !== 'INPUT') {
-      cardElement.focus({ preventScroll: true });
-    }
-
-    const scrollContainerElement = scrollContainerRef.current;
-    if (!scrollContainerElement) return;
-
-    const scrollPosition =
-      cardElement.offsetTop +
-      cardElement.offsetHeight / 2 -
-      scrollContainerElement.offsetHeight / 2;
-    scrollContainerElement.scrollTo({
-      top: scrollPosition,
-      behavior: 'smooth',
-    });
-  }, [active, cardRef.current]);
-
+const WorkCardContents = memo(({ work }: WorkCardContents) => {
   return (
-    <button
-      ref={cardRef}
-      onClick={() => selectIndex(index)}
-      tabIndex={-1}
-      className={
-        'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
-        (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
-      }
-    >
+    <>
       {work.assets?.length ? (
         <div className="relative size-full">
           <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
             <img
               src={work.assets[0]?.mediaPath}
-              className="absolute w-full rounded-lg transition-all [:hover>&]:shadow-md [:hover>&]:[transform:scale(1.2)]"
+              className="absolute w-full rounded-lg transition-transform [transform:translate3d(0,0,0)] [:hover>&]:shadow-md [:hover>&]:[transform:scale(1.2)]"
             />
           </div>
           <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
@@ -77,6 +41,63 @@ const WorkCard = ({ work, index, selectIndex, scrollContainerRef, active }: Work
           )) ?? <span>no tags</span>}
         </p>
       </div>
+    </>
+  );
+});
+
+export interface WorkCardProps {
+  work: Work;
+  index: number;
+  selectIndex: (index: number) => any;
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
+  animateScroll: AnimateScroll;
+  active?: boolean;
+}
+const WorkCard = ({
+  work,
+  index,
+  selectIndex,
+  scrollContainerRef,
+  animateScroll,
+  active,
+}: WorkCardProps) => {
+  const cardRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!active) return;
+
+    const cardElement = cardRef.current;
+    if (!cardElement) return;
+
+    if (document.activeElement?.tagName !== 'INPUT') {
+      cardElement.focus({ preventScroll: true });
+    }
+
+    const scrollContainerElement = scrollContainerRef.current;
+    if (!scrollContainerElement) return;
+
+    const scrollPosition =
+      cardElement.offsetTop +
+      cardElement.offsetHeight / 2 -
+      scrollContainerElement.offsetHeight / 2;
+    animateScroll.start({
+      from: { y: scrollContainerRef.current?.scrollTop },
+      to: { y: scrollPosition },
+      reset: true,
+    });
+  }, [active, cardRef.current, animateScroll]);
+
+  return (
+    <button
+      ref={cardRef}
+      onClick={() => selectIndex(index)}
+      tabIndex={-1}
+      className={
+        'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
+        (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
+      }
+    >
+      <WorkCardContents work={work} />
     </button>
   );
 };

@@ -9,18 +9,23 @@ interface RenderInViewportProps {
 const RenderInViewport = handleViewport(
   ({
     inViewport,
+    enterCount: _enterCount,
+    leaveCount: _leaveCount,
     forwardedRef,
     forceRender,
     fallbackHeight,
     children,
-  }: InjectedViewportProps<HTMLDivElement> & RenderInViewportProps) => {
+    ...divAttributes
+  }: InjectedViewportProps<HTMLDivElement> &
+    RenderInViewportProps &
+    React.HTMLAttributes<HTMLDivElement>) => {
     const elementHeightRef = useRef<number | undefined>(undefined);
     useEffect(() => {
       if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight;
     }, [inViewport]);
 
     return (
-      <div ref={forwardedRef}>
+      <div {...divAttributes} ref={forwardedRef}>
         {inViewport || forceRender ? (
           children
         ) : (

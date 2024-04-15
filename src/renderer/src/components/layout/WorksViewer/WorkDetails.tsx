@@ -1,3 +1,4 @@
+import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
 import { Fragment, useRef, useState } from 'react';
@@ -9,6 +10,7 @@ interface WorkDetailsProps {
 const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const animateScroll = useAnimateScroll(scrollContainerRef);
 
   useKeyboardEvent(
     'keyup',
@@ -33,7 +35,11 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
       if (!scrollContainerElement) return;
 
       const currentScrollTop = scrollContainerElement.scrollTop;
-      scrollContainerElement.scrollTo({ top: currentScrollTop - 100, behavior: 'smooth' });
+      animateScroll.start({
+        from: { y: scrollContainerRef.current?.scrollTop },
+        y: currentScrollTop - 150,
+        reset: true,
+      });
     },
     [scrollContainerRef],
     { control: true },
@@ -49,7 +55,11 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
       if (!scrollContainerElement) return;
 
       const currentScrollTop = scrollContainerElement.scrollTop;
-      scrollContainerElement.scrollTo({ top: currentScrollTop + 100, behavior: 'smooth' });
+      animateScroll.start({
+        from: { y: scrollContainerRef.current?.scrollTop },
+        y: currentScrollTop + 150,
+        reset: true,
+      });
     },
     [scrollContainerRef.current],
     { control: true },
