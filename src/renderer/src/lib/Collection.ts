@@ -52,7 +52,12 @@ export default class Collection {
   public readonly path: string;
   public readonly name: string;
 
+  public get isLoaded() {
+    return this.loaded;
+  }
+
   private worksChunks: Work[][] = [];
+  private loaded = false;
   private onUpdateActions: OnUpdateAction[] = [];
   private onErrorActions: OnErrorAction[] = [];
   private static readonly usersInChunk = 100;
@@ -193,6 +198,8 @@ export default class Collection {
       this.worksChunks.push(newWorksChunk!);
       this.triggerOnUpdate();
     }
+
+    this.loaded = true;
   }
 
   private async parseWork(workDirectory: Dirent, userDirectory: Dirent): Promise<Work | undefined> {
