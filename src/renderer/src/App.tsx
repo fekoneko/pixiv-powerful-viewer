@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react';
 import Header from './components/layout/Header/Header';
 import WorksViewer from './components/layout/WorksViewer/WorksViewer';
 import { CollectionProvider } from './contexts/CollectionContext';
 import { SearchProvider } from './contexts/SearchContext';
 import ThemeButton from './components/layout/ThemeButton';
+import useLocalStorage from './hooks/useLocalStorage';
+import { useCallback } from 'react';
 
 export type Theme = 'light' | 'dark';
 
 const App = () => {
-  const [theme, setTheme] = useState<Theme>();
-
-  useEffect(() => {
-    if (theme === undefined) {
-      setTheme(localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    if (theme !== undefined) {
-      localStorage.setItem('theme', theme);
-    }
-  }, [theme]);
+  const [theme, setTheme] = useLocalStorage<Theme>(
+    'theme',
+    useCallback((error) => console.error(error), []),
+  );
 
   return (
     <CollectionProvider>

@@ -7,22 +7,19 @@ import WorkCard from './WorkCard';
 import RenderInViewport from '@renderer/components/render/RenderInViewport';
 import useTimeout from '@renderer/hooks/useTimeout';
 import useAnimateScroll, { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
+import { FavoriteWorksContext } from '@renderer/contexts/FavoriteWorksContext';
 
 const workCardChunkSize = 20;
+const keyboardSelectionDelay = 150;
 
 interface WorkListCardsProps {
+  works: Work[];
   selectWork: (selectedWork: Work | undefined) => any;
   scrollContainerRef: React.RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
 const WorkListCards = memo(
-  ({ selectWork, scrollContainerRef, animateScroll }: WorkListCardsProps) => {
-    const { search } = useContext(SearchContext);
-    const [selectedIndex, setSelectedIndex] = useState<number>();
-    const works = useWorks(
-      search,
-      useCallback((error) => console.error(error), []),
-    );
+  ({ works, selectWork, scrollContainerRef, animateScroll }: WorkListCardsProps) => {
     const workCardsChunks = useMemo(() => {
       const result: Work[][] = [];
       for (let i = 0; i < works.length; i += workCardChunkSize) {
@@ -31,6 +28,7 @@ const WorkListCards = memo(
       return result;
     }, [works]);
 
+    const [selectedIndex, setSelectedIndex] = useState<number>();
     const canSelectWithKeyboardRef = useRef(true);
     const [, updateKeyboardSelectionTimeout] = useTimeout();
 
@@ -47,7 +45,10 @@ const WorkListCards = memo(
       if (!canSelectWithKeyboardRef.current) return false;
 
       canSelectWithKeyboardRef.current = false;
-      updateKeyboardSelectionTimeout(() => (canSelectWithKeyboardRef.current = true), 150);
+      updateKeyboardSelectionTimeout(
+        () => (canSelectWithKeyboardRef.current = true),
+        keyboardSelectionDelay,
+      );
       return true;
     }, [updateKeyboardSelectionTimeout, canSelectWithKeyboardRef]);
 
@@ -137,39 +138,58 @@ interface WorksListProps {
   selectWork: (selectedWork: Work | undefined) => any;
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
+  const { search } = useContext(SearchContext);
+  const { favoriteWorks, clearFavorites } = useContext(FavoriteWorksContext);
+  const works = useWorks(
+    search,
+    useCallback((error) => console.error(error), []),
+  );
+
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
 
   return (
-    <div
-      className={
-        (!scrolledToTheTop ? 'work-list-gradient-top ' : '') +
-        (!scrolledToTheBottom ? 'work-list-gradient-bottom ' : '') +
-        'flex grow flex-col overflow-hidden'
-      }
-    >
+    <div className="flex flex-col">
       <div
-        ref={scrollContainerRef}
-        className="grow overflow-y-scroll pl-2 [direction:rtl]"
-        onScroll={(e) => {
-          const target = e.target as HTMLDivElement;
-          if (target.scrollTop < 10) setScrolledToTheTop(true);
-          else setScrolledToTheTop(false);
-          if (target.scrollTop + target.getBoundingClientRect().height > target.scrollHeight - 10)
-            setScrolledToTheBottom(true);
-          else setScrolledToTheBottom(false);
-        }}
+        className={
+          (!scrolledToTheTop ? 'work-list-gradient-top ' : '') +
+          (!scrolledToTheBottom ? 'work-list-gradient-bottom ' : '') +
+          'flex grow flex-col overflow-hidden'
+        }
       >
-        <div className="flex flex-col gap-2 py-2 [direction:ltr]">
-          <WorkListCards
-            selectWork={selectWork}
-            scrollContainerRef={scrollContainerRef}
-            animateScroll={animateScroll}
-          />
+        <div
+          ref={scrollContainerRef}
+          className="grow overflow-y-scroll pl-2 [direction:rtl]"
+          onScroll={(e) => {
+            const target = e.target as HTMLDivElement;
+            if (target.scrollTop < 10) setScrolledToTheTop(true);
+            else setScrolledToTheTop(false);
+            if (target.scrollTop + target.getBoundingClientRect().height > target.scrollHeight - 10)
+              setScrolledToTheBottom(true);
+            else setScrolledToTheBottom(false);
+          }}
+        >
+          <div className="flex flex-col gap-2 py-2 [direction:ltr]">
+            <WorkListCards
+              works={search?.request === '#favorites' ? favoriteWorks ?? [] : works}
+              selectWork={selectWork}
+              scrollContainerRef={scrollContainerRef}
+              animateScroll={animateScroll}
+            />
+          </div>
         </div>
       </div>
+
+      {search?.request === '#favorites' && (
+        <button
+          onClick={clearFavorites}
+          className="pb-2 hover:text-text-accent hover:underline focus:text-text-accent focus:outline-none"
+        >
+          Clear favorites
+        </button>
+      )}
     </div>
   );
 };

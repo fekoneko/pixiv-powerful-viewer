@@ -45,7 +45,7 @@ const Searchbar = () => {
       <input
         ref={inputRef}
         placeholder={isInputInFocus ? 'Search here' : 'Press / to search'}
-        className="min-w-0 grow bg-transparent px-3 py-1.5 placeholder:text-text-header/80 focus:outline-none"
+        className="min-w-0 grow bg-transparent py-1.5 pl-3 placeholder:text-text-header/80 focus:outline-none"
         value={search?.request ?? ''}
         onInput={(e) =>
           setSearch((prev) => ({

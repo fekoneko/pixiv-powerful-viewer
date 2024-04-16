@@ -1,29 +1,16 @@
+import { FavoriteWorksContext } from '@renderer/contexts/FavoriteWorksContext';
 import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useContext, useMemo, useRef, useState } from 'react';
 
-interface WorkDetailsProps {
-  work: Work | undefined;
-  toggleFullscreenMode: () => any;
+interface WorkDetailsContentsProps {
+  work: Work;
+  expanded: boolean;
 }
-const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
-  const [expanded, setExpanded] = useState(false);
+const WorkDetailsContents = ({ work, expanded }: WorkDetailsContentsProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
-
-  useKeyboardEvent(
-    'keyup',
-    'Space',
-    (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
-      e.preventDefault();
-
-      if (!work) return;
-      setExpanded((prev) => !prev);
-    },
-    [setExpanded],
-  );
 
   useKeyboardEvent(
     'keydown',
@@ -65,6 +52,176 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
     { control: true },
   );
 
+  if (!work) return null;
+
+  return (
+    <div
+      ref={scrollContainerRef}
+      className="flex flex-col gap-1.5 overflow-x-hidden overflow-y-scroll px-3 pb-5"
+    >
+      <h3 className="text-center text-lg font-semibold text-text-accent">
+        {work.title}
+        {'　'}
+        <span className="whitespace-nowrap text-sm opacity-50">(id: {work.id})</span>
+      </h3>
+      <p className="text-center font-semibold">
+        by {work.userName}
+        {'　'}
+        <span className="whitespace-nowrap text-sm opacity-50">(id: {work.userId})</span>
+      </p>
+      <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+
+      {work.description && (
+        <>
+          <div>
+            {work.description.split('\n').map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+          <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+        </>
+      )}
+
+      <table>
+        <tbody>
+          {work.tags && (
+            <tr>
+              <td className="align-top">tags:　</td>
+              <td className="whitespace-nowrap">
+                {work.tags.map((tag, index) => (
+                  <Fragment key={index}>
+                    {index !== 0 && <span className="opacity-50">・</span>}
+                    <wbr />
+                    <span>{tag}</span>
+                  </Fragment>
+                ))}
+              </td>
+            </tr>
+          )}
+
+          {work.ai !== undefined && (
+            <tr>
+              <td />
+              <td className="align-top">
+                {work.ai ? (
+                  <strong className="text-red-600">AI-generated</strong>
+                ) : (
+                  <>
+                    <strong>Not</strong> AI-generated
+                  </>
+                )}
+              </td>
+            </tr>
+          )}
+
+          {work.dateTime && (
+            <tr>
+              <td className="align-top">uploaded:　</td>
+              <td>
+                <p>{work.dateTime.toDateString()}</p>
+              </td>
+            </tr>
+          )}
+
+          {work.bookmarks !== undefined && (
+            <tr>
+              <td className="align-top">bookmarks:　</td>
+              <td>
+                <p>
+                  {work.bookmarks.toString()} <span className="text-lg">♥️</span>
+                  {'　'}
+                  <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
+                </p>
+              </td>
+            </tr>
+          )}
+
+          {work.pageUrl && (
+            <tr>
+              <td />
+              <td>
+                <a
+                  href={work.pageUrl}
+                  target="blank"
+                  tabIndex={expanded ? 0 : -1}
+                  className="text-blue-500 hover:underline"
+                >
+                  Go to Pixiv page
+                </a>
+              </td>
+            </tr>
+          )}
+
+          <tr>
+            <td />
+            <td>
+              <a
+                href="#"
+                tabIndex={expanded ? 0 : -1}
+                className="text-blue-500 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.api.showItemInFolder(work.path);
+                }}
+              >
+                Show in file explorer
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+interface WorkDetailsProps {
+  work: Work | undefined;
+  toggleFullscreenMode: () => any;
+}
+const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
+  const [expanded, setExpanded] = useState(false);
+  const { favoriteWorks, addToFavorites, removeFromFavorites } = useContext(FavoriteWorksContext);
+  const isFavorited = useMemo(() => {
+    if (!work) return false;
+    return (
+      favoriteWorks?.findIndex(
+        (favoriteWork) =>
+          (favoriteWork.id !== undefined && favoriteWork.id === work.id) ||
+          favoriteWork.path === work.path,
+      ) !== -1
+    );
+  }, [favoriteWorks, work]);
+
+  useKeyboardEvent(
+    'keyup',
+    'Space',
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      if (!work) return;
+      setExpanded((prev) => !prev);
+    },
+    [setExpanded, work],
+  );
+
+  useKeyboardEvent(
+    'keyup',
+    'Enter',
+    (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      e.preventDefault();
+
+      if (!work) return;
+      if (isFavorited) removeFromFavorites(work);
+      else addToFavorites(work);
+    },
+    [addToFavorites, removeFromFavorites, work],
+    { control: false },
+  );
+
+  if (!work) return null;
+
   return (
     <div
       className={
@@ -72,154 +229,36 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
         (expanded ? ' h-1/2' : ' h-10')
       }
     >
-      {work && (
-        <div className={'flex h-10 gap-1 p-1' + (expanded ? ' shadow- z-10' : '')}>
-          <button
-            onClick={() => setExpanded((prev) => !prev)}
-            className="flex min-w-1 grow gap-1 focus:outline-none"
-          >
-            <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
-              {expanded ? '▼' : '▲'}
-            </div>
-            <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
-              {expanded ? 'Details' : work.title}
-            </h2>
-          </button>
-          <div className="flex gap-1">
-            <button className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none">
-              Favorite
-            </button>
-            <div className="my-2 w-[2px] rounded-full bg-text/40" />
-            <button
-              onClick={() => toggleFullscreenMode()}
-              className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
-            >
-              Fullscreen
-            </button>
-          </div>
-        </div>
-      )}
-
-      {work && (
-        <div
-          ref={scrollContainerRef}
-          className="flex flex-col gap-1.5 overflow-x-hidden overflow-y-scroll px-3 pb-5"
+      <div className={'flex h-10 gap-1 p-1' + (expanded ? ' shadow- z-10' : '')}>
+        <button
+          onClick={() => setExpanded((prev) => !prev)}
+          className="flex min-w-1 grow gap-1 focus:outline-none"
         >
-          <h3 className="text-center text-lg font-semibold text-text-accent">
-            {work.title}
-            {'　'}
-            <span className="whitespace-nowrap text-sm opacity-50">(id: {work.id})</span>
-          </h3>
-          <p className="text-center font-semibold">
-            by {work.userName}
-            {'　'}
-            <span className="whitespace-nowrap text-sm opacity-50">(id: {work.userId})</span>
-          </p>
-          <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
-
-          {work.description && (
-            <>
-              <div>
-                {work.description.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-              <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
-            </>
-          )}
-
-          <table>
-            <tbody>
-              {work.tags && (
-                <tr>
-                  <td className="align-top">tags:　</td>
-                  <td className="whitespace-nowrap">
-                    {work.tags.map((tag, index) => (
-                      <Fragment key={index}>
-                        {index !== 0 && <span className="opacity-50">・</span>}
-                        <wbr />
-                        <span>{tag}</span>
-                      </Fragment>
-                    ))}
-                  </td>
-                </tr>
-              )}
-
-              {work.ai !== undefined && (
-                <tr>
-                  <td />
-                  <td className="align-top">
-                    {work.ai ? (
-                      <strong className="text-red-600">AI-generated</strong>
-                    ) : (
-                      <>
-                        <strong>Not</strong> AI-generated
-                      </>
-                    )}
-                  </td>
-                </tr>
-              )}
-
-              {work.dateTime && (
-                <tr>
-                  <td className="align-top">uploaded:　</td>
-                  <td>
-                    <p>{work.dateTime.toDateString()}</p>
-                  </td>
-                </tr>
-              )}
-
-              {work.bookmarks !== undefined && (
-                <tr>
-                  <td className="align-top">bookmarks:　</td>
-                  <td>
-                    <p>
-                      {work.bookmarks.toString()} <span className="text-lg">♥️</span>
-                      {'　'}
-                      <span className="whitespace-nowrap text-sm opacity-50">
-                        (before downloaded)
-                      </span>
-                    </p>
-                  </td>
-                </tr>
-              )}
-
-              {work.pageUrl && (
-                <tr>
-                  <td />
-                  <td>
-                    <a
-                      href={work.pageUrl}
-                      target="blank"
-                      tabIndex={expanded ? 0 : -1}
-                      className="text-blue-500 hover:underline"
-                    >
-                      Go to Pixiv page
-                    </a>
-                  </td>
-                </tr>
-              )}
-
-              <tr>
-                <td />
-                <td>
-                  <a
-                    href="#"
-                    tabIndex={expanded ? 0 : -1}
-                    className="text-blue-500 hover:underline"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.api.showItemInFolder(work.path);
-                    }}
-                  >
-                    Show in file explorer
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
+            {expanded ? '▼' : '▲'}
+          </div>
+          <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
+            {expanded ? 'Details' : work.title}
+          </h2>
+        </button>
+        <div className="flex gap-1">
+          <button
+            onClick={() => (isFavorited ? removeFromFavorites(work) : addToFavorites(work))}
+            className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
+          >
+            {isFavorited ? 'Favorited⭐' : 'Favorite'}
+          </button>
+          <div className="my-2 w-[2px] rounded-full bg-text/40" />
+          <button
+            onClick={toggleFullscreenMode}
+            className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
+          >
+            Fullscreen
+          </button>
         </div>
-      )}
+      </div>
+
+      <WorkDetailsContents work={work} expanded={expanded} />
     </div>
   );
 };
