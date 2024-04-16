@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, protocol, net, dialog } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import icon from '../../resources/icon.png?asset';
+import icon from '../../build/icon.ico?asset';
 
 const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
@@ -11,7 +11,8 @@ const createWindow = (): void => {
     minHeight: 550,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon,
+    // ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -43,7 +44,7 @@ const createWindow = (): void => {
 };
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron');
+  electronApp.setAppUserModelId('com.fekoneko.pixiv-powerful-viewer');
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window);

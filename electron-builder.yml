@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: pixiv-powerful-viewer
+appId: com.fekoneko.pixiv-powerful-viewer
+productName: Pixiv Powerful Viewer
 directories:
   buildResources: build
 files:

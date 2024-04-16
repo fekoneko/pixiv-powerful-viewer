@@ -39,7 +39,6 @@ const FavoriteWorksProvider = ({ children }: React.PropsWithChildren) => {
   }, [favoriteIdsOrPaths, favoriteWorks, setFavoriteWorks, works, collection]);
 
   useEffect(() => {
-    console.log(favoriteWorks, favoriteIdsOrPaths);
     if (!favoriteWorks || !collection?.isLoaded) return;
 
     const newIdsOrPaths = favoriteWorks.map((work) => work.id ?? work.path);
