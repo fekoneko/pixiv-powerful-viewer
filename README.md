@@ -2,6 +2,10 @@
 
 This app allows you to view and search collection saved by [Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh) browser extension locally.
 
+## Download
+
+[Go to _Releases_ page](https://github.com/fekoneko/pixiv-powerful-viewer/releases)
+
 ## App features
 
 - Search by title, tags, description and author
