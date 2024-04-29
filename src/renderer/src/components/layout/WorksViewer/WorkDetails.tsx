@@ -62,12 +62,16 @@ const WorkDetailsContents = ({ work, expanded }: WorkDetailsContentsProps) => {
       <h3 className="text-center text-lg font-semibold text-text-accent">
         {work.title}
         {'　'}
-        <span className="whitespace-nowrap text-sm opacity-50">(id: {work.id})</span>
+        <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+          (id: {work.id})
+        </span>
       </h3>
       <p className="text-center font-semibold">
         by {work.userName}
         {'　'}
-        <span className="whitespace-nowrap text-sm opacity-50">(id: {work.userId})</span>
+        <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+          (id: {work.userId})
+        </span>
       </p>
       <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
 
@@ -225,7 +229,7 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   return (
     <div
       className={
-        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] [transition-duration:0.5s]' +
+        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] duration-1000' +
         (expanded ? ' h-1/2' : ' h-10')
       }
     >

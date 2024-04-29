@@ -14,7 +14,7 @@ const WorkCardContents = memo(({ work }: WorkCardContents) => {
           <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
             <img
               src={work.assets[0]?.mediaPath}
-              className="absolute w-full rounded-lg transition-transform [transform:translate3d(0,0,0)] [:hover>&]:shadow-md [:hover>&]:[transform:scale(1.2)]"
+              className="absolute w-full rounded-lg transition-transform [transform:translate3d(0,0,0)] [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
             />
           </div>
           <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">

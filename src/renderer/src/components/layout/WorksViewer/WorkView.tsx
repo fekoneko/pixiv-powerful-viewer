@@ -57,7 +57,7 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
     <div
       onMouseMove={showControls}
       className={
-        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius] [transition-duration:1s]' +
+        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius] duration-1000' +
         (!controlsShown ? ' cursor-none' : '') +
         (!fullscreenMode ? ' rounded-xl border-2 border-text/30' : '')
       }
@@ -69,7 +69,7 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
           <div className="absolute z-20 flex size-full items-center justify-center">
             <img
               src={work.assets[pageNumber]?.mediaPath}
-              className="w-full blur-md [transform:scale(1.3)]"
+              className="size-full scale-110 object-cover blur-md"
             />
             <div className="absolute size-full bg-background/30" />
           </div>

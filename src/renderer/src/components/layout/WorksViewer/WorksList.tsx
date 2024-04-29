@@ -89,7 +89,7 @@ const WorkListCards = memo(
     );
 
     useKeyboardEvent(
-      'keyup',
+      'keydown',
       'Escape',
       (e) => {
         if (document.activeElement?.tagName === 'INPUT') return;

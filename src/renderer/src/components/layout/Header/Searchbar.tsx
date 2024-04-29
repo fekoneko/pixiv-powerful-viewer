@@ -28,7 +28,7 @@ const Searchbar = () => {
     inputRef.current,
   ]);
 
-  useKeyboardEvent('keyup', 'Escape', () => inputRef.current?.blur(), [inputRef.current]);
+  useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef.current]);
 
   useKeyboardEvent('keyup', 'Backquote', toggleSearchMode, [], { alt: true });
 
