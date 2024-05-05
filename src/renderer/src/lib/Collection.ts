@@ -1,5 +1,6 @@
 import { Dirent } from 'fs';
 import { toHiragana } from 'wanakana';
+import CollectionList from './CollectionList';
 
 export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
@@ -36,7 +37,7 @@ export interface Work {
 }
 
 export type OnUpdate = (works: Work[]) => void;
-export type OnError = InternalOnErrorAction;
+export type OnError = (error: unknown) => void;
 export type CleanupFunction = () => void;
 
 interface MetaFileProperty<T extends keyof Work = keyof Work> {
@@ -45,21 +46,21 @@ interface MetaFileProperty<T extends keyof Work = keyof Work> {
   parser?: (readValue: string) => Work[T];
 }
 
-type InternalOnUpdateAction = () => void;
-type InternalOnErrorAction = (error: unknown) => void;
+export type InternalOnUpdateAction = () => void;
+export type InternalOnErrorAction = (error: unknown) => void;
 
 export default class Collection {
   public readonly path: string;
   public readonly name: string;
-
   public get isLoaded() {
     return this.loaded;
   }
+  public favorites: CollectionList;
 
   private worksChunks: Work[][] = [];
   private loaded = false;
-  private onUpdateActions: InternalOnUpdateAction[] = [];
-  private onErrorActions: InternalOnErrorAction[] = [];
+  private onCollectionUpdateActions: InternalOnUpdateAction[] = [];
+  private onCollectionErrorActions: InternalOnErrorAction[] = [];
   private static readonly usersInChunk = 100;
 
   constructor(collectionPath: string) {
@@ -67,101 +68,126 @@ export default class Collection {
     const splittedPath = collectionPath.split('\\');
     this.name = splittedPath[splittedPath.length - 1];
     this.loadWorksFromCollection();
+    this.favorites = new CollectionList(this, 'favorites');
   }
 
-  public subscribeToWorks(
+  public subscribe(
     search: Search | undefined,
     onUpdate: OnUpdate,
     onError?: OnError,
-  ): CleanupFunction {
+  ): CleanupFunction;
+  public subscribe(
+    predicate: (work: Work) => boolean,
+    onUpdate: OnUpdate,
+    onError?: OnError,
+  ): CleanupFunction;
+  public subscribe(
+    searchOrPredicate: Search | ((work: Work) => boolean) | undefined,
+    onUpdate: OnUpdate,
+    onError?: OnError,
+  ) {
     const searchedChunks: Work[][] = [];
-    const onUpdateAction = () => {
-      if (!search?.request) {
-        const works = this.worksChunks.flat();
-        onUpdate(works);
-        return;
-      }
 
-      const searchKeywords = search.request
-        .split(',')
-        .map((keyword) =>
-          keyword
-            .trim()
-            .split(' ')
-            .map((keyword) => keyword.split('　').map((keyword) => keyword.split('、'))),
-        )
-        .flat(3)
-        .map((keyword) => toHiragana(keyword, { passRomaji: true }).toLowerCase());
+    let onUpdateAction: () => void;
+    if (typeof searchOrPredicate === 'function') {
+      onUpdateAction = () => {
+        // Search only new chunks
+        const newSearchedChunks = this.worksChunks
+          .slice(searchedChunks.length)
+          .map((works) => works.filter(searchOrPredicate));
 
-      const checkProperties = (properties: (string | string[] | undefined)[]) =>
-        searchKeywords.every((keyword) => {
-          return properties.some((property) => {
-            if (!property) return false;
-            if (typeof property === 'object') {
-              return property.some((item) =>
-                toHiragana(item, { passRomaji: true }).toLowerCase().includes(keyword),
-              );
-            } else {
-              return toHiragana(property, { passRomaji: true }).toLowerCase().includes(keyword);
-            }
+        searchedChunks.push(...newSearchedChunks);
+        onUpdate(searchedChunks.flat());
+      };
+    } else {
+      onUpdateAction = () => {
+        if (!searchOrPredicate?.request) {
+          const works = this.worksChunks.flat();
+          onUpdate(works);
+          return;
+        }
+
+        const searchKeywords = searchOrPredicate.request
+          .split(',')
+          .map((keyword) =>
+            keyword
+              .trim()
+              .split(' ')
+              .map((keyword) => keyword.split('　').map((keyword) => keyword.split('、'))),
+          )
+          .flat(3)
+          .map((keyword) => toHiragana(keyword, { passRomaji: true }).toLowerCase());
+
+        const checkProperties = (properties: (string | string[] | undefined)[]) =>
+          searchKeywords.every((keyword) => {
+            return properties.some((property) => {
+              if (!property) return false;
+              if (typeof property === 'object') {
+                return property.some((item) =>
+                  toHiragana(item, { passRomaji: true }).toLowerCase().includes(keyword),
+                );
+              } else {
+                return toHiragana(property, { passRomaji: true }).toLowerCase().includes(keyword);
+              }
+            });
           });
-        });
 
-      // Search only new chunks
-      const newSearchedChunks = this.worksChunks.slice(searchedChunks.length).map((works) => {
-        let results: Work[] = works;
-        if (search.mode === 'all') {
-          results = results.filter((work) =>
-            checkProperties([
-              work.title,
-              work.tags,
-              work.userName,
-              work.description,
-              work.id?.toString(),
-              work.userId?.toString(),
-            ]),
-          );
-        }
-        if (search.mode === 'users') {
-          results = results.filter((work) =>
-            checkProperties([work.userName, work.userId?.toString()]),
-          );
-        } else if (search.mode === 'works') {
-          results = results.filter((work) =>
-            checkProperties([work.title, work.description, work.tags, work.id?.toString()]),
-          );
-        }
-        return results;
-      });
-      searchedChunks.push(...newSearchedChunks);
-      onUpdate(searchedChunks.flat());
-    };
+        // Search only new chunks
+        const newSearchedChunks = this.worksChunks.slice(searchedChunks.length).map((works) => {
+          let results: Work[] = works;
+          if (searchOrPredicate.mode === 'all') {
+            results = results.filter((work) =>
+              checkProperties([
+                work.title,
+                work.tags,
+                work.userName,
+                work.description,
+                work.id?.toString(),
+                work.userId?.toString(),
+              ]),
+            );
+          }
+          if (searchOrPredicate.mode === 'users') {
+            results = results.filter((work) =>
+              checkProperties([work.userName, work.userId?.toString()]),
+            );
+          } else if (searchOrPredicate.mode === 'works') {
+            results = results.filter((work) =>
+              checkProperties([work.title, work.description, work.tags, work.id?.toString()]),
+            );
+          }
+          return results;
+        });
+        searchedChunks.push(...newSearchedChunks);
+        onUpdate(searchedChunks.flat());
+      };
+    }
     onUpdateAction();
 
-    this.onUpdateActions.push(onUpdateAction);
-    if (onError) this.onErrorActions.push(onError);
+    this.onCollectionUpdateActions.push(onUpdateAction);
+    if (onError) this.onCollectionErrorActions.push(onError);
     return () => {
-      this.onUpdateActions.filter((action) => action !== onUpdateAction);
-      if (onError) this.onErrorActions.filter((action) => action !== onError);
+      this.onCollectionUpdateActions.filter((action) => action !== onUpdateAction);
+      if (onError) this.onCollectionErrorActions.filter((action) => action !== onError);
     };
   }
 
-  private triggerOnError(error: unknown) {
-    this.onErrorActions.forEach((action) => action(error));
+  private triggerOnCollectionUpdate() {
+    this.onCollectionUpdateActions.forEach((action) => action());
   }
 
-  private triggerOnUpdate() {
-    this.onUpdateActions.forEach((action) => action());
+  private triggerOnCollectionError(error: unknown) {
+    this.onCollectionErrorActions.forEach((action) => action(error));
   }
 
   private async loadWorksFromCollection() {
     this.worksChunks = [];
-    this.triggerOnUpdate();
+    this.triggerOnCollectionUpdate();
 
     // <collectionPath> \ <...userDirectories>
     const userDirectories = await window.api
       .readDir(this.path, { withFileTypes: true })
-      .catch((error) => this && this.triggerOnError(error));
+      .catch((error) => this && this.triggerOnCollectionError(error));
     if (!userDirectories || !this) return;
 
     const getChunk = async (userDirectories: Dirent[]) => {
@@ -173,7 +199,7 @@ export default class Collection {
               .readDir(userDirectory.path + '\\' + userDirectory.name, {
                 withFileTypes: true,
               })
-              .catch((error) => this && this.triggerOnError(error)),
+              .catch((error) => this && this.triggerOnCollectionError(error)),
           ),
         )
       ).filter((directory) => directory !== undefined) as Dirent[][];
@@ -196,7 +222,7 @@ export default class Collection {
       const newWorksChunk = await getChunk(userDirectories.slice(i, i + Collection.usersInChunk));
       if (!this) return;
       this.worksChunks.push(newWorksChunk!);
-      this.triggerOnUpdate();
+      this.triggerOnCollectionUpdate();
     }
 
     this.loaded = true;
@@ -207,7 +233,7 @@ export default class Collection {
       .readDir(workDirectory.path + '\\' + workDirectory.name, {
         withFileTypes: true,
       })
-      .catch((error) => this && this.triggerOnError(error));
+      .catch((error) => this && this.triggerOnCollectionError(error));
     if (!rawAssetsWithMetaFile || !this) return undefined;
 
     const assetsWithMetaFile: WorkAsset[] = rawAssetsWithMetaFile.map((rawAsset) => ({
@@ -342,21 +368,21 @@ export default class Collection {
   ]);
 
   private async getWorkDataFromMetaFile(metaFilePath: string) {
-    const metaFileBuffer = await window.api
+    const metaFileContents = await window.api
       .readFile(metaFilePath, { encoding: 'utf-8' })
-      .catch((error) => this && this.triggerOnError(error));
-    if (!metaFileBuffer || !this) return {};
+      .catch((error) => this && this.triggerOnCollectionError(error));
+    if (!metaFileContents || !this) return {};
 
-    const metaFileContents = metaFileBuffer.split('\n');
+    const metaFileLines = metaFileContents.split('\n');
     const workData: Partial<Work> = {};
     let currentProperty: MetaFileProperty | undefined;
     let currentIndexInProperty = 0;
     let multilinePropertyBuffer: string[] = [];
 
-    metaFileContents.forEach((line, index) => {
+    metaFileLines.forEach((line, index) => {
       const newProperty = Collection.metaFileProperties.get(line);
       if (
-        (newProperty || index === metaFileContents.length - 1) &&
+        (newProperty || index === metaFileLines.length - 1) &&
         currentProperty &&
         !currentProperty.isArray
       ) {

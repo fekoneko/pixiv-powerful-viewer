@@ -1,4 +1,4 @@
-import { FavoritesContext } from '@renderer/contexts/FavoriteWorksContext';
+import CollectionContext from '@renderer/contexts/CollectionContext';
 import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
@@ -184,21 +184,12 @@ interface WorkDetailsProps {
 }
 const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
-  const {
-    favorites: favoriteWorks,
-    addToFavorites,
-    removeFromFavorites,
-  } = useContext(FavoritesContext);
-  const isFavorited = useMemo(() => {
-    if (!work) return false;
-    return (
-      favoriteWorks?.findIndex(
-        (favoriteWork) =>
-          (favoriteWork.id !== undefined && favoriteWork.id === work.id) ||
-          favoriteWork.path === work.path,
-      ) !== -1
-    );
-  }, [favoriteWorks, work]);
+  const { collection } = useContext(CollectionContext);
+
+  const isFavorited = useMemo(
+    () => !!work && !!collection && collection.favorites.includes(work),
+    [collection, work],
+  );
 
   useKeyboardEvent(
     'keyup',
@@ -221,10 +212,10 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
       e.preventDefault();
 
       if (!work) return;
-      if (isFavorited) removeFromFavorites(work);
-      else addToFavorites(work);
+      if (isFavorited) collection?.favorites.remove(work);
+      else collection?.favorites.add(work);
     },
-    [addToFavorites, removeFromFavorites, work],
+    [collection, work],
     { control: false },
   );
 
@@ -251,7 +242,9 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
         </button>
         <div className="flex gap-1">
           <button
-            onClick={() => (isFavorited ? removeFromFavorites(work) : addToFavorites(work))}
+            onClick={() =>
+              isFavorited ? collection?.favorites.remove(work) : collection?.favorites.add(work)
+            }
             className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             {isFavorited ? 'Favorited⭐' : 'Favorite'}

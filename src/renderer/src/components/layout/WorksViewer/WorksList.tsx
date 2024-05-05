@@ -16,7 +16,7 @@ import WorkCard from './WorkCard';
 import RenderInViewport from '@renderer/components/render/RenderInViewport';
 import useTimeout from '@renderer/hooks/useTimeout';
 import useAnimateScroll, { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
-import { FavoritesContext } from '@renderer/contexts/FavoriteWorksContext';
+import CollectionContext from '@renderer/contexts/CollectionContext';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -148,7 +148,7 @@ interface WorksListProps {
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
   const { search } = useContext(SearchContext);
-  const { favorites: favoriteWorks, clearFavorites } = useContext(FavoritesContext);
+  const { collection } = useContext(CollectionContext);
   const works = useWorks(
     search,
     useCallback((error) => console.error(error), []),
@@ -182,7 +182,7 @@ const WorksList = ({ selectWork }: WorksListProps) => {
         >
           <div className="flex flex-col gap-2 py-2 [direction:ltr]">
             <WorkListCards
-              works={search?.request === '#favorites' ? favoriteWorks ?? [] : works}
+              works={works}
               selectWork={selectWork}
               scrollContainerRef={scrollContainerRef}
               animateScroll={animateScroll}
@@ -193,7 +193,7 @@ const WorksList = ({ selectWork }: WorksListProps) => {
 
       {search?.request === '#favorites' && (
         <button
-          onClick={clearFavorites}
+          onClick={() => collection?.favorites.clear()}
           className="pb-2 hover:text-text-accent hover:underline focus:text-text-accent focus:outline-none"
         >
           Clear favorites
