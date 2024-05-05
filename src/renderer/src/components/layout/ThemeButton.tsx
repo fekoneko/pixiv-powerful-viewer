@@ -1,8 +1,9 @@
 import { Theme } from '@renderer/App';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ThemeButtonProps {
   theme: Theme | undefined;
-  setTheme: React.Dispatch<React.SetStateAction<Theme | undefined>>;
+  setTheme: Dispatch<SetStateAction<Theme | undefined>>;
 }
 const ThemeButton = ({ theme, setTheme }: ThemeButtonProps) => {
   return (

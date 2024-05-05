@@ -1,9 +1,10 @@
 import { SpringRef, useSpring } from '@react-spring/web';
+import { RefObject } from 'react';
 
 export type Scroll = { x: number; y: number };
 export type AnimateScroll = SpringRef<Scroll>;
 
-const useAnimateScroll = (scrollContainerRef?: React.RefObject<HTMLElement>) => {
+const useAnimateScroll = (scrollContainerRef?: RefObject<HTMLElement>) => {
   const [, animateScroll]: [scroll: any, animateScroll: AnimateScroll] = useSpring(() => ({
     from: {
       x: scrollContainerRef ? scrollContainerRef.current?.scrollLeft ?? 0 : scrollX,

@@ -1,11 +1,18 @@
 import useLocalStorage from '@renderer/hooks/useLocalStorage';
 import useWorks from '@renderer/hooks/useWorks';
 import { Work } from '@renderer/lib/Collection';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import CollectionContext from './CollectionContext';
 
-interface FavoriteWorksContextValue {
-  favoriteWorks: Work[] | undefined;
+interface FavoritesContextValue {
+  favorites: Work[] | undefined;
 
   addToFavorites(work: Work): void;
   addToFavorites(id: number): void;
@@ -18,15 +25,15 @@ interface FavoriteWorksContextValue {
   clearFavorites(): void;
 }
 
-export const FavoriteWorksContext = createContext({} as FavoriteWorksContextValue);
+export const FavoritesContext = createContext({} as FavoritesContextValue);
 
-const FavoriteWorksProvider = ({ children }: React.PropsWithChildren) => {
+const FavoritesProvider = ({ children }: PropsWithChildren) => {
   const [favoriteIdsOrPaths, setFavoriteIdsOrPaths] = useLocalStorage<(number | string)[]>(
     'favorites',
     useCallback((error) => console.error(error), []),
   );
   const { collection } = useContext(CollectionContext);
-  const [favoriteWorks, setFavoriteWorks] = useState<Work[]>();
+  const [favorites, setFavorites] = useState<Work[]>();
   const works = useWorks(undefined);
 
   useEffect(() => {
@@ -35,19 +42,19 @@ const FavoriteWorksProvider = ({ children }: React.PropsWithChildren) => {
     const newFavoriteWorks = favoriteIdsOrPaths
       .map((idOrPath) => works.find((work) => work.id === idOrPath || work.path === idOrPath))
       .filter((work) => work !== undefined) as Work[];
-    setFavoriteWorks(newFavoriteWorks);
-  }, [favoriteIdsOrPaths, favoriteWorks, setFavoriteWorks, works, collection]);
+    setFavorites(newFavoriteWorks);
+  }, [favoriteIdsOrPaths, favorites, setFavorites, works, collection]);
 
   useEffect(() => {
-    if (!favoriteWorks || !collection?.isLoaded) return;
+    if (!favorites || !collection?.isLoaded) return;
 
-    const newIdsOrPaths = favoriteWorks.map((work) => work.id ?? work.path);
+    const newIdsOrPaths = favorites.map((work) => work.id ?? work.path);
     setFavoriteIdsOrPaths(newIdsOrPaths);
-  }, [favoriteWorks, setFavoriteIdsOrPaths, collection]);
+  }, [favorites, setFavoriteIdsOrPaths, collection]);
 
   const addToFavorites = useCallback(
     (workOrIdOrPath: Work | number | string) => {
-      setFavoriteWorks((prev) => {
+      setFavorites((prev) => {
         if (typeof workOrIdOrPath === 'object') {
           const filteredPrev = prev?.filter((prevWork) => prevWork.path !== workOrIdOrPath.path);
           return [...(filteredPrev ?? []), workOrIdOrPath];
@@ -64,12 +71,12 @@ const FavoriteWorksProvider = ({ children }: React.PropsWithChildren) => {
         }
       });
     },
-    [setFavoriteWorks, works],
+    [setFavorites, works],
   );
 
   const removeFromFavorites = useCallback(
     (workOrIdOrPath: Work | number | string) => {
-      setFavoriteWorks((prev) => {
+      setFavorites((prev) => {
         if (!prev) return [];
 
         if (typeof workOrIdOrPath === 'object') {
@@ -88,17 +95,17 @@ const FavoriteWorksProvider = ({ children }: React.PropsWithChildren) => {
         }
       });
     },
-    [setFavoriteWorks],
+    [setFavorites],
   );
 
-  const clearFavorites = useCallback(() => setFavoriteWorks([]), [setFavoriteWorks]);
+  const clearFavorites = useCallback(() => setFavorites([]), [setFavorites]);
 
   return (
-    <FavoriteWorksContext.Provider
-      value={{ favoriteWorks, addToFavorites, removeFromFavorites, clearFavorites }}
+    <FavoritesContext.Provider
+      value={{ favorites: favorites, addToFavorites, removeFromFavorites, clearFavorites }}
     >
       {children}
-    </FavoriteWorksContext.Provider>
+    </FavoritesContext.Provider>
   );
 };
-export default FavoriteWorksProvider;
+export default FavoritesProvider;

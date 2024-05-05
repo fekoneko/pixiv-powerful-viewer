@@ -5,7 +5,7 @@ import { Work } from '@renderer/lib/Collection';
 import WorkDetails from './WorkDetails';
 import { animated, useSpring } from '@react-spring/web';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import FavoriteWorksProvider from '@renderer/contexts/FavoriteWorksContext';
+import FavoritesProvider from '@renderer/contexts/FavoriteWorksContext';
 import FavoriteButton from '../FavoriteButton';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';
@@ -87,7 +87,7 @@ const WorksViewer = () => {
   );
 
   return (
-    <FavoriteWorksProvider>
+    <FavoritesProvider>
       <div className="grid size-full grid-cols-2 grid-rows-1 gap-2">
         <WorksList selectWork={setSelectedWork} />
 
@@ -125,7 +125,7 @@ const WorksViewer = () => {
       <div className="absolute bottom-2 left-2">
         <FavoriteButton />
       </div>
-    </FavoriteWorksProvider>
+    </FavoritesProvider>
   );
 };
 export default WorksViewer;

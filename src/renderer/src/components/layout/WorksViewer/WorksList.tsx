@@ -1,5 +1,14 @@
 import useWorks from '../../../hooks/useWorks';
-import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  RefObject,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Work } from '@renderer/lib/Collection';
 import SearchContext from '@renderer/contexts/SearchContext';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
@@ -7,15 +16,15 @@ import WorkCard from './WorkCard';
 import RenderInViewport from '@renderer/components/render/RenderInViewport';
 import useTimeout from '@renderer/hooks/useTimeout';
 import useAnimateScroll, { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
-import { FavoriteWorksContext } from '@renderer/contexts/FavoriteWorksContext';
+import { FavoritesContext } from '@renderer/contexts/FavoriteWorksContext';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
 
 interface WorkListCardsProps {
   works: Work[];
-  selectWork: (selectedWork: Work | undefined) => any;
-  scrollContainerRef: React.RefObject<HTMLDivElement>;
+  selectWork: (selectedWork: Work | undefined) => void;
+  scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
 const WorkListCards = memo(
@@ -135,11 +144,11 @@ const WorkListCards = memo(
 );
 
 interface WorksListProps {
-  selectWork: (selectedWork: Work | undefined) => any;
+  selectWork: (selectedWork: Work | undefined) => void;
 }
 const WorksList = ({ selectWork }: WorksListProps) => {
   const { search } = useContext(SearchContext);
-  const { favoriteWorks, clearFavorites } = useContext(FavoriteWorksContext);
+  const { favorites: favoriteWorks, clearFavorites } = useContext(FavoritesContext);
   const works = useWorks(
     search,
     useCallback((error) => console.error(error), []),

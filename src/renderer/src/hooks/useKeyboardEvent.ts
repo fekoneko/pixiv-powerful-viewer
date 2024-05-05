@@ -11,7 +11,7 @@ type Modifiers = {
 const useKeyboardEvent = (
   type: 'keypress' | 'keyup' | 'keydown',
   keyCode: string | string[],
-  callback: (e: KeyboardEvent) => any,
+  callback: (e: KeyboardEvent) => void,
   deps: DependencyList,
   modifiers?: Modifiers,
 ) => {

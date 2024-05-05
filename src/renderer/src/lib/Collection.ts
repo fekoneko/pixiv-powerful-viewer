@@ -35,8 +35,8 @@ export interface Work {
   assets?: WorkAsset[];
 }
 
-export type OnUpdate = (works: Work[]) => any;
-export type OnError = OnErrorAction;
+export type OnUpdate = (works: Work[]) => void;
+export type OnError = InternalOnErrorAction;
 export type CleanupFunction = () => void;
 
 interface MetaFileProperty<T extends keyof Work = keyof Work> {
@@ -45,8 +45,8 @@ interface MetaFileProperty<T extends keyof Work = keyof Work> {
   parser?: (readValue: string) => Work[T];
 }
 
-type OnUpdateAction = () => any;
-type OnErrorAction = (error: unknown) => any;
+type InternalOnUpdateAction = () => void;
+type InternalOnErrorAction = (error: unknown) => void;
 
 export default class Collection {
   public readonly path: string;
@@ -58,8 +58,8 @@ export default class Collection {
 
   private worksChunks: Work[][] = [];
   private loaded = false;
-  private onUpdateActions: OnUpdateAction[] = [];
-  private onErrorActions: OnErrorAction[] = [];
+  private onUpdateActions: InternalOnUpdateAction[] = [];
+  private onErrorActions: InternalOnErrorAction[] = [];
   private static readonly usersInChunk = 100;
 
   constructor(collectionPath: string) {

@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { HTMLAttributes, ReactElement, useEffect, useRef } from 'react';
 import handleViewport, { InjectedViewportProps } from 'react-in-viewport';
 
 interface RenderInViewportProps {
   forceRender?: boolean;
   fallbackHeight?: number | string;
-  children: React.ReactElement;
+  children: ReactElement;
 }
 const RenderInViewport = handleViewport(
   ({
@@ -18,7 +18,7 @@ const RenderInViewport = handleViewport(
     ...divAttributes
   }: InjectedViewportProps<HTMLDivElement> &
     RenderInViewportProps &
-    React.HTMLAttributes<HTMLDivElement>) => {
+    HTMLAttributes<HTMLDivElement>) => {
     const elementHeightRef = useRef<number | undefined>(undefined);
     useEffect(() => {
       if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight;

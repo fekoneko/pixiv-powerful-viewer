@@ -1,4 +1,4 @@
-import { FavoriteWorksContext } from '@renderer/contexts/FavoriteWorksContext';
+import { FavoritesContext } from '@renderer/contexts/FavoriteWorksContext';
 import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
@@ -180,11 +180,15 @@ const WorkDetailsContents = ({ work, expanded }: WorkDetailsContentsProps) => {
 
 interface WorkDetailsProps {
   work: Work | undefined;
-  toggleFullscreenMode: () => any;
+  toggleFullscreenMode: () => void;
 }
 const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
-  const { favoriteWorks, addToFavorites, removeFromFavorites } = useContext(FavoriteWorksContext);
+  const {
+    favorites: favoriteWorks,
+    addToFavorites,
+    removeFromFavorites,
+  } = useContext(FavoritesContext);
   const isFavorited = useMemo(() => {
     if (!work) return false;
     return (

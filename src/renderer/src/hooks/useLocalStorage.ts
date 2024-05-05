@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 const useLocalStorage = <T = any>(
   key: string,
-  onError?: (error: unknown) => any,
-): [content: T | undefined, setContent: React.Dispatch<React.SetStateAction<T | undefined>>] => {
+  onError?: (error: unknown) => void,
+): [content: T | undefined, setContent: Dispatch<SetStateAction<T | undefined>>] => {
   const [content, setContent] = useState<T>();
 
   useEffect(() => {

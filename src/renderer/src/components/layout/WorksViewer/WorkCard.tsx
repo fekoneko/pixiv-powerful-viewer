@@ -1,6 +1,6 @@
 import { Fragment } from 'react/jsx-runtime';
 import { Work } from '../../../lib/Collection';
-import { memo, useEffect, useRef } from 'react';
+import { RefObject, memo, useEffect, useRef } from 'react';
 import { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
 
 interface WorkCardContents {
@@ -48,8 +48,8 @@ const WorkCardContents = memo(({ work }: WorkCardContents) => {
 export interface WorkCardProps {
   work: Work;
   index: number;
-  selectIndex: (index: number) => any;
-  scrollContainerRef: React.RefObject<HTMLDivElement>;
+  selectIndex: (index: number) => void;
+  scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
   active?: boolean;
 }
