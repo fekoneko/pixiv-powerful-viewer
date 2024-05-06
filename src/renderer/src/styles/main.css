@@ -50,13 +50,18 @@
   .work-list-gradient-bottom {
     @apply relative after:pointer-events-none after:absolute after:left-0 after:top-0 after:size-full after:content-[''];
   }
-  .work-list-gradient-top::before {
-    @apply pointer-events-none absolute left-0 top-0 size-full content-[''];
+  .work-list-gradient-top::before,
+  .work-list-gradient-top::after,
+  .work-list-gradient-bottom::before,
+  .work-list-gradient-bottom::after {
     z-index: 1;
     --background-color: theme('colors.background');
     transition: --background-color 2s;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+  }
+  .work-list-gradient-top::before {
+    @apply pointer-events-none absolute left-0 top-0 size-full content-[''];
     background: linear-gradient(
       0,
       transparent calc(100% - 2rem),
@@ -65,11 +70,6 @@
   }
   .work-list-gradient-bottom::after {
     @apply pointer-events-none absolute left-0 top-0 size-full content-[''];
-    z-index: 1;
-    --background-color: theme('colors.background');
-    transition: --background-color 2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
     background: linear-gradient(0, var(--background-color) 0.5rem, transparent 2rem);
   }
 }
