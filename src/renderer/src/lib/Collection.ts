@@ -1,7 +1,9 @@
 import { Dirent } from 'fs';
 import { toHiragana } from 'wanakana';
 import CollectionList from './CollectionList';
-import AssetImage from './AssetImage';
+import { ISizeCalculationResult } from 'image-size/dist/types/interface';
+
+let nextImageId = 0;
 
 export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
@@ -15,7 +17,9 @@ export interface Search {
 export interface ImageAsset {
   name: string;
   path: string;
-  image: AssetImage;
+  mediaPath: string;
+  imageId: string;
+  imageDimensions: ISizeCalculationResult;
 }
 
 export interface Work {
@@ -31,7 +35,7 @@ export interface Work {
   ai?: boolean;
   description?: string;
   tags?: string[];
-  dimensions?: { h: number; v: number };
+  dimensions?: { width: number; height: number };
   bookmarks?: number;
   dateTime?: Date;
   assets?: ImageAsset[];
@@ -254,18 +258,18 @@ export default class Collection {
         if (leftPage === undefined || rightPage === undefined) return 0;
         return leftPage - rightPage;
       })
-      .map((asset, index) => ({
+      .map((asset) => ({
         name: asset.name,
         path: asset.path,
-        image: new AssetImage(
+        mediaPath:
           'media:///' +
-            encodeURI(asset.path.replaceAll('\\', '/'))
-              .replaceAll('#', '%23')
-              .replaceAll('&', '%26')
-              .replaceAll('?', '%3F')
-              .replaceAll('=', '%3D'),
-          index === 0 ? 3 : 1,
-        ),
+          encodeURI(asset.path.replaceAll('\\', '/'))
+            .replaceAll('#', '%23')
+            .replaceAll('&', '%26')
+            .replaceAll('?', '%3F')
+            .replaceAll('=', '%3D'),
+        imageId: 'image-' + nextImageId++,
+        imageDimensions: window.api.getImageDimensions(asset.path),
       }));
 
     const metaFile = assetsWithMetaFile.find((asset) =>
@@ -356,7 +360,7 @@ export default class Collection {
         parser: (readValue): Work['dimensions'] => {
           const splitValue = readValue.split('x');
           if (splitValue.length !== 2) return undefined;
-          return { h: +splitValue[0].trim(), v: +splitValue[1].trim() };
+          return { height: +splitValue[0].trim(), width: +splitValue[1].trim() };
         },
       },
     ],

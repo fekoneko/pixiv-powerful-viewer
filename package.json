@@ -24,6 +24,7 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@react-spring/web": "^9.7.3",
+    "image-size": "^1.1.1",
     "react-in-viewport": "^1.0.0-alpha.30",
     "wanakana": "^5.3.1"
   },

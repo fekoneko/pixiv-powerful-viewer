@@ -13,16 +13,10 @@ const WorkCardContents = memo(({ work }: WorkCardContents) => {
       {work.assets?.length ? (
         <div className="relative size-full">
           <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
-            {/* <img
-              src={work.assets[0]?.mediaPath}
-              loading="lazy"
-              className="absolute w-full rounded-lg transition-transform [transform:translate3d(0,0,0)] [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
-            /> */}
             {work.assets.length && (
               <AssetImageView
                 asset={work.assets[0]}
-                predecodedImageId={2}
-                className="absolute w-full rounded-lg transition-transform [&>img]:w-full [&>img]:[transform:translate3d(0,0,0)] [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
+                className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
               />
             )}
           </div>

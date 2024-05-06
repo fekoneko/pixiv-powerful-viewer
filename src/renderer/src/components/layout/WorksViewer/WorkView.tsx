@@ -65,24 +65,15 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
     >
       {work?.assets?.length ? (
         <>
-          {/* <img src={work.assets[pageNumber]?.mediaPath} className="z-30 max-h-full max-w-full" /> */}
-          <AssetImageView
-            asset={work.assets[pageNumber]}
-            predecodedImageId={0}
-            className="z-30 size-full [&>img]:size-full [&>img]:object-contain"
-          />
+          <AssetImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
-            {/* <img
-              src={work.assets[pageNumber]?.mediaPath}
-              className="size-full scale-110 object-cover blur-md"
-            /> */}
+            <div className="absolute size-full bg-background" />
             <AssetImageView
               asset={work.assets[pageNumber]}
-              predecodedImageId={1}
-              className="size-full scale-110 blur-md [&>img]:size-full [&>img]:object-cover"
+              className="size-full scale-[3] blur-[0.4rem]"
             />
-            <div className="absolute size-full bg-background/30" />
+            <div className="absolute size-full bg-background/40" />
           </div>
 
           <button
