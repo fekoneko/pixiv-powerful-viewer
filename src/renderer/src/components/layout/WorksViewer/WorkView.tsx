@@ -2,6 +2,7 @@ import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import useTimeout from '@renderer/hooks/useTimeout';
 import { Work } from '@renderer/lib/Collection';
 import { useEffect, useState } from 'react';
+import AssetImageView from './AssetImageView';
 
 const showControlsDelay = 1500;
 
@@ -64,12 +65,22 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
     >
       {work?.assets?.length ? (
         <>
-          <img src={work.assets[pageNumber]?.mediaPath} className="z-30 max-h-full max-w-full" />
+          {/* <img src={work.assets[pageNumber]?.mediaPath} className="z-30 max-h-full max-w-full" /> */}
+          <AssetImageView
+            asset={work.assets[pageNumber]}
+            predecodedImageId={0}
+            className="z-30 size-full [&>img]:size-full [&>img]:object-contain"
+          />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
-            <img
+            {/* <img
               src={work.assets[pageNumber]?.mediaPath}
               className="size-full scale-110 object-cover blur-md"
+            /> */}
+            <AssetImageView
+              asset={work.assets[pageNumber]}
+              predecodedImageId={1}
+              className="size-full scale-110 blur-md [&>img]:size-full [&>img]:object-cover"
             />
             <div className="absolute size-full bg-background/30" />
           </div>

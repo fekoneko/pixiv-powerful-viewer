@@ -1,6 +1,7 @@
 import { Dirent } from 'fs';
 import { toHiragana } from 'wanakana';
 import CollectionList from './CollectionList';
+import AssetImage from './AssetImage';
 
 export type WorkAgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
@@ -11,10 +12,10 @@ export interface Search {
   mode: SearchMode;
 }
 
-export interface WorkAsset {
+export interface ImageAsset {
   name: string;
   path: string;
-  mediaPath: string;
+  image: AssetImage;
 }
 
 export interface Work {
@@ -33,7 +34,7 @@ export interface Work {
   dimensions?: { h: number; v: number };
   bookmarks?: number;
   dateTime?: Date;
-  assets?: WorkAsset[];
+  assets?: ImageAsset[];
 }
 
 export type OnUpdate = (works: Work[]) => void;
@@ -238,19 +239,12 @@ export default class Collection {
       .catch((error) => this && this.triggerOnCollectionError(error));
     if (!rawAssetsWithMetaFile || !this) return undefined;
 
-    const assetsWithMetaFile: WorkAsset[] = rawAssetsWithMetaFile.map((rawAsset) => ({
+    const assetsWithMetaFile = rawAssetsWithMetaFile.map((rawAsset) => ({
       name: rawAsset.name,
       path: rawAsset.path + '\\' + rawAsset.name,
-      mediaPath:
-        'media:///' +
-        encodeURI((rawAsset.path + '/' + rawAsset.name).replaceAll('\\', '/'))
-          .replaceAll('#', '%23')
-          .replaceAll('&', '%26')
-          .replaceAll('?', '%3F')
-          .replaceAll('=', '%3D'),
     }));
 
-    const assets = assetsWithMetaFile
+    const imageAssets: ImageAsset[] = assetsWithMetaFile
       .filter((asset) =>
         /\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$/.test(asset.name.toLowerCase()),
       )
@@ -259,7 +253,20 @@ export default class Collection {
         const [, rightPage] = Collection.splitIntoNameAndId(rigthAsset.name);
         if (leftPage === undefined || rightPage === undefined) return 0;
         return leftPage - rightPage;
-      });
+      })
+      .map((asset, index) => ({
+        name: asset.name,
+        path: asset.path,
+        image: new AssetImage(
+          'media:///' +
+            encodeURI(asset.path.replaceAll('\\', '/'))
+              .replaceAll('#', '%23')
+              .replaceAll('&', '%26')
+              .replaceAll('?', '%3F')
+              .replaceAll('=', '%3D'),
+          index === 0 ? 3 : 1,
+        ),
+      }));
 
     const metaFile = assetsWithMetaFile.find((asset) =>
       /-meta\.txt$/.test(asset.name.toLowerCase()),
@@ -276,7 +283,7 @@ export default class Collection {
       userName,
       title,
       path,
-      assets,
+      assets: imageAssets,
       ...workData,
     };
   }
