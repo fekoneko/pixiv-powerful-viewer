@@ -85,7 +85,7 @@ const WorkCard = ({
       to: { y: scrollPosition },
       reset: true,
     });
-  }, [active, cardRef.current, animateScroll]);
+  }, [active, animateScroll, scrollContainerRef]);
 
   return (
     <button

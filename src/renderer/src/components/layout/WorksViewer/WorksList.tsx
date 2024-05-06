@@ -43,7 +43,7 @@ const WorkListCards = memo(
 
     useEffect(() => {
       selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
-    }, [selectedIndex, selectWork]);
+    }, [selectedIndex, selectWork, works]);
 
     useEffect(() => {
       setSelectedIndex(undefined);

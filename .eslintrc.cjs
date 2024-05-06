@@ -12,7 +12,6 @@ module.exports = {
   plugins: ['react-refresh', 'tailwindcss'],
   rules: {
     'no-irregular-whitespace': 'off',
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': [

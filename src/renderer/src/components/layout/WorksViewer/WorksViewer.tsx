@@ -11,7 +11,7 @@ type TransitionState = 'preview' | 'transition' | 'fullscreen';
 
 const WorksViewer = () => {
   const [selectedWork, setSelectedWork] = useState<Work>();
-  const [fullscreenMode, setFullscreenMode] = useState(false);
+  const [fullscreenMode, setFullscreenMode] = useState<boolean>();
   const [transitionState, setTransitionState] = useState<TransitionState>('preview');
   const viewRef = useRef<HTMLDivElement>(null);
   const [viewTransitionStyles, viewAnimate] = useSpring(() => ({
@@ -27,12 +27,12 @@ const WorksViewer = () => {
   );
 
   useEffect(() => {
-    if (!selectedWork) setFullscreenMode(false);
+    if (!selectedWork) setFullscreenMode(undefined);
   }, [selectedWork]);
 
   useEffect(() => {
     const viewElement = viewRef.current;
-    if (!viewElement) return;
+    if (!viewElement || fullscreenMode === undefined) return;
 
     if (fullscreenMode) {
       viewAnimate.start({
@@ -48,7 +48,6 @@ const WorksViewer = () => {
           width: window.innerWidth,
           height: window.innerHeight,
         },
-        immediate: !selectedWork,
         onStart: () => setTransitionState('transition'),
         onRest: () => setTransitionState('fullscreen'),
       });
@@ -66,12 +65,11 @@ const WorksViewer = () => {
           width: viewElement.offsetWidth,
           height: viewElement.offsetHeight,
         },
-        immediate: !selectedWork,
         onStart: () => setTransitionState('transition'),
         onRest: () => setTransitionState('preview'),
       });
     }
-  }, [fullscreenMode, viewRef.current]);
+  }, [fullscreenMode, viewAnimate]);
 
   useKeyboardEvent(
     'keyup',

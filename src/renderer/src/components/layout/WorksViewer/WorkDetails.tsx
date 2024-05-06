@@ -196,7 +196,7 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
     if (!work) return;
     if (isFavorited) collection?.favorites.add(work);
     else collection?.favorites.remove(work);
-  }, [isFavorited]);
+  }, [isFavorited, work, collection]);
 
   useKeyboardEvent(
     'keyup',
