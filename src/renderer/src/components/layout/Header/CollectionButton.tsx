@@ -14,7 +14,7 @@ const CollectionButton = () => {
   useEffect(() => {
     if (collection || !recentPaths?.length) return;
     loadCollection(recentPaths[0]);
-  }, [loadCollection, recentPaths]);
+  }, [loadCollection, recentPaths, collection]);
 
   const switchCollection = (collectionPath: string) => {
     loadCollection(collectionPath);

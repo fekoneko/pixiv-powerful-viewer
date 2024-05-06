@@ -4,10 +4,15 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     '@electron-toolkit/eslint-config-ts/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
+    'prettier',
   ],
-  plugins: ['tailwindcss'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['react-refresh', 'tailwindcss'],
   rules: {
     'no-irregular-whitespace': 'off',
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': [

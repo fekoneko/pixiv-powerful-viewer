@@ -22,7 +22,7 @@ const RenderInViewport = handleViewport(
     const elementHeightRef = useRef<number | undefined>(undefined);
     useEffect(() => {
       if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight;
-    }, [inViewport]);
+    }, [inViewport, forwardedRef]);
 
     return (
       <div {...divAttributes} ref={forwardedRef}>
