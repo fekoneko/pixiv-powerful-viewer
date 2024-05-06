@@ -1,18 +1,24 @@
 import SearchContext from '@renderer/contexts/SearchContext';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 const FavoriteButton = () => {
   const { search, setSearch } = useContext(SearchContext);
+  const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
   const toggleFavorites = useCallback(
     () =>
       setSearch((prev) => ({
-        request: prev?.request === '#favorites' ? '' : '#favorites',
+        request: prev?.request === '#favorites' ? prevSearchRequest : '#favorites',
         mode: prev?.mode ?? 'all',
       })),
-    [setSearch],
+    [setSearch, prevSearchRequest],
   );
+
+  useEffect(() => {
+    if (!search || search.request === '#favorites') return;
+    setPrevSearchRequest(search.request);
+  }, [search, setPrevSearchRequest]);
 
   useKeyboardEvent(
     'keyup',

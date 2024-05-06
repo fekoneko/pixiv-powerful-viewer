@@ -28,7 +28,9 @@ export default class CollectionList {
     this.onListUpdateActions.push(onUpdateAction);
     if (onError) this.onListErrorActions.push(onError);
     return () => {
-      this.onListUpdateActions.filter((action) => action !== onUpdateAction);
+      this.onListUpdateActions = this.onListUpdateActions.filter(
+        (action) => action !== onUpdateAction,
+      );
       if (onError) this.onListErrorActions.filter((action) => action !== onError);
     };
   }
@@ -37,7 +39,8 @@ export default class CollectionList {
   public add(works: Work[]): void;
 
   public add(arg: Work | Work[]) {
-    this.works.push(...(Array.isArray(arg) ? arg : [arg]));
+    if (!this.includes(arg as any))
+      this.works = [...this.works, ...(Array.isArray(arg) ? arg : [arg])];
     this.triggerOnListUpdate();
     this.saveList();
   }
@@ -79,7 +82,7 @@ export default class CollectionList {
 
   private async loadList() {
     const listFileContents = await window.api
-      .readFile(this.collection.path + '\\' + '.' + this.name, { encoding: 'utf-8' })
+      .readFile(this.collection.path + '\\.' + this.name, { encoding: 'utf-8' })
       .catch((error) => this && this.triggerOnListError(error));
     if (!listFileContents || !this) return;
 
@@ -102,7 +105,7 @@ export default class CollectionList {
 
   private async saveList() {
     const data = this.works.map((work) => work.id ?? work.path).join('\n');
-    return window.api.writeFile(this.collection.path + '\\' + '.' + this.name, data, {
+    return window.api.writeFile(this.collection.path + '\\.' + this.name, data, {
       encoding: 'utf-8',
     });
   }

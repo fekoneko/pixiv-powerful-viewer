@@ -167,7 +167,9 @@ export default class Collection {
     this.onCollectionUpdateActions.push(onUpdateAction);
     if (onError) this.onCollectionErrorActions.push(onError);
     return () => {
-      this.onCollectionUpdateActions.filter((action) => action !== onUpdateAction);
+      this.onCollectionUpdateActions = this.onCollectionUpdateActions.filter(
+        (action) => action !== onUpdateAction,
+      );
       if (onError) this.onCollectionErrorActions.filter((action) => action !== onError);
     };
   }

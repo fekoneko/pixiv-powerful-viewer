@@ -2,7 +2,7 @@ import CollectionContext from '@renderer/contexts/CollectionContext';
 import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
-import { Fragment, useContext, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
   work: Work;
@@ -184,12 +184,19 @@ interface WorkDetailsProps {
 }
 const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
   const { collection } = useContext(CollectionContext);
 
-  const isFavorited = useMemo(
-    () => !!work && !!collection && collection.favorites.includes(work),
+  useEffect(
+    () => setIsFavorited(!!work && !!collection && collection.favorites.includes(work)),
     [collection, work],
   );
+
+  useEffect(() => {
+    if (!work) return;
+    if (isFavorited) collection?.favorites.add(work);
+    else collection?.favorites.remove(work);
+  }, [isFavorited]);
 
   useKeyboardEvent(
     'keyup',
@@ -212,8 +219,7 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
       e.preventDefault();
 
       if (!work) return;
-      if (isFavorited) collection?.favorites.remove(work);
-      else collection?.favorites.add(work);
+      setIsFavorited((prev) => !prev);
     },
     [collection, work],
     { control: false },
@@ -242,9 +248,7 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
         </button>
         <div className="flex gap-1">
           <button
-            onClick={() =>
-              isFavorited ? collection?.favorites.remove(work) : collection?.favorites.add(work)
-            }
+            onClick={() => setIsFavorited((prev) => !prev)}
             className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             {isFavorited ? 'Favorited⭐' : 'Favorite'}
