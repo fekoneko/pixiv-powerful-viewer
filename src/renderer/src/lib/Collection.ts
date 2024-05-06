@@ -66,7 +66,7 @@ export default class Collection {
   private loaded = false;
   private onCollectionUpdateActions: InternalOnUpdateAction[] = [];
   private onCollectionErrorActions: InternalOnErrorAction[] = [];
-  private static readonly usersInChunk = 100;
+  private static readonly usersInChunk = 50;
 
   constructor(collectionPath: string) {
     this.path = collectionPath;
@@ -248,29 +248,36 @@ export default class Collection {
       path: rawAsset.path + '\\' + rawAsset.name,
     }));
 
-    const imageAssets: ImageAsset[] = assetsWithMetaFile
-      .filter((asset) =>
-        /\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$/.test(asset.name.toLowerCase()),
-      )
-      .sort((leftAsset, rigthAsset) => {
-        const [, leftPage] = Collection.splitIntoNameAndId(leftAsset.name);
-        const [, rightPage] = Collection.splitIntoNameAndId(rigthAsset.name);
-        if (leftPage === undefined || rightPage === undefined) return 0;
-        return leftPage - rightPage;
-      })
-      .map((asset) => ({
-        name: asset.name,
-        path: asset.path,
-        mediaPath:
-          'media:///' +
-          encodeURI(asset.path.replaceAll('\\', '/'))
-            .replaceAll('#', '%23')
-            .replaceAll('&', '%26')
-            .replaceAll('?', '%3F')
-            .replaceAll('=', '%3D'),
-        imageId: 'image-' + nextImageId++,
-        imageDimensions: window.api.getImageDimensions(asset.path),
-      }));
+    const imageAssets: ImageAsset[] = await Promise.all(
+      assetsWithMetaFile
+        .filter((asset) =>
+          /\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$/.test(asset.name.toLowerCase()),
+        )
+        .sort((leftAsset, rigthAsset) => {
+          const [, leftPage] = Collection.splitIntoNameAndId(leftAsset.name);
+          const [, rightPage] = Collection.splitIntoNameAndId(rigthAsset.name);
+          if (leftPage === undefined || rightPage === undefined) return 0;
+          return leftPage - rightPage;
+        })
+        .map(async (asset) => ({
+          name: asset.name,
+          path: asset.path,
+          mediaPath:
+            'media:///' +
+            encodeURI(asset.path.replaceAll('\\', '/'))
+              .replaceAll('#', '%23')
+              .replaceAll('&', '%26')
+              .replaceAll('?', '%3F')
+              .replaceAll('=', '%3D'),
+          imageId: 'image-' + nextImageId++,
+          imageDimensions: await new Promise((resolve, reject) =>
+            window.api.getImageDimensions(asset.path, (_, dimensions) => {
+              if (dimensions) resolve(dimensions);
+              else reject();
+            }),
+          ),
+        })),
+    );
 
     const metaFile = assetsWithMetaFile.find((asset) =>
       /-meta\.txt$/.test(asset.name.toLowerCase()),

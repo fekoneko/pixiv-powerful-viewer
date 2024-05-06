@@ -46,9 +46,18 @@ const WorkListCards = memo(
     }, [selectedIndex, selectWork, works]);
 
     useEffect(() => {
-      setSelectedIndex(undefined);
-      animateScroll.start({ y: 0, immediate: true });
-    }, [works, setSelectedIndex, animateScroll]);
+      setSelectedIndex((prev) =>
+        prev === undefined || works.length === 0
+          ? undefined
+          : prev > works.length - 1
+            ? works.length - 1
+            : prev,
+      );
+    }, [works, setSelectedIndex]);
+
+    useEffect(() => {
+      if (selectedIndex === undefined) animateScroll.start({ y: 0, immediate: true });
+    }, [selectedIndex, animateScroll]);
 
     const ensureCanSelectWithKeyboard = useCallback(() => {
       if (!canSelectWithKeyboardRef.current) return false;
