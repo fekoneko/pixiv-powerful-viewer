@@ -1,5 +1,5 @@
-import Header from '@renderer/components/layout/Header/Header';
-import WorksViewer from '@renderer/components/layout/WorksViewer/WorksViewer';
+import Header from '@renderer/components/layout/header/Header';
+import WorksViewer from '@renderer/components/layout/works-viewer/WorksViewer';
 import { CollectionProvider } from '@renderer/contexts/CollectionContext';
 import { SearchProvider } from '@renderer/contexts/SearchContext';
 import ThemeButton from '@renderer/components/layout/ThemeButton';

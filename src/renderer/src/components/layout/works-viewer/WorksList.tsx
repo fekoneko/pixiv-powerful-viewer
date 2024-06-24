@@ -12,7 +12,7 @@ import {
 import { Work } from '@renderer/lib/Collection';
 import SearchContext from '@renderer/contexts/SearchContext';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import WorkCard from '@renderer/components/layout/WorksViewer/WorkCard';
+import WorkCard from '@renderer/components/layout/works-viewer/WorkCard';
 import RenderInViewport from '@renderer/components/render/RenderInViewport';
 import useTimeout from '@renderer/hooks/useTimeout';
 import useAnimateScroll, { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
