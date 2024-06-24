@@ -1,5 +1,5 @@
 import { DependencyList } from 'react';
-import useEventListener from '@renderer/hooks/useEventListener';
+import { useEventListener } from '@renderer/hooks/useEventListener';
 
 type Modifiers = {
   control?: boolean;
@@ -8,7 +8,7 @@ type Modifiers = {
   meta?: boolean;
 };
 
-const useKeyboardEvent = (
+export const useKeyboardEvent = (
   type: 'keypress' | 'keyup' | 'keydown',
   keyCode: string | string[],
   callback: (e: KeyboardEvent) => void,
@@ -34,4 +34,3 @@ const useKeyboardEvent = (
     [...(deps ?? []), modifiers],
   );
 };
-export default useKeyboardEvent;

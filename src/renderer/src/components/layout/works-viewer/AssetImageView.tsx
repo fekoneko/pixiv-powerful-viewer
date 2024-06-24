@@ -1,13 +1,11 @@
 import { ImageAsset } from '@renderer/lib/Collection';
-import { HTMLAttributes, useEffect } from 'react';
+import { FC, SVGProps, useEffect } from 'react';
 
-export interface AssetImageViewProps {
+export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   asset: ImageAsset;
 }
-const AssetImageView = ({
-  asset,
-  ...svgAttributes
-}: AssetImageViewProps & HTMLAttributes<SVGSVGElement>) => {
+
+export const AssetImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
   useEffect(() => {
     const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     imageElement.setAttribute('id', asset.imageId);
@@ -30,11 +28,10 @@ const AssetImageView = ({
 
   return (
     <svg
-      {...svgAttributes}
+      {...svgProps}
       viewBox={`0 0 ${asset.imageDimensions.width ?? 100} ${asset.imageDimensions.height ?? 100}`}
     >
       <use href={'#' + asset.imageId} />
     </svg>
   );
 };
-export default AssetImageView;

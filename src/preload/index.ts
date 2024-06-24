@@ -11,6 +11,7 @@ export interface Api {
   pickDirectory: () => Promise<string>;
   showItemInFolder: typeof shell.showItemInFolder;
 }
+
 const api: Api = {
   readDir: readdir,
   readFile,

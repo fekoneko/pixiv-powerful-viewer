@@ -1,9 +1,9 @@
-import SearchContext from '@renderer/contexts/SearchContext';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import useWanakana from '@renderer/hooks/useWanakana';
-import { useContext, useRef, useState } from 'react';
+import { SearchContext } from '@renderer/contexts/SearchContext';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
+import { useWanakana } from '@renderer/hooks/useWanakana';
+import { FC, useContext, useRef, useState } from 'react';
 
-const Searchbar = () => {
+export const Searchbar: FC = () => {
   const { search, setSearch } = useContext(SearchContext);
   const [kanaConversion, setKanaConversion] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,5 +77,3 @@ const Searchbar = () => {
     </form>
   );
 };
-
-export default Searchbar;

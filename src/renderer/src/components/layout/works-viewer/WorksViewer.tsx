@@ -1,15 +1,15 @@
-import WorksList from '@renderer/components/layout/works-viewer/WorksList';
-import WorkView from '@renderer/components/layout/works-viewer/WorkView';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { WorksList } from '@renderer/components/layout/works-viewer/WorksList';
+import { WorkView } from '@renderer/components/layout/works-viewer/WorkView';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Work } from '@renderer/lib/Collection';
-import WorkDetails from '@renderer/components/layout/works-viewer/WorkDetails';
+import { WorkDetails } from '@renderer/components/layout/works-viewer/WorkDetails';
 import { animated, useSpring } from '@react-spring/web';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import FavoriteButton from '@renderer/components/layout/FavoriteButton';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
+import { FavoriteButton } from '@renderer/components/layout/FavoriteButton';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';
 
-const WorksViewer = () => {
+export const WorksViewer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work>();
   const [fullscreenMode, setFullscreenMode] = useState<boolean>();
   const [transitionState, setTransitionState] = useState<TransitionState>('preview');
@@ -125,4 +125,3 @@ const WorksViewer = () => {
     </>
   );
 };
-export default WorksViewer;

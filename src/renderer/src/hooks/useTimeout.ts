@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-const useTimeout = (): [
+export const useTimeout = (): [
   timeout: ReturnType<typeof setTimeout> | undefined,
   updateTimeout: typeof setTimeout,
 ] => {
@@ -17,4 +17,3 @@ const useTimeout = (): [
 
   return [timeoutId, updateTimeout];
 };
-export default useTimeout;

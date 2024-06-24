@@ -1,7 +1,8 @@
-import Searchbar from '@renderer/components/layout/header/Searchbar';
-import CollectionButton from '@renderer/components/layout/header/CollectionButton';
+import { Searchbar } from '@renderer/components/layout/header/Searchbar';
+import { CollectionButton } from '@renderer/components/layout/header/CollectionButton';
+import { FC } from 'react';
 
-const Header = () => {
+export const Header: FC = () => {
   return (
     <header className="z-10 flex min-h-[3.2rem] items-center gap-1 whitespace-nowrap bg-primary px-[10%] py-1 text-text-header shadow-md">
       <div className="flex grow items-center gap-1 text-xl font-semibold">
@@ -15,4 +16,3 @@ const Header = () => {
     </header>
   );
 };
-export default Header;

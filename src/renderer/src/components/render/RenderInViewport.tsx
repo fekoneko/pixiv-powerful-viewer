@@ -1,12 +1,17 @@
-import { HTMLAttributes, ReactElement, useEffect, useRef } from 'react';
+import { DetailedHTMLProps, FC, HTMLAttributes, ReactNode, useEffect, useRef } from 'react';
 import handleViewport, { InjectedViewportProps } from 'react-in-viewport';
 
-interface RenderInViewportProps {
+interface RenderInViewportProps
+  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   forceRender?: boolean;
   fallbackHeight?: number | string;
-  children: ReactElement;
+  children: ReactNode;
 }
-const RenderInViewport = handleViewport(
+
+export const RenderInViewport: FC<RenderInViewportProps> = handleViewport<
+  HTMLElement,
+  InjectedViewportProps<HTMLDivElement> & RenderInViewportProps
+>(
   ({
     inViewport,
     enterCount: _enterCount,
@@ -15,17 +20,15 @@ const RenderInViewport = handleViewport(
     forceRender,
     fallbackHeight,
     children,
-    ...divAttributes
-  }: InjectedViewportProps<HTMLDivElement> &
-    RenderInViewportProps &
-    HTMLAttributes<HTMLDivElement>) => {
+    ...divProps
+  }) => {
     const elementHeightRef = useRef<number | undefined>(undefined);
     useEffect(() => {
       if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight;
     }, [inViewport, forwardedRef]);
 
     return (
-      <div {...divAttributes} ref={forwardedRef}>
+      <div {...divProps} ref={forwardedRef}>
         {inViewport || forceRender ? (
           children
         ) : (
@@ -36,4 +39,3 @@ const RenderInViewport = handleViewport(
   },
   { rootMargin: '500px' },
 );
-export default RenderInViewport;

@@ -1,4 +1,5 @@
-import Collection, {
+import {
+  Collection,
   CleanupFunction,
   InternalOnErrorAction,
   InternalOnUpdateAction,
@@ -7,7 +8,7 @@ import Collection, {
   Work,
 } from '@renderer/lib/Collection';
 
-export default class CollectionList {
+export class CollectionList {
   public name: string;
 
   private collection: Collection;

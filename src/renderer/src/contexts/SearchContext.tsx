@@ -5,11 +5,11 @@ interface SearchContextValue {
   search: Search | undefined;
   setSearch: Dispatch<SetStateAction<Search | undefined>>;
 }
-const SearchContext = createContext({} as SearchContextValue);
+
+export const SearchContext = createContext({} as SearchContextValue);
 
 export const SearchProvider = ({ children }: PropsWithChildren) => {
   const [search, setSearch] = useState<Search>();
 
   return <SearchContext.Provider value={{ search, setSearch }}>{children}</SearchContext.Provider>;
 };
-export default SearchContext;

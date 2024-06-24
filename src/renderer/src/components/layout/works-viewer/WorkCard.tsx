@@ -1,13 +1,14 @@
 import { Fragment } from 'react/jsx-runtime';
 import { Work } from '@renderer/lib/Collection';
-import { RefObject, memo, useEffect, useRef } from 'react';
+import { FC, RefObject, memo, useEffect, useRef } from 'react';
 import { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
-import AssetImageView from '@renderer/components/layout/works-viewer/AssetImageView';
+import { AssetImageView } from '@renderer/components/layout/works-viewer/AssetImageView';
 
 interface WorkCardContents {
   work: Work;
 }
-const WorkCardContents = memo(({ work }: WorkCardContents) => {
+
+const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents) => {
   return (
     <>
       {work.assets?.length ? (
@@ -56,8 +57,9 @@ export interface WorkCardProps {
   animateScroll: AnimateScroll;
   active?: boolean;
 }
-const WorkCard = memo(
-  ({ work, index, selectIndex, scrollContainerRef, animateScroll, active }: WorkCardProps) => {
+
+export const WorkCard: FC<WorkCardProps> = memo(
+  ({ work, index, selectIndex, scrollContainerRef, animateScroll, active }) => {
     const cardRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -99,4 +101,3 @@ const WorkCard = memo(
     );
   },
 );
-export default WorkCard;

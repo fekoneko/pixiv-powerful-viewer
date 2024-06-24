@@ -1,11 +1,12 @@
 import { Theme } from '@renderer/App';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 
 interface ThemeButtonProps {
   theme: Theme | undefined;
   setTheme: Dispatch<SetStateAction<Theme | undefined>>;
 }
-const ThemeButton = ({ theme, setTheme }: ThemeButtonProps) => {
+
+export const ThemeButton: FC<ThemeButtonProps> = ({ theme, setTheme }) => {
   return (
     <button
       onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
@@ -15,4 +16,3 @@ const ThemeButton = ({ theme, setTheme }: ThemeButtonProps) => {
     </button>
   );
 };
-export default ThemeButton;

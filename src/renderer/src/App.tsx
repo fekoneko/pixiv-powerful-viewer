@@ -1,14 +1,14 @@
-import Header from '@renderer/components/layout/header/Header';
-import WorksViewer from '@renderer/components/layout/works-viewer/WorksViewer';
+import { Header } from '@renderer/components/layout/header/Header';
+import { WorksViewer } from '@renderer/components/layout/works-viewer/WorksViewer';
 import { CollectionProvider } from '@renderer/contexts/CollectionContext';
 import { SearchProvider } from '@renderer/contexts/SearchContext';
-import ThemeButton from '@renderer/components/layout/ThemeButton';
-import useLocalStorage from '@renderer/hooks/useLocalStorage';
-import { useCallback } from 'react';
+import { ThemeButton } from '@renderer/components/layout/ThemeButton';
+import { useLocalStorage } from '@renderer/hooks/useLocalStorage';
+import { FC, useCallback } from 'react';
 
 export type Theme = 'light' | 'dark';
 
-const App = () => {
+export const App: FC = () => {
   const [theme, setTheme] = useLocalStorage<Theme>(
     'theme',
     useCallback((error) => console.error(error), []),
@@ -34,5 +34,3 @@ const App = () => {
     </CollectionProvider>
   );
 };
-
-export default App;

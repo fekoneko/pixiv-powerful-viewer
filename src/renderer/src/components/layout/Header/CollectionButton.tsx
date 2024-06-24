@@ -1,9 +1,9 @@
-import { useCallback, useContext, useEffect, useRef } from 'react';
-import CollectionContext from '@renderer/contexts/CollectionContext';
-import useLocalStorage from '@renderer/hooks/useLocalStorage';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
+import { FC, useCallback, useContext, useEffect, useRef } from 'react';
+import { CollectionContext } from '@renderer/contexts/CollectionContext';
+import { useLocalStorage } from '@renderer/hooks/useLocalStorage';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
 
-const CollectionButton = () => {
+export const CollectionButton: FC = () => {
   const { collection, loadCollection } = useContext(CollectionContext);
   const [recentPaths, setRecentPaths] = useLocalStorage<string[]>(
     'recentCollections',
@@ -68,4 +68,3 @@ const CollectionButton = () => {
     </div>
   );
 };
-export default CollectionButton;

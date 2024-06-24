@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import CollectionContext from '@renderer/contexts/CollectionContext';
+import { CollectionContext } from '@renderer/contexts/CollectionContext';
 import { OnError, Search, Work } from '@renderer/lib/Collection';
 
 interface UseWorks {
   (search?: Search, onError?: OnError): Work[];
   (predicate: (work: Work) => boolean, onError?: OnError): Work[];
 }
-const useWorks: UseWorks = (arg?: any, onError?: OnError) => {
+
+export const useWorks: UseWorks = (arg?: any, onError?: OnError) => {
   const { collection } = useContext(CollectionContext);
   const [works, setWorks] = useState<Work[]>([]);
 
@@ -17,4 +18,3 @@ const useWorks: UseWorks = (arg?: any, onError?: OnError) => {
 
   return works;
 };
-export default useWorks;

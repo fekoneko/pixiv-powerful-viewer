@@ -1,8 +1,8 @@
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import useTimeout from '@renderer/hooks/useTimeout';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
+import { useTimeout } from '@renderer/hooks/useTimeout';
 import { Work } from '@renderer/lib/Collection';
-import { useEffect, useState } from 'react';
-import AssetImageView from '@renderer/components/layout/works-viewer/AssetImageView';
+import { FC, useEffect, useState } from 'react';
+import { AssetImageView } from '@renderer/components/layout/works-viewer/AssetImageView';
 
 const showControlsDelay = 1500;
 
@@ -10,7 +10,8 @@ interface WorkViewProps {
   work: Work | undefined;
   fullscreenMode?: boolean;
 }
-const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
+
+export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [controlsShown, setControlsShown] = useState(false);
   const [, updateShowControlsTimeout] = useTimeout();
@@ -119,4 +120,3 @@ const WorkView = ({ work, fullscreenMode }: WorkViewProps) => {
     </div>
   );
 };
-export default WorkView;

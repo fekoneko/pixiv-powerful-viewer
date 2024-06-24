@@ -1,5 +1,5 @@
-import useWorks from '@renderer/hooks/useWorks';
 import {
+  FC,
   RefObject,
   memo,
   useCallback,
@@ -9,14 +9,15 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useWorks } from '@renderer/hooks/useWorks';
 import { Work } from '@renderer/lib/Collection';
-import SearchContext from '@renderer/contexts/SearchContext';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import WorkCard from '@renderer/components/layout/works-viewer/WorkCard';
-import RenderInViewport from '@renderer/components/render/RenderInViewport';
-import useTimeout from '@renderer/hooks/useTimeout';
-import useAnimateScroll, { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
-import CollectionContext from '@renderer/contexts/CollectionContext';
+import { SearchContext } from '@renderer/contexts/SearchContext';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
+import { WorkCard } from '@renderer/components/layout/works-viewer/WorkCard';
+import { RenderInViewport } from '@renderer/components/render/RenderInViewport';
+import { useTimeout } from '@renderer/hooks/useTimeout';
+import { useAnimateScroll, AnimateScroll } from '@renderer/hooks/useAnimateScroll';
+import { CollectionContext } from '@renderer/contexts/CollectionContext';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -27,8 +28,9 @@ interface WorkListCardsProps {
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
-const WorkListCards = memo(
-  ({ works, selectWork, scrollContainerRef, animateScroll }: WorkListCardsProps) => {
+
+const WorkListCards: FC<WorkListCardsProps> = memo(
+  ({ works, selectWork, scrollContainerRef, animateScroll }) => {
     const workCardsChunks = useMemo(() => {
       const result: Work[][] = [];
       for (let i = 0; i < works.length; i += workCardChunkSize) {
@@ -155,7 +157,8 @@ const WorkListCards = memo(
 interface WorksListProps {
   selectWork: (selectedWork: Work | undefined) => void;
 }
-const WorksList = ({ selectWork }: WorksListProps) => {
+
+export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
   const { search } = useContext(SearchContext);
   const { collection } = useContext(CollectionContext);
   const works = useWorks(
@@ -211,4 +214,3 @@ const WorksList = ({ selectWork }: WorksListProps) => {
     </div>
   );
 };
-export default WorksList;

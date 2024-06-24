@@ -1,11 +1,12 @@
 import { PropsWithChildren, createContext, useCallback, useState } from 'react';
-import Collection from '@renderer/lib/Collection';
+import { Collection } from '@renderer/lib/Collection';
 
 interface CollectionContextValue {
   collection: Collection | undefined;
   loadCollection: (collectionPath: string) => void;
 }
-const CollectionContext = createContext({} as CollectionContextValue);
+
+export const CollectionContext = createContext({} as CollectionContextValue);
 
 export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collection, setCollection] = useState<Collection>();
@@ -23,4 +24,3 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
     </CollectionContext.Provider>
   );
 };
-export default CollectionContext;

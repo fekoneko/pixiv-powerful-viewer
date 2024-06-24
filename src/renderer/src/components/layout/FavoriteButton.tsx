@@ -1,8 +1,8 @@
-import SearchContext from '@renderer/contexts/SearchContext';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { SearchContext } from '@renderer/contexts/SearchContext';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
+import { FC, useCallback, useContext, useEffect, useState } from 'react';
 
-const FavoriteButton = () => {
+export const FavoriteButton: FC = () => {
   const { search, setSearch } = useContext(SearchContext);
   const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
@@ -43,4 +43,3 @@ const FavoriteButton = () => {
     </button>
   );
 };
-export default FavoriteButton;

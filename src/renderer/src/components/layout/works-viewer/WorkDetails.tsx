@@ -1,14 +1,15 @@
-import CollectionContext from '@renderer/contexts/CollectionContext';
-import useAnimateScroll from '@renderer/hooks/useAnimateScroll';
-import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
+import { CollectionContext } from '@renderer/contexts/CollectionContext';
+import { useAnimateScroll } from '@renderer/hooks/useAnimateScroll';
+import { useKeyboardEvent } from '@renderer/hooks/useKeyboardEvent';
 import { Work } from '@renderer/lib/Collection';
-import { Fragment, useContext, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, useContext, useEffect, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
   work: Work;
   expanded: boolean;
 }
-const WorkDetailsContents = ({ work, expanded }: WorkDetailsContentsProps) => {
+
+const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
 
@@ -182,7 +183,8 @@ interface WorkDetailsProps {
   work: Work | undefined;
   toggleFullscreenMode: () => void;
 }
-const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
+
+export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }) => {
   const [expanded, setExpanded] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const { collection } = useContext(CollectionContext);
@@ -267,4 +269,3 @@ const WorkDetails = ({ work, toggleFullscreenMode }: WorkDetailsProps) => {
     </div>
   );
 };
-export default WorkDetails;

@@ -1,6 +1,6 @@
 import { Dirent } from 'fs';
 import { toHiragana } from 'wanakana';
-import CollectionList from '@renderer/lib/CollectionList';
+import { CollectionList } from '@renderer/lib/CollectionList';
 import { ISizeCalculationResult } from 'image-size/dist/types/interface';
 
 let nextImageId = 0;
@@ -54,7 +54,7 @@ interface MetaFileProperty<T extends keyof Work = keyof Work> {
 export type InternalOnUpdateAction = () => void;
 export type InternalOnErrorAction = (error: unknown) => void;
 
-export default class Collection {
+export class Collection {
   public readonly path: string;
   public readonly name: string;
   public get isLoaded() {

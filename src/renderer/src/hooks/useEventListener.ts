@@ -1,6 +1,6 @@
 import { DependencyList, RefObject, useEffect } from 'react';
 
-const useEventListener = <K extends keyof HTMLElementEventMap>(
+export const useEventListener = <K extends keyof HTMLElementEventMap>(
   targetRef: RefObject<HTMLElement> | null,
   type: K,
   listener: EventListenerOrEventListenerObject,
@@ -17,4 +17,3 @@ const useEventListener = <K extends keyof HTMLElementEventMap>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...(deps ?? []), targetRef, options, type, listener]);
 };
-export default useEventListener;
