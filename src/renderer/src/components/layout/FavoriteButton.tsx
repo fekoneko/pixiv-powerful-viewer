@@ -18,7 +18,7 @@ const FavoriteButton = () => {
   useEffect(() => {
     if (!search || search.request === '#favorites') return;
     setPrevSearchRequest(search.request);
-  }, [search, setPrevSearchRequest]);
+  }, [search]);
 
   useKeyboardEvent(
     'keyup',

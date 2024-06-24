@@ -56,52 +56,47 @@ export interface WorkCardProps {
   animateScroll: AnimateScroll;
   active?: boolean;
 }
-const WorkCard = ({
-  work,
-  index,
-  selectIndex,
-  scrollContainerRef,
-  animateScroll,
-  active,
-}: WorkCardProps) => {
-  const cardRef = useRef<HTMLButtonElement>(null);
+const WorkCard = memo(
+  ({ work, index, selectIndex, scrollContainerRef, animateScroll, active }: WorkCardProps) => {
+    const cardRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!active) return;
+    useEffect(() => {
+      if (!active) return;
 
-    const cardElement = cardRef.current;
-    if (!cardElement) return;
+      const cardElement = cardRef.current;
+      if (!cardElement) return;
 
-    if (document.activeElement?.tagName !== 'INPUT') {
-      cardElement.focus({ preventScroll: true });
-    }
-
-    const scrollContainerElement = scrollContainerRef.current;
-    if (!scrollContainerElement) return;
-
-    const scrollPosition =
-      cardElement.offsetTop +
-      cardElement.offsetHeight / 2 -
-      scrollContainerElement.offsetHeight / 2;
-    animateScroll.start({
-      from: { y: scrollContainerRef.current?.scrollTop },
-      to: { y: scrollPosition },
-      reset: true,
-    });
-  }, [active, animateScroll, scrollContainerRef]);
-
-  return (
-    <button
-      ref={cardRef}
-      onClick={() => selectIndex(index)}
-      tabIndex={-1}
-      className={
-        'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
-        (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
+      if (document.activeElement?.tagName !== 'INPUT') {
+        cardElement.focus({ preventScroll: true });
       }
-    >
-      <WorkCardContents work={work} />
-    </button>
-  );
-};
-export default memo(WorkCard);
+
+      const scrollContainerElement = scrollContainerRef.current;
+      if (!scrollContainerElement) return;
+
+      const scrollPosition =
+        cardElement.offsetTop +
+        cardElement.offsetHeight / 2 -
+        scrollContainerElement.offsetHeight / 2;
+      animateScroll.start({
+        from: { y: scrollContainerRef.current?.scrollTop },
+        to: { y: scrollPosition },
+        reset: true,
+      });
+    }, [active, animateScroll, scrollContainerRef]);
+
+    return (
+      <button
+        ref={cardRef}
+        onClick={() => selectIndex(index)}
+        tabIndex={-1}
+        className={
+          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
+          (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
+        }
+      >
+        <WorkCardContents work={work} />
+      </button>
+    );
+  },
+);
+export default WorkCard;

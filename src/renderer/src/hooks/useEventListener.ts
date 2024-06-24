@@ -10,8 +10,11 @@ const useEventListener = <K extends keyof HTMLElementEventMap>(
   useEffect(() => {
     const target = targetRef ? targetRef.current : window;
     target?.addEventListener(type, listener, options);
-
     return () => target?.removeEventListener(type, listener, options);
-  }, [...(deps ?? []), targetRef?.current, type, listener]);
+
+    // We need this rule disabled to destructure dependency array here -> ...(deps ?? [])
+    // This is needed so the user can pass custom dependencies to this hook
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...(deps ?? []), targetRef, options, type, listener]);
 };
 export default useEventListener;

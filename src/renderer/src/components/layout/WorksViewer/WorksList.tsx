@@ -53,7 +53,7 @@ const WorkListCards = memo(
             ? works.length - 1
             : prev,
       );
-    }, [works, setSelectedIndex]);
+    }, [works]);
 
     useEffect(() => {
       if (selectedIndex === undefined) animateScroll.start({ y: 0, immediate: true });

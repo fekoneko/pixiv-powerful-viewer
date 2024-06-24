@@ -22,6 +22,7 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'react/display-name': 'off',
     'react/prop-types': 'off',
     'tailwindcss/enforces-negative-arbitrary-values': 'warn',

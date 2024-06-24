@@ -6,17 +6,14 @@ const useTimeout = (): [
 ] => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
 
-  const updateTimeout = useCallback(
-    (...args: Parameters<typeof setTimeout>) => {
-      const newTimeoutId = setTimeout(...args);
-      setTimeoutId((prev) => {
-        clearTimeout(prev);
-        return newTimeoutId;
-      });
+  const updateTimeout = useCallback((...args: Parameters<typeof setTimeout>) => {
+    const newTimeoutId = setTimeout(...args);
+    setTimeoutId((prev) => {
+      clearTimeout(prev);
       return newTimeoutId;
-    },
-    [setTimeout],
-  ) as typeof setTimeout;
+    });
+    return newTimeoutId;
+  }, []) as typeof setTimeout;
 
   return [timeoutId, updateTimeout];
 };

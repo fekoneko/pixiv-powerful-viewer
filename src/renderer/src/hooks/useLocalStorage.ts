@@ -18,7 +18,7 @@ const useLocalStorage = <T = any>(
     } catch (error) {
       onError && onError(error);
     }
-  }, [key, setContent, onError]);
+  }, [key, content, onError]);
 
   useEffect(() => {
     if (content === undefined) return;

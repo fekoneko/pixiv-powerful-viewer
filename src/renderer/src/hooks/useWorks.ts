@@ -13,7 +13,7 @@ const useWorks: UseWorks = (arg?: any, onError?: OnError) => {
   useEffect(() => {
     if (arg?.request === '#favorites') return collection?.favorites.subscribe(setWorks, onError);
     else return collection?.subscribe(arg, setWorks, onError);
-  }, [collection, arg, onError, setWorks]);
+  }, [collection, arg, onError]);
 
   return works;
 };
