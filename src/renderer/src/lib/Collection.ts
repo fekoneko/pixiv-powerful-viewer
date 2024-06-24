@@ -1,6 +1,6 @@
 import { Dirent } from 'fs';
 import { toHiragana } from 'wanakana';
-import CollectionList from './CollectionList';
+import CollectionList from '@renderer/lib/CollectionList';
 import { ISizeCalculationResult } from 'image-size/dist/types/interface';
 
 let nextImageId = 0;

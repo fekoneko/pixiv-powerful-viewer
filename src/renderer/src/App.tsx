@@ -1,9 +1,9 @@
-import Header from './components/layout/Header/Header';
-import WorksViewer from './components/layout/WorksViewer/WorksViewer';
-import { CollectionProvider } from './contexts/CollectionContext';
-import { SearchProvider } from './contexts/SearchContext';
-import ThemeButton from './components/layout/ThemeButton';
-import useLocalStorage from './hooks/useLocalStorage';
+import Header from '@renderer/components/layout/Header/Header';
+import WorksViewer from '@renderer/components/layout/WorksViewer/WorksViewer';
+import { CollectionProvider } from '@renderer/contexts/CollectionContext';
+import { SearchProvider } from '@renderer/contexts/SearchContext';
+import ThemeButton from '@renderer/components/layout/ThemeButton';
+import useLocalStorage from '@renderer/hooks/useLocalStorage';
 import { useCallback } from 'react';
 
 export type Theme = 'light' | 'dark';

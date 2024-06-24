@@ -1,5 +1,5 @@
-import Searchbar from './Searchbar';
-import CollectionButton from './CollectionButton';
+import Searchbar from '@renderer/components/layout/Header/Searchbar';
+import CollectionButton from '@renderer/components/layout/Header/CollectionButton';
 
 const Header = () => {
   return (

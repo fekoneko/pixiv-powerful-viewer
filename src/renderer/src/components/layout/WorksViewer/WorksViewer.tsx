@@ -1,11 +1,11 @@
-import WorksList from './WorksList';
-import WorkView from './WorkView';
+import WorksList from '@renderer/components/layout/WorksViewer/WorksList';
+import WorkView from '@renderer/components/layout/WorksViewer/WorkView';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Work } from '@renderer/lib/Collection';
-import WorkDetails from './WorkDetails';
+import WorkDetails from '@renderer/components/layout/WorksViewer/WorkDetails';
 import { animated, useSpring } from '@react-spring/web';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
-import FavoriteButton from '../FavoriteButton';
+import FavoriteButton from '@renderer/components/layout/FavoriteButton';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';
 

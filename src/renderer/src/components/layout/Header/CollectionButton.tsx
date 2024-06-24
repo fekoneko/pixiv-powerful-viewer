@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
-import CollectionContext from '../../../contexts/CollectionContext';
+import CollectionContext from '@renderer/contexts/CollectionContext';
 import useLocalStorage from '@renderer/hooks/useLocalStorage';
 import useKeyboardEvent from '@renderer/hooks/useKeyboardEvent';
 

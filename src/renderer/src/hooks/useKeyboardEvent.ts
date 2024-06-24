@@ -1,5 +1,5 @@
 import { DependencyList } from 'react';
-import useEventListener from './useEventListener';
+import useEventListener from '@renderer/hooks/useEventListener';
 
 type Modifiers = {
   control?: boolean;

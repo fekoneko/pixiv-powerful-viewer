@@ -1,8 +1,8 @@
 import { Fragment } from 'react/jsx-runtime';
-import { Work } from '../../../lib/Collection';
+import { Work } from '@renderer/lib/Collection';
 import { RefObject, memo, useEffect, useRef } from 'react';
 import { AnimateScroll } from '@renderer/hooks/useAnimateScroll';
-import AssetImageView from './AssetImageView';
+import AssetImageView from '@renderer/components/layout/WorksViewer/AssetImageView';
 
 interface WorkCardContents {
   work: Work;

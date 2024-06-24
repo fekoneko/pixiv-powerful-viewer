@@ -1,5 +1,5 @@
 import { Dispatch, PropsWithChildren, SetStateAction, createContext, useState } from 'react';
-import { Search } from '../lib/Collection';
+import { Search } from '@renderer/lib/Collection';
 
 interface SearchContextValue {
   search: Search | undefined;

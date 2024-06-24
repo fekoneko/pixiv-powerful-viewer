@@ -5,7 +5,7 @@ import Collection, {
   OnError,
   OnUpdate,
   Work,
-} from './Collection';
+} from '@renderer/lib/Collection';
 
 export default class CollectionList {
   public name: string;

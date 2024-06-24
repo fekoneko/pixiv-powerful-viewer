@@ -4,12 +4,12 @@
 
 @font-face {
   font-family: 'Noto Sans JP';
-  src: url(../assets/fonts/NotoSansJP.ttf);
+  src: url(@renderer/assets/fonts/NotoSansJP.ttf);
   unicode-range: U+3000-303f, U+3040-309f, U+30a0-30ff, U+ff00-ffef, U+4e00-9faf;
 }
 @font-face {
   font-family: 'Segoe UI';
-  src: url(../assets/fonts/SegoeUI.ttf);
+  src: url(@renderer/assets/fonts/SegoeUI.ttf);
 }
 
 @layer base {

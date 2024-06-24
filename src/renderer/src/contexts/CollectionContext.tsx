@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useState } from 'react';
-import Collection from '../lib/Collection';
+import Collection from '@renderer/lib/Collection';
 
 interface CollectionContextValue {
   collection: Collection | undefined;

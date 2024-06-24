@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import CollectionContext from '../contexts/CollectionContext';
-import { OnError, Search, Work } from '../lib/Collection';
+import CollectionContext from '@renderer/contexts/CollectionContext';
+import { OnError, Search, Work } from '@renderer/lib/Collection';
 
 interface UseWorks {
   (search?: Search, onError?: OnError): Work[];
