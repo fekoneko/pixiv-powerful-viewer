@@ -64,7 +64,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
         (!fullscreenMode ? ' rounded-xl border-2 border-text/30' : '')
       }
     >
-      {work?.assets?.length ? (
+      {work?.assets?.length && work.assets[pageNumber] ? (
         <>
           <AssetImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
 
