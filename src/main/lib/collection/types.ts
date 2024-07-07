@@ -40,6 +40,7 @@ export interface Work extends Metadata {
   title: string;
   userName: string;
   path: string;
+  absolutePath: string;
   assets: ImageAsset[];
 }
 

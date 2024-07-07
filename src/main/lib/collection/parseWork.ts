@@ -3,7 +3,7 @@ import { metaFileMap } from './metaFileMap';
 import { Dirent } from 'fs';
 import { getImageDimensions } from '../image-size';
 import { readdir, readFile } from 'fs/promises';
-import { join, sep } from 'path';
+import { join, sep, relative } from 'path';
 
 interface File {
   name: string;
@@ -136,7 +136,8 @@ export const parseWork = async (
 
   const [title, id] = splitIntoNameAndId(workDirent.name);
   const [userName, userId] = splitIntoNameAndId(userDirent.name);
-  const path = join(workDirent.path, workDirent.name);
+  const absolutePath = join(workDirent.path, workDirent.name);
+  const path = relative(userDirent.path, absolutePath);
 
   return [
     {
@@ -145,6 +146,7 @@ export const parseWork = async (
       userName,
       title,
       path,
+      absolutePath,
       assets,
       ...(metadata ?? {}),
     },
