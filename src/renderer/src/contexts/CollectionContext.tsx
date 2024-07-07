@@ -13,6 +13,9 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
   const loadCollection = useCallback((collectionPath: string) => {
     setCollection(new Collection(collectionPath));
+    window.api.collection
+      .loadWorks(collectionPath)
+      .then(([works]) => console.log('loadWorks(): ', works)); // TODO: remove
   }, []);
 
   return (

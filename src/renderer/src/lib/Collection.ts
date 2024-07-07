@@ -270,12 +270,7 @@ export class Collection {
               .replaceAll('?', '%3F')
               .replaceAll('=', '%3D'),
           imageId: 'image-' + nextImageId++,
-          imageDimensions: await new Promise((resolve, reject) =>
-            window.api.getImageDimensions(asset.path, (_, dimensions) => {
-              if (dimensions) resolve(dimensions);
-              else reject();
-            }),
-          ),
+          imageDimensions: await window.api.getImageDimensions(asset.path),
         })),
     );
 
