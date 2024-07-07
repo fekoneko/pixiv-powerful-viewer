@@ -210,7 +210,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
       if (!work) return;
       setExpanded((prev) => !prev);
     },
-    [setExpanded, work],
+    [work],
   );
 
   useKeyboardEvent(

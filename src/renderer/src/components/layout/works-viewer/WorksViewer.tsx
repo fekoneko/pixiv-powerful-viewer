@@ -23,7 +23,7 @@ export const WorksViewer: FC = () => {
 
   const toggleFullscreenMode = useCallback(
     () => setFullscreenMode((prev) => (selectedWork ? !prev : false)),
-    [selectedWork, setFullscreenMode],
+    [selectedWork],
   );
 
   useEffect(() => {

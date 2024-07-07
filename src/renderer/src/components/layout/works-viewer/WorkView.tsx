@@ -33,7 +33,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
 
       showControls();
     },
-    [work, setPageNumber, setControlsShown, updateShowControlsTimeout],
+    [work, updateShowControlsTimeout],
   );
 
   useKeyboardEvent(
@@ -48,7 +48,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
 
       showControls();
     },
-    [work, setPageNumber, setControlsShown, updateShowControlsTimeout],
+    [work, updateShowControlsTimeout],
   );
 
   useEffect(() => {

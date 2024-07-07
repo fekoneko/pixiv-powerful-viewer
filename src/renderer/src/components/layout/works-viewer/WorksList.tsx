@@ -86,7 +86,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
           return prev <= 0 ? 0 : prev - 1;
         });
       },
-      [setSelectedIndex, ensureCanSelectWithKeyboard],
+      [ensureCanSelectWithKeyboard],
       { control: false },
     );
 
@@ -104,7 +104,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
           return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
         });
       },
-      [works.length, setSelectedIndex, ensureCanSelectWithKeyboard],
+      [works.length, ensureCanSelectWithKeyboard],
       { control: false },
     );
 
@@ -117,7 +117,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
 
         setSelectedIndex(undefined);
       },
-      [setSelectedIndex],
+      [],
     );
 
     return (

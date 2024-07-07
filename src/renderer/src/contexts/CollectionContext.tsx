@@ -11,12 +11,9 @@ export const CollectionContext = createContext({} as CollectionContextValue);
 export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collection, setCollection] = useState<Collection>();
 
-  const loadCollection = useCallback(
-    (collectionPath: string) => {
-      setCollection(new Collection(collectionPath));
-    },
-    [setCollection],
-  );
+  const loadCollection = useCallback((collectionPath: string) => {
+    setCollection(new Collection(collectionPath));
+  }, []);
 
   return (
     <CollectionContext.Provider value={{ collection, loadCollection }}>
