@@ -1,53 +1,36 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+import { Header } from '@/components/layout/header/Header';
+import { WorksViewer } from '@/components/layout/works-viewer/WorksViewer';
+import { CollectionProvider } from '@/contexts/CollectionContext';
+import { SearchProvider } from '@/contexts/SearchContext';
+import { ThemeButton } from '@/components/layout/ThemeButton';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { FC, useCallback } from 'react';
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+export type Theme = 'light' | 'dark';
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
+export const App: FC = () => {
+  const [theme, setTheme] = useLocalStorage<Theme>(
+    'theme',
+    useCallback((error: unknown) => console.error(error), []),
+  );
 
   return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
+    <CollectionProvider>
+      <SearchProvider>
+        <div
+          data-theme={theme ?? 'light'}
+          className="flex size-full flex-col overflow-hidden bg-background text-text transition-colors"
+        >
+          <Header />
+          <main className="grow overflow-hidden pl-[calc(10%-1rem)] pr-[10%]">
+            <WorksViewer />
+          </main>
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p>{greetMsg}</p>
-    </div>
+          <div className="absolute bottom-2 right-2">
+            <ThemeButton theme={theme} setTheme={setTheme} />
+          </div>
+        </div>
+      </SearchProvider>
+    </CollectionProvider>
   );
-}
-
-export default App;
+};
