@@ -18,18 +18,18 @@ export interface Work {
   userName: string;
   assets: ImageAsset[];
 
-  id?: number;
-  userId?: number;
-  url?: string;
-  imageUrl?: string;
-  thumbnailUrl?: string;
-  ageRestriction?: AgeRestriction;
-  ai?: boolean;
-  description?: string;
-  tags?: string[];
-  dimensions?: ImageDimensions;
-  bookmarks?: number;
-  uploadTime?: string;
+  id: number | null;
+  userId: number | null;
+  url: string | null;
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+  ageRestriction: AgeRestriction | null;
+  ai: boolean | null;
+  description: string | null;
+  tags: string[] | null;
+  dimensions: ImageDimensions | null;
+  bookmarks: number | null;
+  uploadTime: string | null;
 }
 
 export interface WorkLike {

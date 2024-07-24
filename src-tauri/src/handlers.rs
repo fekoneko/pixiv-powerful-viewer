@@ -6,6 +6,8 @@ use std::path::{Path, PathBuf};
 use std::u64;
 use std::vec;
 
+const MAX_READ_DEPTH: usize = 5;
+
 #[derive(serde::Serialize)]
 pub struct Work {
     path: String,
@@ -59,11 +61,24 @@ pub fn read_collection(collection_path: &str) -> (Vec<Work>, Vec<String>) {
 fn load_works(collection_path: &Path) -> (Vec<Work>, Vec<String>) {
     let mut works: Vec<Work> = vec![];
     let mut errors: Vec<String> = vec![];
-    recursively_load_works(collection_path, &mut errors, &mut works);
+    recursively_load_works(collection_path, &mut errors, &mut works, 1);
     (works, errors)
 }
 
-fn recursively_load_works(path: &Path, errors: &mut Vec<String>, works: &mut Vec<Work>) {
+fn recursively_load_works(
+    path: &Path,
+    errors: &mut Vec<String>,
+    works: &mut Vec<Work>,
+    depth: usize,
+) {
+    if depth == MAX_READ_DEPTH {
+        errors.push(format!(
+            "Reached maximum recursive read depth of {}",
+            MAX_READ_DEPTH
+        ));
+        return;
+    }
+
     let mut asset_group: Vec<PathBuf> = vec![];
 
     (|| -> io::Result<()> {
@@ -72,7 +87,7 @@ fn recursively_load_works(path: &Path, errors: &mut Vec<String>, works: &mut Vec
             let entry_path = entry.path();
 
             if entry_path.is_dir() {
-                recursively_load_works(&entry_path, errors, works);
+                recursively_load_works(&entry_path, errors, works, depth + 1);
             } else if entry_path.is_file() {
                 asset_group.push(entry_path);
             }

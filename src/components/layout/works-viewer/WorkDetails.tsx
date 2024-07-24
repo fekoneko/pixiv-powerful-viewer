@@ -104,7 +104,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
             </tr>
           )}
 
-          {work.ai !== undefined && (
+          {work.ai !== null && (
             <tr>
               <td />
               <td className="align-top">
@@ -128,7 +128,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
             </tr>
           )}
 
-          {work.bookmarks !== undefined && (
+          {work.bookmarks !== null && (
             <tr>
               <td className="align-top">bookmarks:　</td>
               <td>
