@@ -1,3 +1,4 @@
+use fancy_regex::Regex;
 use std::error::Error;
 use std::fs;
 use std::io;
@@ -5,13 +6,12 @@ use std::path::{Path, PathBuf};
 use std::u64;
 use std::vec;
 
-use fancy_regex::Regex;
-
 #[derive(serde::Serialize)]
 pub struct Work {
     path: String,
     title: String,
     user_name: String,
+    assets: Vec<ImageAsset>,
 
     id: Option<u64>,
     user_id: Option<u64>,
@@ -25,15 +25,12 @@ pub struct Work {
     dimensions: Option<ImageDimensions>,
     bookmarks: Option<u64>,
     upload_time: Option<String>,
-    assets: Option<Vec<String>>,
 }
 
 #[derive(serde::Serialize)]
 pub struct ImageAsset {
     name: String,
     path: String,
-    media_path: String,
-    image_id: String,
     image_dimensions: ImageDimensions,
 }
 
@@ -140,6 +137,11 @@ fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<
     if let Some(meta_asset) = meta_asset {
         add_metadata_from_file(meta_asset, &mut work)?;
     }
+
+    for asset in image_assets.iter() {
+        add_asset(asset, &mut work);
+    }
+
     Ok(work)
 }
 
@@ -161,6 +163,7 @@ fn get_required_metadata(work_path: &Path) -> Work {
                 .to_str()
                 .unwrap_or_default(),
         ),
+        assets: vec![],
 
         id: None,
         user_id: None,
@@ -174,7 +177,6 @@ fn get_required_metadata(work_path: &Path) -> Work {
         dimensions: None,
         bookmarks: None,
         upload_time: None,
-        assets: None,
     }
 }
 
@@ -277,4 +279,25 @@ fn parse_field(field_name: &str, field_data: &Vec<&str>, work: &mut Work) {
         "Date" => work.upload_time = field_data.first().map(|value| String::from(*value)),
         _ => (),
     }
+}
+
+fn add_asset(asset: &PathBuf, work: &mut Work) {
+    if let Some(asset_name) = asset.file_name() {
+        if let Ok((asset_width, asset_height)) = get_image_dimensions(asset) {
+            work.assets.push(ImageAsset {
+                name: asset_name.to_string_lossy().to_string(),
+                path: asset.to_string_lossy().to_string(),
+                image_dimensions: ImageDimensions {
+                    width: asset_width,
+                    height: asset_height,
+                },
+            });
+        };
+    };
+}
+
+fn get_image_dimensions(asset: &Path) -> Result<(u32, u32), Box<dyn Error>> {
+    let reader = image::ImageReader::open(asset)?;
+    let dimensions = reader.into_dimensions()?;
+    Ok(dimensions)
 }
