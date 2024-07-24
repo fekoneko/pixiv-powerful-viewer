@@ -1,5 +1,5 @@
 import { SearchContext } from '@/contexts/SearchContext';
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { FC, useCallback, useContext, useEffect, useState } from 'react';
 
 export const FavoriteButton: FC = () => {
@@ -7,17 +7,13 @@ export const FavoriteButton: FC = () => {
   const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
   const toggleFavorites = useCallback(
-    () =>
-      setSearch((prev) => ({
-        request: prev?.request === '#favorites' ? prevSearchRequest : '#favorites',
-        mode: prev?.mode ?? 'all',
-      })),
+    () => setSearch((prev) => (prev === '#favorites' ? prevSearchRequest : '#favorites')),
     [setSearch, prevSearchRequest],
   );
 
   useEffect(() => {
-    if (!search || search.request === '#favorites') return;
-    setPrevSearchRequest(search.request);
+    if (search === '#favorites') return;
+    setPrevSearchRequest(search);
   }, [search]);
 
   useKeyboardEvent(
@@ -37,9 +33,9 @@ export const FavoriteButton: FC = () => {
     <button
       role="button"
       onClick={toggleFavorites}
-      className="hover:bg-text/10 focus:bg-text/10 rounded-full px-[0.58rem] py-2 text-lg focus:outline-none"
+      className="rounded-full px-[0.58rem] py-2 text-lg hover:bg-text/10 focus:bg-text/10 focus:outline-none"
     >
-      {search?.request === '#favorites' ? '❌' : '⭐'}
+      {search === '#favorites' ? '❌' : '⭐'}
     </button>
   );
 };

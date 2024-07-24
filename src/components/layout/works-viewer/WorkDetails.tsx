@@ -1,7 +1,7 @@
 import { CollectionContext } from '@/contexts/CollectionContext';
-import { useAnimateScroll } from '@/hooks/useAnimateScroll';
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
-import { Work } from '@/lib/Collection';
+import { useAnimateScroll } from '@/hooks/use-animate-scroll';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
+import { Work } from '@/lib/collection';
 import { FC, Fragment, useContext, useEffect, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
@@ -119,11 +119,11 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
             </tr>
           )}
 
-          {work.dateTime && (
+          {work.uploadTime && (
             <tr>
               <td className="align-top">uploaded:　</td>
               <td>
-                <p>{work.dateTime.toDateString()}</p>
+                <p>{work.uploadTime}</p>
               </td>
             </tr>
           )}
@@ -141,12 +141,12 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
             </tr>
           )}
 
-          {work.pageUrl && (
+          {work.url && (
             <tr>
               <td />
               <td>
                 <a
-                  href={work.pageUrl}
+                  href={work.url}
                   target="blank"
                   tabIndex={expanded ? 0 : -1}
                   className="text-blue-500 hover:underline"

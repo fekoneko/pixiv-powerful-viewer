@@ -31,7 +31,7 @@ pub struct Work {
 pub struct ImageAsset {
     name: String,
     path: String,
-    image_dimensions: ImageDimensions,
+    dimensions: ImageDimensions,
 }
 
 #[derive(serde::Serialize)]
@@ -287,7 +287,7 @@ fn add_asset(asset: &PathBuf, work: &mut Work) {
             work.assets.push(ImageAsset {
                 name: asset_name.to_string_lossy().to_string(),
                 path: asset.to_string_lossy().to_string(),
-                image_dimensions: ImageDimensions {
+                dimensions: ImageDimensions {
                     width: asset_width,
                     height: asset_height,
                 },

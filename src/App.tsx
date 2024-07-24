@@ -3,7 +3,7 @@ import { WorksViewer } from '@/components/layout/works-viewer/WorksViewer';
 import { CollectionProvider } from '@/contexts/CollectionContext';
 import { SearchProvider } from '@/contexts/SearchContext';
 import { ThemeButton } from '@/components/layout/ThemeButton';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { FC, useCallback } from 'react';
 
 export type Theme = 'light' | 'dark';

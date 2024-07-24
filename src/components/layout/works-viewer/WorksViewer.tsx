@@ -1,10 +1,10 @@
 import { WorksList } from '@/components/layout/works-viewer/WorksList';
 import { WorkView } from '@/components/layout/works-viewer/WorkView';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Work } from '@/lib/Collection';
+import { Work } from '@/lib/collection';
 import { WorkDetails } from '@/components/layout/works-viewer/WorkDetails';
 import { animated, useSpring } from '@react-spring/web';
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { FavoriteButton } from '@/components/layout/FavoriteButton';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';

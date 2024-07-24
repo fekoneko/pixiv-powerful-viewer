@@ -9,14 +9,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useWorks } from '@/hooks/useWorks';
-import { Work } from '@/lib/Collection';
+import { useWorks } from '@/hooks/use-works';
+import { Work } from '@/lib/collection';
 import { SearchContext } from '@/contexts/SearchContext';
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { WorkCard } from '@/components/layout/works-viewer/WorkCard';
 import { RenderInViewport } from '@/components/render/RenderInViewport';
-import { useTimeout } from '@/hooks/useTimeout';
-import { useAnimateScroll, AnimateScroll } from '@/hooks/useAnimateScroll';
+import { useTimeout } from '@/hooks/use-timeout';
+import { useAnimateScroll, AnimateScroll } from '@/hooks/use-animate-scroll';
 import { CollectionContext } from '@/contexts/CollectionContext';
 
 const workCardChunkSize = 20;
@@ -137,7 +137,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
               const workIndex = chunkIndex * workCardChunkSize + workIndexInChunk;
               return (
                 <WorkCard
-                  key={work.path}
+                  key={work.path} // TODO: relativePath
                   work={work}
                   index={workIndex}
                   selectIndex={setSelectedIndex}
@@ -161,10 +161,7 @@ interface WorksListProps {
 export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
   const { search } = useContext(SearchContext);
   const { collection } = useContext(CollectionContext);
-  const works = useWorks(
-    search,
-    useCallback((error: unknown) => console.error(error), []),
-  );
+  const works = useWorks(search);
 
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(false);
@@ -194,7 +191,7 @@ export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
         >
           <div className="flex flex-col gap-2 py-2 [direction:ltr]">
             <WorkListCards
-              works={works}
+              works={works ?? []}
               selectWork={selectWork}
               scrollContainerRef={scrollContainerRef}
               animateScroll={animateScroll}
@@ -203,7 +200,7 @@ export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
         </div>
       </div>
 
-      {search?.request === '#favorites' && (
+      {search === '#favorites' && (
         <button
           onClick={() => collection?.favorites.clear()}
           className="pb-2 hover:text-text-accent hover:underline focus:text-text-accent focus:outline-none"

@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useEffect, useRef } from 'react';
 import { CollectionContext } from '@/contexts/CollectionContext';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 
 export const CollectionButton: FC = () => {
   const { collection, loadCollection } = useContext(CollectionContext);

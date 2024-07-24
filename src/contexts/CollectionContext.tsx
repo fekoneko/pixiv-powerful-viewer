@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useState } from 'react';
-import { Collection } from '@/lib/Collection';
+import { Collection, createCollection } from '@/lib/collection/collection';
 
 interface CollectionContextValue {
   collection: Collection | undefined;
@@ -11,8 +11,8 @@ export const CollectionContext = createContext({} as CollectionContextValue);
 export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collection, setCollection] = useState<Collection>();
 
-  const loadCollection = useCallback((collectionPath: string) => {
-    setCollection(new Collection(collectionPath));
+  const loadCollection = useCallback(async (collectionPath: string) => {
+    setCollection(await createCollection(collectionPath));
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 import { Fragment } from 'react/jsx-runtime';
-import { Work } from '@/lib/Collection';
+import { Work } from '@/lib/collection';
 import { FC, RefObject, memo, useEffect, useRef } from 'react';
-import { AnimateScroll } from '@/hooks/useAnimateScroll';
+import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { AssetImageView } from '@/components/layout/works-viewer/AssetImageView';
 
 interface WorkCardContents {
@@ -21,7 +21,7 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
               />
             )}
           </div>
-          <p className="border-text/50 bg-background text-text absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border px-2 shadow-md transition-colors [:hover>&]:invisible">
+          <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
             x{work.assets.length}
           </p>
         </div>
@@ -29,7 +29,7 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
         <div />
       )}
       <div className="overflow-hidden p-2 text-left">
-        <h2 className="text-text-accent whitespace-nowrap text-lg font-bold">
+        <h2 className="whitespace-nowrap text-lg font-bold text-text-accent">
           {work.title ?? 'Untitled'}
         </h2>
         <p className="mb-2 whitespace-nowrap text-sm font-semibold">
@@ -92,7 +92,7 @@ export const WorkCard: FC<WorkCardProps> = memo(
         onClick={() => selectIndex(index)}
         tabIndex={-1}
         className={
-          'border-text/30 grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 p-1 shadow-md focus:outline-none' +
+          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
           (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
         }
       >

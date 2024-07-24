@@ -1,4 +1,4 @@
-import { ImageAsset } from '@/lib/Collection';
+import { ImageAsset } from '@/lib/collection';
 import { FC, SVGProps, useEffect } from 'react';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
@@ -8,10 +8,10 @@ export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
 export const AssetImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
   useEffect(() => {
     const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    imageElement.setAttribute('id', asset.imageId);
-    imageElement.setAttribute('width', (asset.imageDimensions.width ?? 100).toString());
-    imageElement.setAttribute('height', (asset.imageDimensions.height ?? 100).toString());
-    imageElement.setAttribute('href', asset.mediaPath);
+    imageElement.setAttribute('id', asset.path);
+    imageElement.setAttribute('width', asset.dimensions.width.toString());
+    imageElement.setAttribute('height', asset.dimensions.height.toString());
+    imageElement.setAttribute('href', asset.path); // TODO: fix media path
     imageElement.setAttribute('decoding', 'async');
 
     let originElement = document.getElementById('images-origin');
@@ -27,11 +27,8 @@ export const AssetImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) 
   }, [asset]);
 
   return (
-    <svg
-      {...svgProps}
-      viewBox={`0 0 ${asset.imageDimensions.width ?? 100} ${asset.imageDimensions.height ?? 100}`}
-    >
-      <use href={'#' + asset.imageId} />
+    <svg {...svgProps} viewBox={`0 0 ${asset.dimensions.width} ${asset.dimensions.height}`}>
+      <use href={'#' + asset.path} />
     </svg>
   );
 };

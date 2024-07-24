@@ -1,6 +1,6 @@
-import { useKeyboardEvent } from '@/hooks/useKeyboardEvent';
-import { useTimeout } from '@/hooks/useTimeout';
-import { Work } from '@/lib/Collection';
+import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
+import { useTimeout } from '@/hooks/use-timeout';
+import { Work } from '@/lib/collection';
 import { FC, useEffect, useState } from 'react';
 import { AssetImageView } from '@/components/layout/works-viewer/AssetImageView';
 
@@ -61,7 +61,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
       className={
         'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius] duration-1000' +
         (!controlsShown ? ' cursor-none' : '') +
-        (!fullscreenMode ? ' border-text/30 rounded-xl border-2' : '')
+        (!fullscreenMode ? ' rounded-xl border-2 border-text/30' : '')
       }
     >
       {work?.assets?.length && work.assets[pageNumber] ? (
@@ -69,12 +69,12 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
           <AssetImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
-            <div className="bg-background absolute size-full" />
+            <div className="absolute size-full bg-background" />
             <AssetImageView
               asset={work.assets[pageNumber]}
               className="size-full scale-[3] blur-[0.4rem]"
             />
-            <div className="bg-background/40 absolute size-full" />
+            <div className="absolute size-full bg-background/40" />
           </div>
 
           <button
