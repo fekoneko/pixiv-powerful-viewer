@@ -1,10 +1,10 @@
 use fancy_regex::Regex;
 use std::error::Error;
-use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::u64;
 use std::vec;
+use tokio::fs;
 
 #[derive(serde::Serialize)]
 #[allow(non_snake_case)]
@@ -59,9 +59,8 @@ pub async fn read_collection(collection_path: String) -> (Vec<Work>, Vec<String>
 }
 
 async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<String>) {
-    // TODO: use tokio::fs
     async fn one_level(path: PathBuf, to_visit: &mut Vec<PathBuf>) -> io::Result<Vec<PathBuf>> {
-        let mut dir = tokio::fs::read_dir(path).await?;
+        let mut dir = fs::read_dir(path).await?;
         let mut asset_group = vec![];
 
         while let Some(child) = dir.next_entry().await? {
@@ -86,7 +85,7 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
                 if asset_group.len() == 0 {
                     continue;
                 }
-                match parse_work(&asset_group, &path) {
+                match parse_work(&asset_group, &path).await {
                     Ok(mut work) => {
                         work.relativePath = path
                             .strip_prefix(&initial_path)
@@ -107,9 +106,8 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
     (works, errors)
 }
 
-fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
+async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
     // TODO: regex + io errors only
-    // TODO: parse async as well
 
     let image_regex = Regex::new(r"\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$")?;
     let meta_regex = Regex::new(r"-meta\.txt$")?;
@@ -150,7 +148,7 @@ fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<
     let mut work = get_required_metadata(work_path);
 
     if let Some(meta_asset) = meta_asset {
-        add_metadata_from_file(meta_asset, &mut work)?;
+        add_metadata_from_file(meta_asset, &mut work).await?;
     }
 
     for asset in image_assets.iter() {
@@ -196,8 +194,8 @@ fn get_required_metadata(work_path: &Path) -> Work {
     }
 }
 
-fn add_metadata_from_file(meta_asset: &PathBuf, work: &mut Work) -> io::Result<()> {
-    let raw_metadata = fs::read_to_string(meta_asset)?;
+async fn add_metadata_from_file(meta_asset: &PathBuf, work: &mut Work) -> io::Result<()> {
+    let raw_metadata = fs::read_to_string(meta_asset).await?;
     let mut field_data: Vec<&str> = vec![];
     let mut field_name: Option<&str> = None;
 
@@ -213,9 +211,7 @@ fn add_metadata_from_file(meta_asset: &PathBuf, work: &mut Work) -> io::Result<(
                     field_name = Some(raw_line);
                 }
             }
-            _ => {
-                field_data.push(raw_line);
-            }
+            _ => field_data.push(raw_line),
         }
     }
     if let Some(field_name) = field_name {
