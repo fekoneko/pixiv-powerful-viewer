@@ -6,27 +6,27 @@ use std::path::{Path, PathBuf};
 use std::u64;
 use std::vec;
 
-const MAX_READ_DEPTH: usize = 5;
-
 #[derive(serde::Serialize)]
+#[allow(non_snake_case)]
 pub struct Work {
     path: String,
+    relativePath: String,
     title: String,
-    user_name: String,
+    userName: String,
     assets: Vec<ImageAsset>,
 
     id: Option<u64>,
-    user_id: Option<u64>,
+    userId: Option<u64>,
     url: Option<String>,
-    image_url: Option<String>,
-    thumbnail_url: Option<String>,
-    age_restriction: Option<String>,
+    imageUrl: Option<String>,
+    thumbnailUrl: Option<String>,
+    ageRestriction: Option<String>,
     ai: Option<bool>,
     description: Option<String>,
     tags: Option<Vec<String>>,
     dimensions: Option<ImageDimensions>,
     bookmarks: Option<u64>,
-    upload_time: Option<String>,
+    uploadTime: Option<String>,
 }
 
 #[derive(serde::Serialize)]
@@ -43,8 +43,8 @@ pub struct ImageDimensions {
 }
 
 #[tauri::command]
-pub fn read_collection(collection_path: &str) -> (Vec<Work>, Vec<String>) {
-    let collection_path = Path::new(collection_path);
+pub async fn read_collection(collection_path: String) -> (Vec<Work>, Vec<String>) {
+    let collection_path = Path::new(&collection_path);
     if !collection_path.is_dir() {
         return (
             vec![],
@@ -55,62 +55,62 @@ pub fn read_collection(collection_path: &str) -> (Vec<Work>, Vec<String>) {
         );
     }
 
-    load_works(collection_path)
+    load_works(collection_path).await
 }
 
-fn load_works(collection_path: &Path) -> (Vec<Work>, Vec<String>) {
-    let mut works: Vec<Work> = vec![];
-    let mut errors: Vec<String> = vec![];
-    recursively_load_works(collection_path, &mut errors, &mut works, 1);
-    (works, errors)
-}
+async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<String>) {
+    // TODO: use tokio::fs
+    async fn one_level(path: PathBuf, to_visit: &mut Vec<PathBuf>) -> io::Result<Vec<PathBuf>> {
+        let mut dir = tokio::fs::read_dir(path).await?;
+        let mut asset_group = vec![];
 
-fn recursively_load_works(
-    path: &Path,
-    errors: &mut Vec<String>,
-    works: &mut Vec<Work>,
-    depth: usize,
-) {
-    if depth == MAX_READ_DEPTH {
-        errors.push(format!(
-            "Reached maximum recursive read depth of {}",
-            MAX_READ_DEPTH
-        ));
-        return;
-    }
-
-    let mut asset_group: Vec<PathBuf> = vec![];
-
-    (|| -> io::Result<()> {
-        for entry_result in fs::read_dir(path)? {
-            let entry = entry_result?;
-            let entry_path = entry.path();
-
-            if entry_path.is_dir() {
-                recursively_load_works(&entry_path, errors, works, depth + 1);
-            } else if entry_path.is_file() {
-                asset_group.push(entry_path);
+        while let Some(child) = dir.next_entry().await? {
+            if child.metadata().await?.is_dir() {
+                to_visit.push(child.path());
+            } else {
+                asset_group.push(child.path())
             }
         }
-        Ok(())
-    })()
-    .unwrap_or_else(|error| {
-        errors.push(format!("Failed to read '{}': {error}", path.display()));
-    });
 
-    if asset_group.len() > 0 {
-        match parse_work(&asset_group, path) {
-            Ok(work) => works.push(work),
-            Err(error) => errors.push(format!(
-                "Failed to parse work in '{}': {error}",
-                path.display()
-            )),
-        }
+        Ok(asset_group)
     }
+
+    let mut works: Vec<Work> = vec![];
+    let mut errors: Vec<String> = vec![];
+    let initial_path: PathBuf = collection_path.into();
+    let mut to_visit: Vec<PathBuf> = vec![initial_path.clone()];
+
+    while let Some(path) = to_visit.pop() {
+        match one_level(path.clone(), &mut to_visit).await {
+            Ok(asset_group) => {
+                if asset_group.len() == 0 {
+                    continue;
+                }
+                match parse_work(&asset_group, &path) {
+                    Ok(mut work) => {
+                        work.relativePath = path
+                            .strip_prefix(&initial_path)
+                            .unwrap_or(Path::new(""))
+                            .display()
+                            .to_string();
+
+                        works.push(work)
+                    }
+                    Err(error) => {
+                        errors.push(format!("Failed to parse '{}': {error}", path.display()))
+                    }
+                }
+            }
+            Err(error) => errors.push(format!("Failed to read '{}': {error}", path.display())),
+        };
+    }
+    (works, errors)
 }
 
 fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
     // TODO: regex + io errors only
+    // TODO: parse async as well
+
     let image_regex = Regex::new(r"\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$")?;
     let meta_regex = Regex::new(r"-meta\.txt$")?;
     let part_in_parentheses_regex = Regex::new(r"(?<=\()\d+(?=\)\.[^\.]*$)")?;
@@ -163,6 +163,7 @@ fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<
 fn get_required_metadata(work_path: &Path) -> Work {
     Work {
         path: String::from(work_path.to_str().unwrap_or_default()),
+        relativePath: String::from(""),
         title: String::from(
             work_path
                 .file_name()
@@ -170,7 +171,7 @@ fn get_required_metadata(work_path: &Path) -> Work {
                 .to_str()
                 .unwrap_or_default(),
         ),
-        user_name: String::from(
+        userName: String::from(
             work_path
                 .iter()
                 .nth_back(1)
@@ -181,17 +182,17 @@ fn get_required_metadata(work_path: &Path) -> Work {
         assets: vec![],
 
         id: None,
-        user_id: None,
+        userId: None,
         url: None,
-        image_url: None,
-        thumbnail_url: None,
-        age_restriction: None,
+        imageUrl: None,
+        thumbnailUrl: None,
+        ageRestriction: None,
         ai: None,
         description: None,
         tags: None,
         dimensions: None,
         bookmarks: None,
-        upload_time: None,
+        uploadTime: None,
     }
 }
 
@@ -228,10 +229,10 @@ fn parse_field(field_name: &str, field_data: &Vec<&str>, work: &mut Work) {
     match field_name {
         "ID" => work.id = field_data.first().map(|value| value.parse().ok()).flatten(),
         "URL" => work.url = field_data.first().map(|value| String::from(*value)),
-        "Original" => work.image_url = field_data.first().map(|value| String::from(*value)),
-        "Thumbnail" => work.thumbnail_url = field_data.first().map(|value| String::from(*value)),
+        "Original" => work.imageUrl = field_data.first().map(|value| String::from(*value)),
+        "Thumbnail" => work.thumbnailUrl = field_data.first().map(|value| String::from(*value)),
         "xRestrict" => {
-            work.age_restriction = field_data
+            work.ageRestriction = field_data
                 .first()
                 .map(|value| match *value {
                     "AllAges" => Some(String::from("all-ages")),
@@ -253,10 +254,10 @@ fn parse_field(field_name: &str, field_data: &Vec<&str>, work: &mut Work) {
         }
         "User" => {
             if let Some(first_line) = field_data.first() {
-                work.user_name = String::from(*first_line)
+                work.userName = String::from(*first_line)
             }
         }
-        "UserID" => work.user_id = field_data.first().map(|value| value.parse().ok()).flatten(),
+        "UserID" => work.userId = field_data.first().map(|value| value.parse().ok()).flatten(),
         "Title" => {
             if let Some(first_line) = field_data.first() {
                 work.title = String::from(*first_line)
@@ -291,7 +292,7 @@ fn parse_field(field_name: &str, field_data: &Vec<&str>, work: &mut Work) {
             }
         }
         "Bookmark" => work.bookmarks = field_data.first().map(|value| value.parse().ok()).flatten(),
-        "Date" => work.upload_time = field_data.first().map(|value| String::from(*value)),
+        "Date" => work.uploadTime = field_data.first().map(|value| String::from(*value)),
         _ => (),
     }
 }

@@ -27,7 +27,7 @@ export const CollectionButton: FC = () => {
   };
 
   const showPickCollectionDialog = async () => {
-    const collectionPath = 'C:\\Test'; // TODO: await pickDirectory();
+    const collectionPath = 'C:\\Andrew\\Other\\For PPV Test'; // TODO: await pickDirectory();
     if (!collectionPath) return;
 
     switchCollection(collectionPath);

@@ -4,6 +4,7 @@ import { invoke, path } from '@tauri-apps/api';
 
 export const createCollection = async (collectionPath: string): Promise<Collection> => {
   const [works, errors]: [Work[], string[]] = await invoke('read_collection', { collectionPath });
+  console.log(works); // TODO: Remove
   errors.forEach((error) => console.error(error)); // TODO: Show toast messages or something
   return new Collection(collectionPath, works);
 };
