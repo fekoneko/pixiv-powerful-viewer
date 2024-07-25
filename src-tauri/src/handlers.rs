@@ -1,9 +1,13 @@
 use std::error::Error;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 use std::u64;
 use std::vec;
+use tauri::State;
 use tokio::fs;
+
+use crate::Pids;
 
 #[derive(serde::Serialize)]
 #[allow(non_snake_case)]
@@ -42,22 +46,33 @@ pub struct ImageDimensions {
 }
 
 #[tauri::command]
-pub async fn read_collection(collection_path: String) -> (Vec<Work>, Vec<String>) {
+pub async fn read_collection(
+    collection_path: String,
+    pids: State<'_, Pids>,
+) -> Result<(Vec<Work>, Vec<String>), ()> {
+    let pid = pids.read_collection_pid.clone();
+    *pid.lock().unwrap() += 1;
+
     let collection_path = Path::new(&collection_path);
     if !collection_path.is_dir() {
-        return (
+        return Ok((
             vec![],
             vec![format!(
                 "Collection is not a directory: {}",
                 collection_path.display()
             )],
-        );
+        ));
     }
 
-    load_works(collection_path).await
+    Ok(load_works(collection_path, pid.clone()).await)
 }
 
-async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<String>) {
+async fn load_works(
+    collection_path: impl Into<PathBuf>,
+    pid: Arc<Mutex<usize>>,
+) -> (Vec<Work>, Vec<String>) {
+    let original_pid = *pid.lock().unwrap();
+
     async fn one_level(path: PathBuf, to_visit: &mut Vec<PathBuf>) -> io::Result<Vec<PathBuf>> {
         let mut dir = fs::read_dir(path).await?;
         let mut asset_group = vec![];
@@ -79,6 +94,10 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
     let mut to_visit: Vec<PathBuf> = vec![initial_path.clone()];
 
     while let Some(path) = to_visit.pop() {
+        if *pid.lock().unwrap() != original_pid {
+            return (works, errors);
+        }
+
         match one_level(path.clone(), &mut to_visit).await {
             Ok(asset_group) => {
                 if asset_group.len() == 0 {
@@ -92,7 +111,7 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
                             .display()
                             .to_string();
 
-                        println!("Parsed work: {:}", work.title);
+                        println!("Parsed work: '{}'", work.title);
                         works.push(work);
                     }
                     Err(error) => {
