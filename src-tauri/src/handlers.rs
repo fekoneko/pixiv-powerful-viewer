@@ -1,4 +1,3 @@
-use fancy_regex::Regex;
 use std::error::Error;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -38,8 +37,8 @@ pub struct ImageAsset {
 
 #[derive(serde::Serialize)]
 pub struct ImageDimensions {
-    width: u32,
-    height: u32,
+    width: usize,
+    height: usize,
 }
 
 #[tauri::command]
@@ -93,10 +92,11 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
                             .display()
                             .to_string();
 
-                        works.push(work)
+                        println!("Parsed work: {:}", work.title);
+                        works.push(work);
                     }
                     Err(error) => {
-                        errors.push(format!("Failed to parse '{}': {error}", path.display()))
+                        errors.push(format!("Failed to parse '{}': {error}", path.display()));
                     }
                 }
             }
@@ -109,41 +109,41 @@ async fn load_works(collection_path: impl Into<PathBuf>) -> (Vec<Work>, Vec<Stri
 async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
     // TODO: regex + io errors only
 
-    let image_regex = Regex::new(r"\.jpg$|\.png$|\.gif$|\.webm$|\.webp$|\.apng$")?;
-    let meta_regex = Regex::new(r"-meta\.txt$")?;
-    let part_in_parentheses_regex = Regex::new(r"(?<=\()\d+(?=\)\.[^\.]*$)")?;
-
     let mut image_assets: Vec<&PathBuf> = vec![];
     let mut meta_asset: Option<&PathBuf> = None;
 
-    fn get_asset_name(asset: &PathBuf) -> &str {
-        asset
+    for asset in asset_group.iter() {
+        match asset.extension() {
+            Some(extension) => match extension.to_str().unwrap_or_default() {
+                "jpg" | "png" | "gif" | "webm" | "webp" | "apng" => image_assets.push(asset),
+                "txt" => meta_asset = Some(asset),
+                _ => (),
+            },
+            None => (),
+        }
+    }
+
+    fn get_page_index(asset: &PathBuf) -> Option<u64> {
+        let asset_name = asset
             .file_name()
             .unwrap_or_default()
             .to_str()
-            .unwrap_or_default()
+            .unwrap_or_default();
+        if asset_name.len() == 0 {
+            return None;
+        }
+
+        if let Some(left_index) = asset_name.rfind("(") {
+            if let Some(right_index) = asset_name[left_index + 1..].find(")") {
+                return asset_name[left_index + 1..left_index + right_index + 1]
+                    .parse()
+                    .ok();
+            }
+        }
+        None
     }
 
-    for asset in asset_group.iter() {
-        let asset_name = get_asset_name(asset);
-
-        if image_regex.is_match(asset_name).unwrap_or(false) {
-            image_assets.push(asset);
-        } else if meta_regex.is_match(asset_name).unwrap_or(false) {
-            meta_asset = Some(asset);
-        }
-    }
-
-    image_assets.sort_unstable_by_key(|asset| -> u64 {
-        if let Some(page_index) = part_in_parentheses_regex
-            .find(get_asset_name(*asset))
-            .unwrap_or(None)
-        {
-            page_index.as_str().parse().unwrap_or(u64::MAX)
-        } else {
-            u64::MAX
-        }
-    });
+    image_assets.sort_unstable_by_key(|asset| -> u64 { get_page_index(asset).unwrap_or(u64::MAX) });
 
     let mut work = get_required_metadata(work_path);
 
@@ -295,21 +295,15 @@ fn parse_field(field_name: &str, field_data: &Vec<&str>, work: &mut Work) {
 
 fn add_asset(asset: &PathBuf, work: &mut Work) {
     if let Some(asset_name) = asset.file_name() {
-        if let Ok((asset_width, asset_height)) = get_image_dimensions(asset) {
+        if let Ok(asset_dimensions) = imagesize::size(asset) {
             work.assets.push(ImageAsset {
                 name: asset_name.to_string_lossy().to_string(),
                 path: asset.to_string_lossy().to_string(),
                 dimensions: ImageDimensions {
-                    width: asset_width,
-                    height: asset_height,
+                    width: asset_dimensions.width,
+                    height: asset_dimensions.height,
                 },
             });
         };
     };
-}
-
-fn get_image_dimensions(asset: &Path) -> Result<(u32, u32), Box<dyn Error>> {
-    let reader = image::ImageReader::open(asset)?;
-    let dimensions = reader.into_dimensions()?;
-    Ok(dimensions)
 }

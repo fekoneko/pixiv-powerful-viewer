@@ -2,6 +2,7 @@ import { FC, useCallback, useContext, useEffect, useRef } from 'react';
 import { CollectionContext } from '@/contexts/CollectionContext';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
+import { dialog } from '@tauri-apps/api';
 
 export const CollectionButton: FC = () => {
   const { collection, loadCollection } = useContext(CollectionContext);
@@ -27,8 +28,8 @@ export const CollectionButton: FC = () => {
   };
 
   const showPickCollectionDialog = async () => {
-    const collectionPath = 'C:\\Andrew\\Other\\For PPV Test'; // TODO: await pickDirectory();
-    if (!collectionPath) return;
+    const collectionPath = await dialog.open({ directory: true, multiple: false });
+    if (typeof collectionPath !== 'string') return;
 
     switchCollection(collectionPath);
   };
