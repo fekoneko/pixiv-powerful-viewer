@@ -1,5 +1,6 @@
 import { ImageAsset } from '@/lib/collection';
 import { FC, SVGProps, useEffect } from 'react';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   asset: ImageAsset;
@@ -11,7 +12,7 @@ export const AssetImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) 
     imageElement.setAttribute('id', asset.path);
     imageElement.setAttribute('width', asset.dimensions.width.toString());
     imageElement.setAttribute('height', asset.dimensions.height.toString());
-    imageElement.setAttribute('href', asset.path); // TODO: fix media path
+    imageElement.setAttribute('href', convertFileSrc(asset.path));
     imageElement.setAttribute('decoding', 'async');
 
     let originElement = document.getElementById('images-origin');
