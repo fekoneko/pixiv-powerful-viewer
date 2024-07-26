@@ -14,7 +14,10 @@ fn main() {
         .manage(Pids {
             read_collection_pid: Arc::new(Mutex::new(0)),
         })
-        .invoke_handler(tauri::generate_handler![handlers::read_collection])
+        .invoke_handler(tauri::generate_handler![
+            handlers::read_collection,
+            handlers::open
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

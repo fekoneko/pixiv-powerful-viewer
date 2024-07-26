@@ -326,3 +326,8 @@ fn add_asset(asset: &PathBuf, work: &mut Work) {
         };
     };
 }
+
+#[tauri::command]
+pub fn open(path_or_url: String) -> Result<(), String> {
+    opener::open(path_or_url).map_err(|error| error.to_string())
+}

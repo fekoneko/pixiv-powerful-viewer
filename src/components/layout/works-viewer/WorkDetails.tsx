@@ -2,6 +2,7 @@ import { CollectionContext } from '@/contexts/CollectionContext';
 import { useAnimateScroll } from '@/hooks/use-animate-scroll';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { Work } from '@/lib/collection';
+import { invoke } from '@tauri-apps/api';
 import { FC, Fragment, useContext, useEffect, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
@@ -146,10 +147,14 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
               <td />
               <td>
                 <a
-                  href={work.url}
+                  href="#"
                   target="blank"
                   tabIndex={expanded ? 0 : -1}
                   className="text-blue-500 hover:underline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    invoke('open', { pathOrUrl: work.url });
+                  }}
                 >
                   Go to Pixiv page
                 </a>
@@ -166,7 +171,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
                 className="text-blue-500 hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  // TODO: showItemInFolder(work.path);
+                  invoke('open', { pathOrUrl: work.path });
                 }}
               >
                 Show in file explorer
