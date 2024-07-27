@@ -106,18 +106,17 @@ async fn load_works(
                     continue;
                 }
                 match parse_work(&asset_group, &path).await {
-                    Ok(work) => {
-                        if let Some(mut work) = work {
-                            work.relativePath = path
-                                .strip_prefix(&initial_path)
-                                .unwrap_or(Path::new(""))
-                                .display()
-                                .to_string();
+                    Ok(Some(mut work)) => {
+                        work.relativePath = path
+                            .strip_prefix(&initial_path)
+                            .unwrap_or(Path::new(""))
+                            .display()
+                            .to_string();
 
-                            // println!("Parsed work: '{}'", work.title);
-                            works.push(work);
-                        }
+                        // println!("Parsed work: '{}'", work.title);
+                        works.push(work);
                     }
+                    Ok(None) => (),
                     Err(error) => {
                         errors.push(format!("Failed to parse '{}': {error}", path.display()));
                     }
