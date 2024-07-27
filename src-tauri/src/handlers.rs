@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::io;
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use std::sync::{Arc, Mutex};
@@ -107,15 +106,17 @@ async fn load_works(
                     continue;
                 }
                 match parse_work(&asset_group, &path).await {
-                    Ok(mut work) => {
-                        work.relativePath = path
-                            .strip_prefix(&initial_path)
-                            .unwrap_or(Path::new(""))
-                            .display()
-                            .to_string();
+                    Ok(work) => {
+                        if let Some(mut work) = work {
+                            work.relativePath = path
+                                .strip_prefix(&initial_path)
+                                .unwrap_or(Path::new(""))
+                                .display()
+                                .to_string();
 
-                        println!("Parsed work: '{}'", work.title);
-                        works.push(work);
+                            // println!("Parsed work: '{}'", work.title);
+                            works.push(work);
+                        }
                     }
                     Err(error) => {
                         errors.push(format!("Failed to parse '{}': {error}", path.display()));
@@ -128,9 +129,7 @@ async fn load_works(
     Ok((works, errors))
 }
 
-async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
-    // TODO: regex + io errors only
-
+async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> io::Result<Option<Work>> {
     let mut image_assets: Vec<&PathBuf> = vec![];
     let mut meta_asset: Option<&PathBuf> = None;
 
@@ -143,6 +142,10 @@ async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work
             },
             None => (),
         }
+    }
+
+    if image_assets.len() == 0 && meta_asset.is_none() {
+        return Ok(None);
     }
 
     fn get_page_index(asset: &PathBuf) -> Option<u64> {
@@ -177,7 +180,7 @@ async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work
         add_asset(asset, &mut work);
     }
 
-    Ok(work)
+    Ok(Some(work))
 }
 
 fn get_required_metadata(work_path: &Path) -> Work {
