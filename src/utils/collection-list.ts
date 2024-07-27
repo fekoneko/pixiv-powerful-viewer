@@ -15,7 +15,7 @@ export const writeCollectionList = async (
 export const readCollectionList = async (
   collectionPath: string,
   listName: string,
-  collection: Work[],
+  collectionWorks: Work[],
 ): Promise<Work[]> => {
   const relativePaths: string[] = await invoke('read_collection_list', {
     collectionPath: collectionPath,
@@ -23,7 +23,7 @@ export const readCollectionList = async (
   });
 
   return [...new Set(relativePaths)]
-    .map((relativePath) => collection.find((work) => work.relativePath === relativePath))
+    .map((relativePath) => collectionWorks.find((work) => work.relativePath === relativePath))
     .filter((work): work is Work => work !== undefined);
 };
 
