@@ -1,5 +1,5 @@
-import { CollectionContext, CollectionContextValue } from '@/contexts/CollectionContext';
 import { useContext } from 'react';
+import { CollectionContext, CollectionContextValue } from '@/providers/CollectionProvider';
 
 export const useCollection = (): CollectionContextValue => {
   const context = useContext(CollectionContext);

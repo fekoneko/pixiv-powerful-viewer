@@ -1,6 +1,6 @@
-import { toHiragana } from 'wanakana';
-import { Work } from '../types/collection';
 import { invoke } from '@tauri-apps/api';
+import { toHiragana } from 'wanakana';
+import { Work } from '@/types/collection';
 
 export const readCollection = async (
   collectionPath: string,

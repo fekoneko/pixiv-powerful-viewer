@@ -1,10 +1,8 @@
-import { SearchContext } from '@/contexts/SearchContext';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { useWanakana } from '@/hooks/use-wanakana';
-import { FC, useContext, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
+import { useKeyboardEvent, useSearch, useWanakana } from '@/hooks';
 
 export const Searchbar: FC = () => {
-  const { search, setSearch } = useContext(SearchContext);
+  const { search, setSearch } = useSearch();
   const [kanaConversion, setKanaConversion] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInputInFocus, setIsInputInFocus] = useState(false);

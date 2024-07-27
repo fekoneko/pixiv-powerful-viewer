@@ -1,9 +1,7 @@
-import { useAnimateScroll } from '@/hooks/use-animate-scroll';
-import { useCollection } from '@/hooks/use-collection';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { Work } from '@/types/collection';
-import { openExternal } from '@/utils/open';
 import { FC, Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { useAnimateScroll, useCollection, useKeyboardEvent } from '@/hooks';
+import { openExternal } from '@/utils/open';
+import { Work } from '@/types/collection';
 
 interface WorkDetailsContentsProps {
   work: Work;

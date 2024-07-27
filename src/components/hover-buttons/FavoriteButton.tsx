@@ -1,9 +1,8 @@
-import { SearchContext } from '@/contexts/SearchContext';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { FC, useCallback, useContext, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { useKeyboardEvent, useSearch } from '@/hooks';
 
 export const FavoriteButton: FC = () => {
-  const { search, setSearch } = useContext(SearchContext);
+  const { search, setSearch } = useSearch();
   const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
   const toggleFavorites = useCallback(
@@ -33,7 +32,7 @@ export const FavoriteButton: FC = () => {
     <button
       role="button"
       onClick={toggleFavorites}
-      className="rounded-full px-[0.58rem] py-2 text-lg hover:bg-text/10 focus:bg-text/10 focus:outline-none"
+      className="absolute bottom-2 left-2 rounded-full px-[0.58rem] py-2 text-lg hover:bg-text/10 focus:bg-text/10 focus:outline-none"
     >
       {search === '#favorites' ? '❌' : '⭐'}
     </button>

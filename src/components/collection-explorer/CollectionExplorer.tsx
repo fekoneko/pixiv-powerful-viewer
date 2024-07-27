@@ -1,15 +1,15 @@
-import { WorksList } from '@/components/layout/works-viewer/WorksList';
-import { WorkView } from '@/components/layout/works-viewer/WorkView';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { WorkDetails } from '@/components/layout/works-viewer/WorkDetails';
 import { animated, useSpring } from '@react-spring/web';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { FavoriteButton } from '@/components/layout/FavoriteButton';
+import { useKeyboardEvent } from '@/hooks';
 import { Work } from '@/types/collection';
+
+import { WorksList } from './WorksList';
+import { WorkView } from './WorkView';
+import { WorkDetails } from './WorkDetails';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';
 
-export const WorksViewer: FC = () => {
+export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work>();
   const [fullscreenMode, setFullscreenMode] = useState<boolean>();
   const [transitionState, setTransitionState] = useState<TransitionState>('preview');
@@ -85,7 +85,7 @@ export const WorksViewer: FC = () => {
 
   return (
     <>
-      <div className="grid size-full grid-cols-2 grid-rows-1 gap-2">
+      <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden pl-[calc(10%-1rem)] pr-[10%]">
         <WorksList selectWork={setSelectedWork} />
 
         <div className="flex flex-col gap-2 py-2">
@@ -105,7 +105,7 @@ export const WorksViewer: FC = () => {
           </div>
           <WorkDetails work={selectedWork} toggleFullscreenMode={toggleFullscreenMode} />
         </div>
-      </div>
+      </main>
 
       {transitionState === 'fullscreen' && (
         <div className="absolute left-0 top-0 z-50 flex h-[20dvh] w-screen justify-center pt-2 opacity-0 transition-opacity hover:opacity-80">
@@ -118,10 +118,6 @@ export const WorksViewer: FC = () => {
           </button>
         </div>
       )}
-
-      <div className="absolute bottom-2 left-2">
-        <FavoriteButton />
-      </div>
     </>
   );
 };

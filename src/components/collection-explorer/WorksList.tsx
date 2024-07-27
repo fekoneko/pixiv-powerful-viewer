@@ -1,22 +1,10 @@
-import {
-  FC,
-  RefObject,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { SearchContext } from '@/contexts/SearchContext';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { WorkCard } from '@/components/layout/works-viewer/WorkCard';
-import { RenderInViewport } from '@/components/render/RenderInViewport';
-import { useTimeout } from '@/hooks/use-timeout';
-import { useAnimateScroll, AnimateScroll } from '@/hooks/use-animate-scroll';
+import { FC, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useKeyboardEvent, useTimeout, useAnimateScroll, useCollection, useSearch } from '@/hooks';
+import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { Work } from '@/types/collection';
-import { useCollection } from '@/hooks/use-collection';
+
+import { WorkCard } from './WorkCard';
+import { RenderInViewport } from './RenderInViewport';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -158,7 +146,7 @@ interface WorksListProps {
 }
 
 export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
-  const { search } = useContext(SearchContext);
+  const { search } = useSearch();
   const { searchCollection, clearFavorites } = useCollection();
   const works = useMemo(() => searchCollection(search), [search, searchCollection]);
 

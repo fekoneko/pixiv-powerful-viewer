@@ -1,5 +1,5 @@
-import { bind, unbind } from 'wanakana';
 import { RefObject, useEffect } from 'react';
+import { bind, unbind } from 'wanakana';
 
 /**
  * Warning! Use onInput instead of onChange in binded element to let React detect all the value changes

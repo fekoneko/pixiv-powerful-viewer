@@ -1,8 +1,8 @@
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { useTimeout } from '@/hooks/use-timeout';
 import { FC, useEffect, useState } from 'react';
-import { AssetImageView } from '@/components/layout/works-viewer/AssetImageView';
+import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { Work } from '@/types/collection';
+
+import { AssetImageView } from './AssetImageView';
 
 const showControlsDelay = 1500;
 

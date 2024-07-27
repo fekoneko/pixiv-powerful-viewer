@@ -1,53 +1,52 @@
-import { Fragment } from 'react/jsx-runtime';
 import { FC, RefObject, memo, useEffect, useRef } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
-import { AssetImageView } from '@/components/layout/works-viewer/AssetImageView';
 import { Work } from '@/types/collection';
+
+import { AssetImageView } from './AssetImageView';
 
 interface WorkCardContents {
   work: Work;
 }
 
-const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents) => {
-  return (
-    <>
-      {work.assets?.length ? (
-        <div className="relative size-full">
-          <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
-            {work.assets.length && (
-              <AssetImageView
-                asset={work.assets[0]}
-                className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
-              />
-            )}
-          </div>
-          <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
-            x{work.assets.length}
-          </p>
+const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents) => (
+  <>
+    {work.assets?.length ? (
+      <div className="relative size-full">
+        <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
+          {work.assets.length && (
+            <AssetImageView
+              asset={work.assets[0]}
+              className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
+            />
+          )}
         </div>
-      ) : (
-        <div />
-      )}
-      <div className="overflow-hidden p-2 text-left">
-        <h2 className="whitespace-nowrap text-lg font-bold text-text-accent">
-          {work.title ?? 'Untitled'}
-        </h2>
-        <p className="mb-2 whitespace-nowrap text-sm font-semibold">
-          {work.userName ?? 'Unknown author'}
-        </p>
-        <p className="whitespace-nowrap text-sm">
-          {work.tags?.map((tag, index) => (
-            <Fragment key={index}>
-              {index !== 0 && <span className="opacity-50">・</span>}
-              <wbr />
-              <span>{tag}</span>
-            </Fragment>
-          )) ?? <span>no tags</span>}
+        <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
+          x{work.assets.length}
         </p>
       </div>
-    </>
-  );
-});
+    ) : (
+      <div />
+    )}
+    <div className="overflow-hidden p-2 text-left">
+      <h2 className="whitespace-nowrap text-lg font-bold text-text-accent">
+        {work.title ?? 'Untitled'}
+      </h2>
+      <p className="mb-2 whitespace-nowrap text-sm font-semibold">
+        {work.userName ?? 'Unknown author'}
+      </p>
+      <p className="whitespace-nowrap text-sm">
+        {work.tags?.map((tag, index) => (
+          <Fragment key={index}>
+            {index !== 0 && <span className="opacity-50">・</span>}
+            <wbr />
+            <span>{tag}</span>
+          </Fragment>
+        )) ?? <span>no tags</span>}
+      </p>
+    </div>
+  </>
+));
 
 export interface WorkCardProps {
   work: Work;

@@ -1,5 +1,5 @@
-import { Work, WorkLike } from '../types/collection';
 import { invoke } from '@tauri-apps/api';
+import { Work, WorkLike } from '@/types/collection';
 
 export const writeCollectionList = async (
   collectionPath: string,

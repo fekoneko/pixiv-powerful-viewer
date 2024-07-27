@@ -1,8 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
+import { useLocalStorage, useKeyboardEvent, useCollection } from '@/hooks';
 import { dialog } from '@tauri-apps/api';
-import { useCollection } from '@/hooks/use-collection';
 
 export const CollectionButton: FC = () => {
   const { collectionPath, collectionName, switchCollection } = useCollection();
