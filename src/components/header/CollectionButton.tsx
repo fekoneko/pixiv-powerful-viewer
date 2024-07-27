@@ -34,13 +34,9 @@ export const CollectionButton: FC = () => {
   };
 
   useKeyboardEvent('keyup', 'KeyO', showPickCollectionDialog, [], { control: true });
-  useKeyboardEvent(
-    'keyup',
-    'Tab',
-    () => recentSelectRef.current?.focus(),
-    [recentSelectRef.current],
-    { control: true },
-  );
+  useKeyboardEvent('keyup', 'Tab', () => recentSelectRef.current?.focus(), [recentSelectRef], {
+    control: true,
+  });
 
   return (
     <div className="flex">

@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useSearch } from '@/hooks';
+import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 
 export const FavoriteButton: FC = () => {
   const { search, setSearch } = useSearch();
@@ -19,7 +20,7 @@ export const FavoriteButton: FC = () => {
     'keyup',
     'Enter',
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       toggleFavorites();

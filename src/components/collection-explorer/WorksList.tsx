@@ -1,5 +1,6 @@
 import { FC, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useKeyboardEvent, useTimeout, useAnimateScroll, useCollection, useSearch } from '@/hooks';
+import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { Work } from '@/types/collection';
 
@@ -11,13 +12,13 @@ const keyboardSelectionDelay = 150;
 
 interface WorkListCardsProps {
   works: Work[];
-  selectWork: (selectedWork: Work | undefined) => void;
+  onSelectWork: (selectedWork: Work | undefined) => void;
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
 
 const WorkListCards: FC<WorkListCardsProps> = memo(
-  ({ works, selectWork, scrollContainerRef, animateScroll }) => {
+  ({ works, onSelectWork, scrollContainerRef, animateScroll }) => {
     const workCardsChunks = useMemo(() => {
       const result: Work[][] = [];
       for (let i = 0; i < works.length; i += workCardChunkSize) {
@@ -31,8 +32,8 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
     const [, updateKeyboardSelectionTimeout] = useTimeout();
 
     useEffect(() => {
-      selectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
-    }, [selectedIndex, selectWork, works]);
+      onSelectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
+    }, [selectedIndex, onSelectWork, works]);
 
     useEffect(() => {
       setSelectedIndex((prev) =>
@@ -63,7 +64,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
       'keydown',
       ['ArrowUp', 'KeyW'],
       (e) => {
-        if (document.activeElement?.tagName === 'INPUT') return;
+        if (isTextfieldFocused()) return;
         e.preventDefault();
 
         if (!ensureCanSelectWithKeyboard()) return;
@@ -81,7 +82,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
       'keydown',
       ['ArrowDown', 'KeyS'],
       (e) => {
-        if (document.activeElement?.tagName === 'INPUT') return;
+        if (isTextfieldFocused()) return;
         e.preventDefault();
 
         if (!ensureCanSelectWithKeyboard()) return;
@@ -99,7 +100,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
       'keydown',
       'Escape',
       (e) => {
-        if (document.activeElement?.tagName === 'INPUT') return;
+        if (isTextfieldFocused()) return;
         e.preventDefault();
 
         setSelectedIndex(undefined);
@@ -127,7 +128,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
                   key={work.relativePath}
                   work={work}
                   index={workIndex}
-                  selectIndex={setSelectedIndex}
+                  onSelect={setSelectedIndex}
                   scrollContainerRef={scrollContainerRef}
                   animateScroll={animateScroll}
                   active={workIndex === selectedIndex}
@@ -142,10 +143,10 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
 );
 
 interface WorksListProps {
-  selectWork: (selectedWork: Work | undefined) => void;
+  onSelectWork: (selectedWork: Work | undefined) => void;
 }
 
-export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
+export const WorksList: FC<WorksListProps> = ({ onSelectWork }) => {
   const { search } = useSearch();
   const { searchCollection, clearFavorites } = useCollection();
   const works = useMemo(() => searchCollection(search), [search, searchCollection]);
@@ -179,7 +180,7 @@ export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
           <div className="flex flex-col gap-2 py-2 [direction:ltr]">
             <WorkListCards
               works={works ?? []}
-              selectWork={selectWork}
+              onSelectWork={onSelectWork}
               scrollContainerRef={scrollContainerRef}
               animateScroll={animateScroll}
             />

@@ -14,11 +14,9 @@ export const Searchbar: FC = () => {
     inputRef.current?.focus();
   };
 
-  useKeyboardEvent('keyup', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [
-    inputRef.current,
-  ]);
+  useKeyboardEvent('keyup', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [inputRef]);
 
-  useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef.current]);
+  useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef]);
 
   useKeyboardEvent('keyup', 'Backquote', toggleKanaConversion, [], { control: true });
 

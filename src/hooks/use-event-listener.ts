@@ -5,11 +5,12 @@ export const useEventListener = <K extends keyof HTMLElementEventMap>(
   type: K,
   listener: EventListenerOrEventListenerObject,
   deps?: DependencyList,
-  options?: boolean | EventListenerOptions | undefined,
+  options?: boolean | EventListenerOptions,
 ) => {
   useEffect(() => {
-    const target = targetRef ? targetRef.current : window;
+    const target = targetRef?.current ?? window;
     target?.addEventListener(type, listener, options);
+
     return () => target?.removeEventListener(type, listener, options);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

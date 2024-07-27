@@ -51,14 +51,14 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
 export interface WorkCardProps {
   work: Work;
   index: number;
-  selectIndex: (index: number) => void;
+  onSelect: (index: number) => void;
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
   active?: boolean;
 }
 
 export const WorkCard: FC<WorkCardProps> = memo(
-  ({ work, index, selectIndex, scrollContainerRef, animateScroll, active }) => {
+  ({ work, index, onSelect, scrollContainerRef, animateScroll, active }) => {
     const cardRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -88,7 +88,7 @@ export const WorkCard: FC<WorkCardProps> = memo(
     return (
       <button
         ref={cardRef}
-        onClick={() => selectIndex(index)}
+        onClick={() => onSelect(index)}
         tabIndex={-1}
         className={
           'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +

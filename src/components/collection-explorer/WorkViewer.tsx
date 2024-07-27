@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
+import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { AssetImageView } from './AssetImageView';
@@ -11,7 +12,7 @@ interface WorkViewProps {
   fullscreenMode?: boolean;
 }
 
-export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
+export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [controlsShown, setControlsShown] = useState(false);
   const [, updateShowControlsTimeout] = useTimeout();
@@ -25,7 +26,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
     'keydown',
     ['ArrowLeft', 'KeyA'],
     async (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       if (!work?.assets?.length) return;
@@ -40,7 +41,7 @@ export const WorkView: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
     'keydown',
     ['ArrowRight', 'KeyD'],
     async (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       if (!work?.assets?.length) return;

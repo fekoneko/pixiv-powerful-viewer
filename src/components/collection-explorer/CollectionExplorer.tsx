@@ -1,10 +1,11 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { animated, useSpring } from '@react-spring/web';
 import { useKeyboardEvent } from '@/hooks';
+import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorksList } from './WorksList';
-import { WorkView } from './WorkView';
+import { WorkViewer } from './WorkViewer';
 import { WorkDetails } from './WorkDetails';
 
 type TransitionState = 'preview' | 'transition' | 'fullscreen';
@@ -13,8 +14,8 @@ export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work>();
   const [fullscreenMode, setFullscreenMode] = useState<boolean>();
   const [transitionState, setTransitionState] = useState<TransitionState>('preview');
-  const viewRef = useRef<HTMLDivElement>(null);
-  const [viewTransitionStyles, viewAnimate] = useSpring(() => ({
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const [viewerTransitionStyles, viewerAnimate] = useSpring(() => ({
     x: 0,
     y: 0,
     width: 0,
@@ -31,20 +32,20 @@ export const CollectionExplorer: FC = () => {
   }, [selectedWork]);
 
   useEffect(() => {
-    const viewElement = viewRef.current;
-    if (!viewElement || fullscreenMode === undefined) return;
+    const viewerElement = viewerRef.current;
+    if (!viewerElement || fullscreenMode === undefined) return;
 
     if (fullscreenMode) {
-      viewAnimate.start({
+      viewerAnimate.start({
         from: {
           x: 0,
           y: 0,
-          width: viewElement.offsetWidth,
-          height: viewElement.offsetHeight,
+          width: viewerElement.offsetWidth,
+          height: viewerElement.offsetHeight,
         },
         to: {
-          x: -viewElement.getBoundingClientRect().x,
-          y: -viewElement.getBoundingClientRect().y,
+          x: -viewerElement.getBoundingClientRect().x,
+          y: -viewerElement.getBoundingClientRect().y,
           width: window.innerWidth,
           height: window.innerHeight,
         },
@@ -52,30 +53,30 @@ export const CollectionExplorer: FC = () => {
         onRest: () => setTransitionState('fullscreen'),
       });
     } else {
-      viewAnimate.start({
+      viewerAnimate.start({
         from: {
-          x: -viewElement.getBoundingClientRect().x,
-          y: -viewElement.getBoundingClientRect().y,
+          x: -viewerElement.getBoundingClientRect().x,
+          y: -viewerElement.getBoundingClientRect().y,
           width: window.innerWidth,
           height: window.innerHeight,
         },
         to: {
           x: 0,
           y: 0,
-          width: viewElement.offsetWidth,
-          height: viewElement.offsetHeight,
+          width: viewerElement.offsetWidth,
+          height: viewerElement.offsetHeight,
         },
         onStart: () => setTransitionState('transition'),
         onRest: () => setTransitionState('preview'),
       });
     }
-  }, [fullscreenMode, viewAnimate]);
+  }, [fullscreenMode, viewerAnimate]);
 
   useKeyboardEvent(
     'keyup',
     'KeyF',
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       toggleFullscreenMode();
@@ -86,12 +87,12 @@ export const CollectionExplorer: FC = () => {
   return (
     <>
       <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden pl-[calc(10%-1rem)] pr-[10%]">
-        <WorksList selectWork={setSelectedWork} />
+        <WorksList onSelectWork={setSelectedWork} />
 
         <div className="flex flex-col gap-2 py-2">
-          <div ref={viewRef} className="grow">
+          <div ref={viewerRef} className="grow">
             <animated.div
-              style={transitionState === 'transition' ? viewTransitionStyles : undefined}
+              style={transitionState === 'transition' ? viewerTransitionStyles : undefined}
               className={
                 transitionState === 'preview'
                   ? 'flex size-full flex-col'
@@ -100,10 +101,10 @@ export const CollectionExplorer: FC = () => {
                     : 'absolute z-30 flex flex-col'
               }
             >
-              <WorkView work={selectedWork} fullscreenMode={fullscreenMode} />
+              <WorkViewer work={selectedWork} fullscreenMode={fullscreenMode} />
             </animated.div>
           </div>
-          <WorkDetails work={selectedWork} toggleFullscreenMode={toggleFullscreenMode} />
+          <WorkDetails work={selectedWork} onToggleFullscreen={toggleFullscreenMode} />
         </div>
       </main>
 

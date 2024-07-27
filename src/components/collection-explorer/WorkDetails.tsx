@@ -1,5 +1,6 @@
 import { FC, Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useKeyboardEvent } from '@/hooks';
+import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { openExternal } from '@/utils/open';
 import { Work } from '@/types/collection';
 
@@ -48,7 +49,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
         reset: true,
       });
     },
-    [scrollContainerRef.current],
+    [scrollContainerRef],
     { control: true },
   );
 
@@ -184,10 +185,10 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
 
 interface WorkDetailsProps {
   work: Work | undefined;
-  toggleFullscreenMode: () => void;
+  onToggleFullscreen: () => void;
 }
 
-export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }) => {
+export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) => {
   const [expanded, setExpanded] = useState(false);
   const { addToFavorites, removeFromFavorites, checkFavorited } = useCollection();
   const isFavorited = useMemo(
@@ -211,7 +212,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
     'keyup',
     'Space',
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       toggleExpanded();
@@ -223,7 +224,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
     'keyup',
     'Enter',
     (e) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (isTextfieldFocused()) return;
       e.preventDefault();
 
       toggleFavorite();
@@ -259,7 +260,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
           </button>
           <div className="my-2 w-[2px] rounded-full bg-text/40" />
           <button
-            onClick={toggleFullscreenMode}
+            onClick={onToggleFullscreen}
             className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             Fullscreen
