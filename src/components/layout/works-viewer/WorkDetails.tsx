@@ -2,7 +2,7 @@ import { useAnimateScroll } from '@/hooks/use-animate-scroll';
 import { useCollection } from '@/hooks/use-collection';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { Work } from '@/types/collection';
-import { invoke } from '@tauri-apps/api';
+import { openExternal } from '@/utils/open';
 import { FC, Fragment, useCallback, useMemo, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
@@ -153,7 +153,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
                   className="text-blue-500 hover:underline"
                   onClick={(e) => {
                     e.preventDefault();
-                    invoke('open', { pathOrUrl: work.url }); // TODO: Handle error
+                    openExternal(work.url!); // TODO: Handle error
                   }}
                 >
                   Go to Pixiv page
@@ -171,7 +171,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
                 className="text-blue-500 hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  invoke('open', { pathOrUrl: work.path }); // TODO: Handle error
+                  openExternal(work.path); // TODO: Handle error
                 }}
               >
                 Show in file explorer
