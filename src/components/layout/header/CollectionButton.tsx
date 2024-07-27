@@ -1,31 +1,32 @@
-import { FC, useCallback, useContext, useEffect, useRef } from 'react';
-import { CollectionContext } from '@/contexts/CollectionContext';
+import { FC, useEffect, useRef } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { dialog } from '@tauri-apps/api';
+import { useCollection } from '@/hooks/use-collection';
 
 export const CollectionButton: FC = () => {
-  const { collection, loadCollection } = useContext(CollectionContext);
+  const { collectionPath, collectionName, switchCollection } = useCollection();
   const [recentPaths, setRecentPaths] = useLocalStorage<string[]>(
     'recentCollections',
-    useCallback((error: unknown) => console.error(error), []),
+    console.error,
   );
   const recentSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
-    if (collection || !recentPaths?.length) return;
-    loadCollection(recentPaths[0]);
-  }, [loadCollection, recentPaths, collection]);
+    if (!recentPaths || recentPaths.length === 0 || collectionName !== null) return;
+    switchCollection(recentPaths[0]);
+  }, [recentPaths, collectionName, switchCollection]);
 
-  const switchCollection = (collectionPath: string) => {
-    loadCollection(collectionPath);
+  useEffect(() => {
+    if (!collectionPath) return;
+
     setRecentPaths((prev) => {
       if (prev) {
         const filteredPrev = prev.filter((path) => path !== collectionPath);
         return [collectionPath, ...filteredPrev];
       } else return [collectionPath];
     });
-  };
+  }, [collectionPath, setRecentPaths]);
 
   const showPickCollectionDialog = async () => {
     const collectionPath = await dialog.open({ directory: true, multiple: false });
@@ -49,7 +50,7 @@ export const CollectionButton: FC = () => {
         onClick={showPickCollectionDialog}
         className="whitespace-nowrap rounded-xl px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
-        {collection?.name ?? '< Select collection >'}
+        {collectionName ?? '< Select collection >'}
       </button>
       {recentPaths && (
         <div className="rounded-xl has-[:focus]:bg-text-header/20 has-[:hover]:bg-text-header/20">

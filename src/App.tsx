@@ -4,15 +4,12 @@ import { CollectionProvider } from '@/contexts/CollectionContext';
 import { SearchProvider } from '@/contexts/SearchContext';
 import { ThemeButton } from '@/components/layout/ThemeButton';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 
 export type Theme = 'light' | 'dark';
 
 export const App: FC = () => {
-  const [theme, setTheme] = useLocalStorage<Theme>(
-    'theme',
-    useCallback((error: unknown) => console.error(error), []),
-  );
+  const [theme, setTheme] = useLocalStorage<Theme>('theme', console.error);
 
   return (
     <CollectionProvider>

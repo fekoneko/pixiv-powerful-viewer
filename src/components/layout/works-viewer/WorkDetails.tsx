@@ -1,9 +1,9 @@
-import { CollectionContext } from '@/contexts/CollectionContext';
 import { useAnimateScroll } from '@/hooks/use-animate-scroll';
+import { useCollection } from '@/hooks/use-collection';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
-import { Work } from '@/lib/collection';
+import { Work } from '@/types/collection';
 import { invoke } from '@tauri-apps/api';
-import { FC, Fragment, useContext, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, useCallback, useMemo, useRef, useState } from 'react';
 
 interface WorkDetailsContentsProps {
   work: Work;
@@ -153,7 +153,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
                   className="text-blue-500 hover:underline"
                   onClick={(e) => {
                     e.preventDefault();
-                    invoke('open', { pathOrUrl: work.url });
+                    invoke('open', { pathOrUrl: work.url }); // TODO: Handle error
                   }}
                 >
                   Go to Pixiv page
@@ -171,7 +171,7 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
                 className="text-blue-500 hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  invoke('open', { pathOrUrl: work.path });
+                  invoke('open', { pathOrUrl: work.path }); // TODO: Handle error
                 }}
               >
                 Show in file explorer
@@ -191,19 +191,23 @@ interface WorkDetailsProps {
 
 export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }) => {
   const [expanded, setExpanded] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const { collection } = useContext(CollectionContext);
-
-  useEffect(
-    () => setIsFavorited(!!work && !!collection && collection.favorites.includes(work)),
-    [collection, work],
+  const { addToFavorites, removeFromFavorites, checkFavorited } = useCollection();
+  const isFavorited = useMemo(
+    () => work !== undefined && checkFavorited(work),
+    [work, checkFavorited],
   );
 
-  useEffect(() => {
+  const toggleFavorite = useCallback(() => {
     if (!work) return;
-    if (isFavorited) collection?.favorites.add(work);
-    else collection?.favorites.remove(work);
-  }, [isFavorited, work, collection]);
+
+    if (isFavorited) removeFromFavorites(work);
+    else addToFavorites(work);
+  }, [work, isFavorited, addToFavorites, removeFromFavorites]);
+
+  const toggleExpanded = useCallback(() => {
+    if (!work) return;
+    setExpanded((prev) => !prev);
+  }, [work]);
 
   useKeyboardEvent(
     'keyup',
@@ -212,10 +216,9 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
       if (document.activeElement?.tagName === 'INPUT') return;
       e.preventDefault();
 
-      if (!work) return;
-      setExpanded((prev) => !prev);
+      toggleExpanded();
     },
-    [work],
+    [toggleExpanded],
   );
 
   useKeyboardEvent(
@@ -225,10 +228,9 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
       if (document.activeElement?.tagName === 'INPUT') return;
       e.preventDefault();
 
-      if (!work) return;
-      setIsFavorited((prev) => !prev);
+      toggleFavorite();
     },
-    [collection, work],
+    [toggleFavorite],
     { control: false },
   );
 
@@ -242,10 +244,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
       }
     >
       <div className={'flex h-10 gap-1 p-1' + (expanded ? ' shadow- z-10' : '')}>
-        <button
-          onClick={() => setExpanded((prev) => !prev)}
-          className="flex min-w-1 grow gap-1 focus:outline-none"
-        >
+        <button onClick={toggleExpanded} className="flex min-w-1 grow gap-1 focus:outline-none">
           <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
             {expanded ? '▼' : '▲'}
           </div>
@@ -255,7 +254,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, toggleFullscreenMode }
         </button>
         <div className="flex gap-1">
           <button
-            onClick={() => setIsFavorited((prev) => !prev)}
+            onClick={toggleFavorite}
             className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             {isFavorited ? 'Favorited⭐' : 'Favorite'}

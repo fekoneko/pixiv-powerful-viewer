@@ -1,6 +1,6 @@
 use std::error::Error;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use std::sync::{Arc, Mutex};
 use std::u64;
 use std::vec;
@@ -49,7 +49,7 @@ pub struct ImageDimensions {
 pub async fn read_collection(
     collection_path: String,
     pids: State<'_, Pids>,
-) -> Result<(Vec<Work>, Vec<String>), ()> {
+) -> Result<(Vec<Work>, Vec<String>), String> {
     let pid = pids.read_collection_pid.clone();
     *pid.lock().unwrap() += 1;
 
@@ -64,13 +64,13 @@ pub async fn read_collection(
         ));
     }
 
-    Ok(load_works(collection_path, pid.clone()).await)
+    load_works(collection_path, pid.clone()).await
 }
 
 async fn load_works(
     collection_path: impl Into<PathBuf>,
     pid: Arc<Mutex<usize>>,
-) -> (Vec<Work>, Vec<String>) {
+) -> Result<(Vec<Work>, Vec<String>), String> {
     let original_pid = *pid.lock().unwrap();
 
     async fn one_level(path: PathBuf, to_visit: &mut Vec<PathBuf>) -> io::Result<Vec<PathBuf>> {
@@ -95,7 +95,10 @@ async fn load_works(
 
     while let Some(path) = to_visit.pop() {
         if *pid.lock().unwrap() != original_pid {
-            return (works, errors);
+            return Err(format!(
+                "Reading collection {} was cancelled",
+                initial_path.display()
+            ));
         }
 
         match one_level(path.clone(), &mut to_visit).await {
@@ -122,7 +125,7 @@ async fn load_works(
             Err(error) => errors.push(format!("Failed to read '{}': {error}", path.display())),
         };
     }
-    (works, errors)
+    Ok((works, errors))
 }
 
 async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> Result<Work, Box<dyn Error>> {
@@ -325,6 +328,34 @@ fn add_asset(asset: &PathBuf, work: &mut Work) {
             });
         };
     };
+}
+
+#[tauri::command]
+pub async fn read_collection_list(
+    collection_path: String,
+    list_name: String,
+) -> Result<Vec<String>, String> {
+    let path = format!("{collection_path}{MAIN_SEPARATOR}.{list_name}");
+
+    fs::read_to_string(path)
+        .await
+        .map_err(|error| error.to_string())?
+        .lines()
+        .map(|line| Ok(line.to_string()))
+        .collect()
+}
+
+#[tauri::command]
+pub async fn write_collection_list(
+    collection_path: String,
+    list_name: String,
+    list: Vec<String>,
+) -> Result<(), String> {
+    let path = format!("{collection_path}{MAIN_SEPARATOR}.{list_name}");
+
+    fs::write(path, list.join("\n"))
+        .await
+        .map_err(|error| error.to_string())
 }
 
 #[tauri::command]

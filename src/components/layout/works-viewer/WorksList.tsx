@@ -9,15 +9,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useWorks } from '@/hooks/use-works';
-import { Work } from '@/lib/collection';
 import { SearchContext } from '@/contexts/SearchContext';
 import { useKeyboardEvent } from '@/hooks/use-keyboard-event';
 import { WorkCard } from '@/components/layout/works-viewer/WorkCard';
 import { RenderInViewport } from '@/components/render/RenderInViewport';
 import { useTimeout } from '@/hooks/use-timeout';
 import { useAnimateScroll, AnimateScroll } from '@/hooks/use-animate-scroll';
-import { CollectionContext } from '@/contexts/CollectionContext';
+import { Work } from '@/types/collection';
+import { useCollection } from '@/hooks/use-collection';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -137,7 +136,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
               const workIndex = chunkIndex * workCardChunkSize + workIndexInChunk;
               return (
                 <WorkCard
-                  key={work.path} // TODO: relativePath
+                  key={work.relativePath}
                   work={work}
                   index={workIndex}
                   selectIndex={setSelectedIndex}
@@ -160,8 +159,8 @@ interface WorksListProps {
 
 export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
   const { search } = useContext(SearchContext);
-  const { collection } = useContext(CollectionContext);
-  const works = useWorks(search);
+  const { searchCollection, clearFavorites } = useCollection();
+  const works = useMemo(() => searchCollection(search), [search, searchCollection]);
 
   const [scrolledToTheTop, setScrolledToTheTop] = useState(true);
   const [scrolledToTheBottom, setScrolledToTheBottom] = useState(false);
@@ -202,7 +201,7 @@ export const WorksList: FC<WorksListProps> = ({ selectWork }) => {
 
       {search === '#favorites' && (
         <button
-          onClick={() => collection?.favorites.clear()}
+          onClick={clearFavorites}
           className="pb-2 hover:text-text-accent hover:underline focus:text-text-accent focus:outline-none"
         >
           Clear favorites

@@ -16,6 +16,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             handlers::read_collection,
+            handlers::read_collection_list,
+            handlers::write_collection_list,
             handlers::open
         ])
         .run(tauri::generate_context!())

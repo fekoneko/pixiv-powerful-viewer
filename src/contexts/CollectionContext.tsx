@@ -1,22 +1,145 @@
+import { Work, WorkLike } from '@/types/collection';
+import {
+  readCollection as readCollectionUtil,
+  searchCollection as searchCollectionUtil,
+} from '@/utils/collection';
+import {
+  isInCollectionList,
+  readCollectionList,
+  writeCollectionList,
+} from '@/utils/collection-list';
+import { sep } from '@tauri-apps/api/path';
 import { PropsWithChildren, createContext, useCallback, useState } from 'react';
-import { Collection, createCollection } from '@/lib/collection/collection';
 
-interface CollectionContextValue {
-  collection: Collection | undefined;
-  loadCollection: (collectionPath: string) => void;
+export interface CollectionContextValue {
+  collectionPath: string | null;
+  collectionName: string | null;
+  collectionWorks: Work[] | null;
+  switchCollection: (collectionPath: string) => Promise<void>;
+  isLoading: boolean;
+  searchCollection: (query: string) => Work[] | null;
+
+  favorites: Work[] | null;
+  addToFavorites: (work: Work) => Promise<void>;
+  removeFromFavorites: (work: WorkLike) => Promise<void>;
+  clearFavorites: () => Promise<void>;
+  checkFavorited: (work: WorkLike) => boolean;
 }
 
-export const CollectionContext = createContext({} as CollectionContextValue);
+export const CollectionContext = createContext<CollectionContextValue | null>(null);
 
 export const CollectionProvider = ({ children }: PropsWithChildren) => {
-  const [collection, setCollection] = useState<Collection>();
+  const [collectionPath, setCollectionPath] = useState<string | null>(null);
+  const [collectionName, setCollectionName] = useState<string | null>(null);
+  const [collectionWorks, setCollectionWorks] = useState<Work[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [favorites, setFavorites] = useState<Work[] | null>(null);
 
-  const loadCollection = useCallback(async (collectionPath: string) => {
-    setCollection(await createCollection(collectionPath));
+  const switchCollection = useCallback(async (collectionPath: string) => {
+    setCollectionPath(collectionPath);
+    setCollectionName(collectionPath.split(sep).reverse()[0]);
+    setIsLoading(true);
+
+    try {
+      const [works] = await readCollectionUtil(collectionPath);
+      setCollectionWorks(works);
+      // TODO: errors.forEach(showToast);
+
+      const favorites = await readCollectionList(collectionPath, 'favorites', works);
+      setFavorites(favorites);
+    } catch (error) {
+      // TODO: showToast(error instanceof Error ? error.message : String(error));
+      setCollectionWorks(null);
+      setFavorites(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
+  const searchCollection = useCallback(
+    (query: string) => {
+      if (!collectionWorks) return null;
+      if (query === '#favorites') return favorites;
+
+      return searchCollectionUtil(collectionWorks, query);
+    },
+    [collectionWorks, favorites],
+  );
+
+  const addToFavorites = useCallback(
+    async (work: Work) => {
+      try {
+        if (collectionPath === null || isLoading) throw new Error('Collection is not loaded');
+
+        const newFavorites = [
+          ...(favorites?.filter(
+            (favoriteWork) => favoriteWork.relativePath !== work.relativePath,
+          ) ?? []),
+          work,
+        ];
+
+        console.log('newFavorites', newFavorites);
+
+        setFavorites(newFavorites);
+        await writeCollectionList(collectionPath, 'favorites', newFavorites);
+      } catch (error) {
+        // TODO: showToast(error instanceof Error ? error.message : String(error));
+      }
+    },
+    [collectionPath, isLoading, favorites],
+  );
+
+  const removeFromFavorites = useCallback(
+    async (work: WorkLike) => {
+      try {
+        if (collectionPath === null || isLoading) throw new Error('Collection is not loaded');
+
+        const newFavorites =
+          favorites?.filter((favoriteWork) => favoriteWork.relativePath !== work.relativePath) ??
+          [];
+
+        setFavorites(newFavorites);
+        await writeCollectionList(collectionPath, 'favorites', newFavorites);
+      } catch (error) {
+        // TODO: showToast(error instanceof Error ? error.message : String(error));
+      }
+    },
+    [collectionPath, isLoading, favorites],
+  );
+
+  const clearFavorites = useCallback(async () => {
+    try {
+      if (collectionPath === null || isLoading) throw new Error('Collection is not loaded');
+
+      setFavorites([]);
+      await writeCollectionList(collectionPath, 'favorites', []);
+    } catch (error) {
+      // TODO: showToast(error instanceof Error ? error.message : String(error));
+    }
+  }, [collectionPath, isLoading]);
+
+  const checkFavorited = useCallback(
+    (work: WorkLike) => favorites !== null && isInCollectionList(work, favorites),
+    [favorites],
+  );
+
   return (
-    <CollectionContext.Provider value={{ collection, loadCollection }}>
+    <CollectionContext.Provider
+      value={{
+        collectionPath,
+        collectionName,
+        collectionWorks,
+        switchCollection,
+        isLoading,
+        searchCollection,
+
+        favorites,
+        addToFavorites,
+        removeFromFavorites,
+        clearFavorites,
+        checkFavorited,
+      }}
+    >
       {children}
     </CollectionContext.Provider>
   );

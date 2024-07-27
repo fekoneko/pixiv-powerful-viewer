@@ -1,6 +1,6 @@
-import { ImageAsset } from '@/lib/collection';
 import { FC, SVGProps, useEffect } from 'react';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { ImageAsset } from '@/types/collection';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   asset: ImageAsset;
