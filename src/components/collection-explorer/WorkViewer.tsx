@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { FullscreenState } from '@/hooks/use-fullscreen';
 import { isTextfieldFocused } from '@/utils/is-textfield-focused';
@@ -19,10 +19,10 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
   const [controlsShown, setControlsShown] = useState(false);
   const [, updateShowControlsTimeout] = useTimeout();
 
-  const showControls = () => {
+  const showControls = useCallback(() => {
     setControlsShown(true);
     updateShowControlsTimeout(() => setControlsShown(false), showControlsDelay);
-  };
+  }, [updateShowControlsTimeout]);
 
   useKeyboardEvent(
     'keydown',
@@ -36,7 +36,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
 
       showControls();
     },
-    [work, updateShowControlsTimeout],
+    [work, showControls],
   );
 
   useKeyboardEvent(
@@ -51,7 +51,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
 
       showControls();
     },
-    [work, updateShowControlsTimeout],
+    [work, showControls],
   );
 
   useEffect(() => {
@@ -63,9 +63,9 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
       onMouseMove={showControls}
       className={twMerge(
         'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg',
-        !controlsShown && 'cursor-none',
-        fullscreenState !== 'fullscreen' && 'rounded-xl',
-        fullscreenState === 'normal' && 'border-2 border-text/30',
+        fullscreenState === 'normal' && 'rounded-xl border-2 border-text/30',
+        fullscreenState === 'transition' && 'rounded-xl',
+        work && !controlsShown && 'cursor-none',
       )}
     >
       {work?.assets?.length && work.assets[pageNumber] ? (

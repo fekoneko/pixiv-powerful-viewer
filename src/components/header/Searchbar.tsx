@@ -14,11 +14,11 @@ export const Searchbar: FC = () => {
     inputRef.current?.focus();
   };
 
-  useKeyboardEvent('keyup', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [inputRef]);
+  useKeyboardEvent('keydown', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [inputRef]);
 
   useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef]);
 
-  useKeyboardEvent('keyup', 'Backquote', toggleKanaConversion, [], { control: true });
+  useKeyboardEvent('keydown', 'Backquote', toggleKanaConversion, [], { control: true });
 
   return (
     <form
@@ -41,7 +41,7 @@ export const Searchbar: FC = () => {
       <button
         onClick={toggleKanaConversion}
         type="button"
-        className="rounded-l-md rounded-r-3xl pl-2 pr-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="aspect-square rounded-3xl px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
         title="Toggle romaji-to-kana conversion"
       >
         {kanaConversion ? 'カ' : 'A'}

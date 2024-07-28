@@ -17,7 +17,7 @@ export const FavoriteButton: FC = () => {
   }, [search]);
 
   useKeyboardEvent(
-    'keyup',
+    'keydown',
     'Enter',
     (e) => {
       if (isTextfieldFocused()) return;

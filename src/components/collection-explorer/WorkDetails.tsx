@@ -171,7 +171,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) 
 
   const toggleExpanded = useCallback(() => setExpanded((prev) => !prev), []);
 
-  useKeyboardEvent('keyup', 'Space', (e) => {
+  useKeyboardEvent('keydown', 'Space', (e) => {
     if (!work || isTextfieldFocused()) return;
     e.preventDefault();
 
@@ -179,7 +179,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) 
   });
 
   useKeyboardEvent(
-    'keyup',
+    'keydown',
     'Enter',
     (e) => {
       if (!work || isTextfieldFocused()) return;

@@ -2,11 +2,11 @@ import { FC, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState 
 import { useKeyboardEvent, useTimeout, useAnimateScroll, useCollection, useSearch } from '@/hooks';
 import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
+import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { WorkCard } from './WorkCard';
 import { RenderInViewport } from './RenderInViewport';
-import { twMerge } from 'tailwind-merge';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -14,12 +14,13 @@ const keyboardSelectionDelay = 150;
 interface WorkListCardsProps {
   works: Work[];
   onSelectWork: (selectedWork: Work | null) => void;
+  allowDeselect?: boolean;
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
 
 const WorkListCards: FC<WorkListCardsProps> = memo(
-  ({ works, onSelectWork, scrollContainerRef, animateScroll }) => {
+  ({ works, onSelectWork, allowDeselect, scrollContainerRef, animateScroll }) => {
     const workCardsChunks = useMemo(() => {
       const result: Work[][] = [];
       for (let i = 0; i < works.length; i += workCardChunkSize) {
@@ -33,7 +34,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
     const [, updateKeyboardSelectionTimeout] = useTimeout();
 
     useEffect(() => {
-      onSelectWork(selectedIndex !== null ? works[selectedIndex] : null);
+      onSelectWork(selectedIndex !== null ? (works[selectedIndex] ?? null) : null);
     }, [selectedIndex, onSelectWork, works]);
 
     useEffect(() => {
@@ -98,7 +99,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
     );
 
     useKeyboardEvent('keydown', 'Escape', (e) => {
-      if (isTextfieldFocused()) return;
+      if (!allowDeselect || isTextfieldFocused()) return;
       e.preventDefault();
 
       setSelectedIndex(null);
@@ -140,9 +141,10 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
 
 interface WorksListProps {
   onSelectWork: (selectedWork: Work | null) => void;
+  allowDeselect?: boolean;
 }
 
-export const WorksList: FC<WorksListProps> = ({ onSelectWork }) => {
+export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) => {
   const { search } = useSearch();
   const { searchCollection, clearFavorites } = useCollection();
   const works = useMemo(() => searchCollection(search), [search, searchCollection]);
@@ -177,6 +179,7 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork }) => {
             <WorkListCards
               works={works ?? []}
               onSelectWork={onSelectWork}
+              allowDeselect={allowDeselect}
               scrollContainerRef={scrollContainerRef}
               animateScroll={animateScroll}
             />

@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { animated } from '@react-spring/web';
 import { useKeyboardEvent, useFullscreen } from '@/hooks';
 import { isTextfieldFocused } from '@/utils/is-textfield-focused';
@@ -16,10 +16,10 @@ export const CollectionExplorer: FC = () => {
     useFullscreen(viewerRef);
 
   useKeyboardEvent(
-    'keyup',
+    'keydown',
     'KeyF',
     (e) => {
-      if (isTextfieldFocused()) return;
+      if (!selectedWork || isTextfieldFocused()) return;
       e.preventDefault();
 
       toggleFullscreen();
@@ -27,10 +27,26 @@ export const CollectionExplorer: FC = () => {
     [toggleFullscreen],
   );
 
+  useKeyboardEvent(
+    'keydown',
+    'Escape',
+    (e) => {
+      if (fullscreenState === 'normal' || isTextfieldFocused()) return;
+      e.preventDefault();
+
+      exitFullscreen();
+    },
+    [exitFullscreen],
+  );
+
+  useEffect(() => {
+    if (!selectedWork) exitFullscreen();
+  }, [selectedWork, exitFullscreen]);
+
   return (
     <>
       <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden pl-[calc(10%-1rem)] pr-[10%]">
-        <WorksList onSelectWork={setSelectedWork} />
+        <WorksList onSelectWork={setSelectedWork} allowDeselect={fullscreenState === 'normal'} />
 
         <div className="flex flex-col gap-2 py-2">
           <div ref={viewerRef} className="grow">
@@ -38,6 +54,7 @@ export const CollectionExplorer: FC = () => {
               <WorkViewer work={selectedWork} fullscreenState={fullscreenState} />
             </animated.div>
           </div>
+
           <WorkDetails work={selectedWork} onToggleFullscreen={toggleFullscreen} />
         </div>
       </main>
