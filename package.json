@@ -2,7 +2,7 @@
   "name": "pixiv-powerful-viewer",
   "private": true,
   "type": "module",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-3",
   "description": "This app allows you to view and search collections saved by Pixiv Powerful Downloader browser extension locally",
   "author": "fekoneko",
   "homepage": "https://github.com/fekoneko/pixiv-powerful-viewer",

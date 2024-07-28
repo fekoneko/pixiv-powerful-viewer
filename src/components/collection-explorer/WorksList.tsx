@@ -46,15 +46,13 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
           onScroll={onScroll}
         >
           <div className="flex flex-col gap-2 py-2 [direction:ltr]">
-            {works && (
-              <WorkListChunks
-                works={works}
-                onSelectWork={onSelectWork}
-                allowDeselect={allowDeselect}
-                scrollContainerRef={scrollContainerRef}
-                animateScroll={animateScroll}
-              />
-            )}
+            <WorkListChunks
+              works={works ?? []}
+              onSelectWork={onSelectWork}
+              allowDeselect={allowDeselect}
+              scrollContainerRef={scrollContainerRef}
+              animateScroll={animateScroll}
+            />
           </div>
         </div>
       </div>
