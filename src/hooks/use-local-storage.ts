@@ -3,11 +3,11 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 export const useLocalStorage = <T = any>(
   key: string,
   onError?: (error: unknown) => void,
-): [content: T | undefined, setContent: Dispatch<SetStateAction<T | undefined>>] => {
-  const [content, setContent] = useState<T>();
+): [content: T | null, setContent: Dispatch<SetStateAction<T | null>>] => {
+  const [content, setContent] = useState<T | null>(null);
 
   useEffect(() => {
-    if (content !== undefined) return;
+    if (content !== null) return;
 
     const readJson = localStorage.getItem(key);
     if (readJson === null) return;
@@ -21,7 +21,7 @@ export const useLocalStorage = <T = any>(
   }, [key, content, onError]);
 
   useEffect(() => {
-    if (content === undefined) return;
+    if (content === null) return;
     localStorage.setItem(key, JSON.stringify(content));
   }, [key, content]);
 

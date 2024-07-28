@@ -22,9 +22,10 @@ export const RenderInViewport: FC<RenderInViewportProps> = handleViewport<
     children,
     ...divProps
   }) => {
-    const elementHeightRef = useRef<number | undefined>(undefined);
+    const elementHeightRef = useRef<number | null>(null);
+
     useEffect(() => {
-      if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight;
+      if (inViewport) elementHeightRef.current = forwardedRef.current?.offsetHeight ?? null;
     }, [inViewport, forwardedRef]);
 
     return (

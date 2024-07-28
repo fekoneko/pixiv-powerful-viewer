@@ -17,6 +17,7 @@ export interface CollectionContextValue {
   favorites: Work[] | null;
   addToFavorites: (work: Work) => Promise<void>;
   removeFromFavorites: (work: WorkLike) => Promise<void>;
+  toggleFavorite: (work: Work) => Promise<void>;
   clearFavorites: () => Promise<void>;
   checkFavorited: (work: WorkLike) => boolean;
 }
@@ -118,6 +119,14 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
     [favorites],
   );
 
+  const toggleFavorite = useCallback(
+    async (work: Work) => {
+      if (checkFavorited(work)) return removeFromFavorites(work);
+      else return addToFavorites(work);
+    },
+    [checkFavorited, addToFavorites, removeFromFavorites],
+  );
+
   return (
     <CollectionContext.Provider
       value={{
@@ -131,6 +140,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         favorites,
         addToFavorites,
         removeFromFavorites,
+        toggleFavorite,
         clearFavorites,
         checkFavorited,
       }}

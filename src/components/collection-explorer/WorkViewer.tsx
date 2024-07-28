@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge';
 const showControlsDelay = 1500;
 
 interface WorkViewProps {
-  work: Work | undefined;
+  work: Work | null;
   fullscreenState: FullscreenState;
 }
 
@@ -62,7 +62,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
     <div
       onMouseMove={showControls}
       className={twMerge(
-        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius]',
+        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg',
         !controlsShown && 'cursor-none',
         fullscreenState !== 'fullscreen' && 'rounded-xl',
         fullscreenState === 'normal' && 'border-2 border-text/30',

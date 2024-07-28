@@ -54,26 +54,25 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
     { control: true },
   );
 
-  if (!work) return null;
-
   return (
     <div
       ref={scrollContainerRef}
       className="flex flex-col gap-1.5 overflow-x-hidden overflow-y-scroll px-3 pb-5"
     >
-      <h3 className="text-center text-lg font-semibold text-text-accent">
+      <h3 className="flex items-baseline justify-center gap-3 text-lg font-semibold text-text-accent">
         {work.title}
-        {'　'}
         <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
           (id: {work.id})
         </span>
       </h3>
-      <p className="text-center font-semibold">
+
+      <p className="flex items-baseline justify-center gap-3 font-semibold">
         by {work.userName}
-        {'　'}
-        <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
-          (id: {work.userId})
-        </span>
+        {work.id !== null && (
+          <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+            (id: {work.userId})
+          </span>
+        )}
       </p>
       <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
 
@@ -88,147 +87,105 @@ const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) =
         </>
       )}
 
-      <table>
-        <tbody>
-          {work.tags && (
-            <tr>
-              <td className="align-top">tags:　</td>
-              <td className="whitespace-nowrap">
-                {work.tags.map((tag, index) => (
-                  <Fragment key={index}>
-                    {index !== 0 && <span className="opacity-50">・</span>}
-                    <wbr />
-                    <span>{tag}</span>
-                  </Fragment>
-                ))}
-              </td>
-            </tr>
-          )}
+      <div className="grid grid-cols-[auto_1fr] gap-2">
+        {work.tags && <p>tags:　</p>}
+        {work.tags && (
+          <p className="whitespace-nowrap">
+            {work.tags.map((tag, index) => (
+              <Fragment key={index}>
+                {index !== 0 && <span className="opacity-50">・</span>}
+                <wbr />
+                <span>{tag}</span>
+              </Fragment>
+            ))}
+          </p>
+        )}
 
-          {work.ai !== null && (
-            <tr>
-              <td />
-              <td className="align-top">
-                {work.ai ? (
-                  <strong className="text-red-600">AI-generated</strong>
-                ) : (
-                  <>
-                    <strong>Not</strong> AI-generated
-                  </>
-                )}
-              </td>
-            </tr>
-          )}
+        {work.ai !== null && <p />}
+        {work.ai !== null && (
+          <p>
+            {work.ai ? (
+              <strong className="text-red-600">AI-generated</strong>
+            ) : (
+              <>
+                <strong>Not</strong> AI-generated
+              </>
+            )}
+          </p>
+        )}
 
-          {work.uploadTime && (
-            <tr>
-              <td className="align-top">uploaded:　</td>
-              <td>
-                <p>{work.uploadTime}</p>
-              </td>
-            </tr>
-          )}
+        {work.uploadTime && <p>uploaded:　</p>}
+        {work.uploadTime && <p>{new Date(work.uploadTime).toLocaleString()}</p>}
 
-          {work.bookmarks !== null && (
-            <tr>
-              <td className="align-top">bookmarks:　</td>
-              <td>
-                <p>
-                  {work.bookmarks.toString()} <span className="text-lg">♥️</span>
-                  {'　'}
-                  <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
-                </p>
-              </td>
-            </tr>
-          )}
+        {work.bookmarks !== null && <td>bookmarks:　</td>}
+        {work.bookmarks !== null && (
+          <p>
+            {work.bookmarks.toString()} <span className="text-lg">♥️</span>
+            {'　'}
+            <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
+          </p>
+        )}
 
-          {work.url && (
-            <tr>
-              <td />
-              <td>
-                <a
-                  href="#"
-                  target="blank"
-                  tabIndex={expanded ? 0 : -1}
-                  className="text-blue-500 hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openExternal(work.url!); // TODO: Handle error
-                  }}
-                >
-                  Go to Pixiv page
-                </a>
-              </td>
-            </tr>
-          )}
+        {work.url && <p />}
+        {work.url && (
+          <a
+            href="#"
+            target="blank"
+            tabIndex={expanded ? 0 : -1}
+            className="text-blue-500 hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternal(work.url!); // TODO: Handle error
+            }}
+          >
+            Go to Pixiv page
+          </a>
+        )}
 
-          <tr>
-            <td />
-            <td>
-              <a
-                href="#"
-                tabIndex={expanded ? 0 : -1}
-                className="text-blue-500 hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  openExternal(work.path); // TODO: Handle error
-                }}
-              >
-                Show in file explorer
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <p />
+        <a
+          href="#"
+          tabIndex={expanded ? 0 : -1}
+          className="text-blue-500 hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            openExternal(work.path); // TODO: Handle error
+          }}
+        >
+          Show in file explorer
+        </a>
+      </div>
     </div>
   );
 };
 
 interface WorkDetailsProps {
-  work: Work | undefined;
+  work: Work | null;
   onToggleFullscreen: () => void;
 }
 
 export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) => {
   const [expanded, setExpanded] = useState(false);
-  const { addToFavorites, removeFromFavorites, checkFavorited } = useCollection();
-  const isFavorited = useMemo(
-    () => work !== undefined && checkFavorited(work),
-    [work, checkFavorited],
-  );
+  const { toggleFavorite, checkFavorited } = useCollection();
+  const isFavorited = useMemo(() => work && checkFavorited(work), [work, checkFavorited]);
 
-  const toggleFavorite = useCallback(() => {
-    if (!work) return;
+  const toggleExpanded = useCallback(() => setExpanded((prev) => !prev), []);
 
-    if (isFavorited) removeFromFavorites(work);
-    else addToFavorites(work);
-  }, [work, isFavorited, addToFavorites, removeFromFavorites]);
+  useKeyboardEvent('keyup', 'Space', (e) => {
+    if (!work || isTextfieldFocused()) return;
+    e.preventDefault();
 
-  const toggleExpanded = useCallback(() => {
-    if (!work) return;
-    setExpanded((prev) => !prev);
-  }, [work]);
-
-  useKeyboardEvent(
-    'keyup',
-    'Space',
-    (e) => {
-      if (isTextfieldFocused()) return;
-      e.preventDefault();
-
-      toggleExpanded();
-    },
-    [toggleExpanded],
-  );
+    toggleExpanded();
+  });
 
   useKeyboardEvent(
     'keyup',
     'Enter',
     (e) => {
-      if (isTextfieldFocused()) return;
+      if (!work || isTextfieldFocused()) return;
       e.preventDefault();
 
-      toggleFavorite();
+      toggleFavorite(work);
     },
     [toggleFavorite],
     { control: false },
@@ -252,9 +209,10 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) 
             {expanded ? 'Details' : work.title}
           </h2>
         </button>
+
         <div className="flex gap-1">
           <button
-            onClick={toggleFavorite}
+            onClick={() => toggleFavorite(work)}
             className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             {isFavorited ? 'Favorited⭐' : 'Favorite'}

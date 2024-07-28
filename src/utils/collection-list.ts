@@ -24,7 +24,7 @@ export const readCollectionList = async (
 
   return [...new Set(relativePaths)]
     .map((relativePath) => collectionWorks.find((work) => work.relativePath === relativePath))
-    .filter((work): work is Work => work !== undefined);
+    .filter((work) => work !== undefined);
 };
 
 export const isInCollectionList = (work: WorkLike, collection: WorkLike[]): boolean =>

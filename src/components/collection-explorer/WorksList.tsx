@@ -13,7 +13,7 @@ const keyboardSelectionDelay = 150;
 
 interface WorkListCardsProps {
   works: Work[];
-  onSelectWork: (selectedWork: Work | undefined) => void;
+  onSelectWork: (selectedWork: Work | null) => void;
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
 }
@@ -28,18 +28,18 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
       return result;
     }, [works]);
 
-    const [selectedIndex, setSelectedIndex] = useState<number>();
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const canSelectWithKeyboardRef = useRef(true);
     const [, updateKeyboardSelectionTimeout] = useTimeout();
 
     useEffect(() => {
-      onSelectWork(selectedIndex !== undefined ? works[selectedIndex] : undefined);
+      onSelectWork(selectedIndex !== null ? works[selectedIndex] : null);
     }, [selectedIndex, onSelectWork, works]);
 
     useEffect(() => {
       setSelectedIndex((prev) =>
-        prev === undefined || works.length === 0
-          ? undefined
+        prev === null || works.length === 0
+          ? null
           : prev > works.length - 1
             ? works.length - 1
             : prev,
@@ -47,7 +47,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
     }, [works]);
 
     useEffect(() => {
-      if (selectedIndex === undefined) animateScroll.start({ y: 0, immediate: true });
+      if (selectedIndex === null) animateScroll.start({ y: 0, immediate: true });
     }, [selectedIndex, animateScroll]);
 
     const ensureCanSelectWithKeyboard = useCallback(() => {
@@ -71,7 +71,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
         if (!ensureCanSelectWithKeyboard()) return;
 
         setSelectedIndex((prev) => {
-          if (prev === undefined) return 0;
+          if (prev === null) return 0;
           return prev <= 0 ? 0 : prev - 1;
         });
       },
@@ -89,7 +89,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
         if (!ensureCanSelectWithKeyboard()) return;
 
         setSelectedIndex((prev) => {
-          if (prev === undefined) return 0;
+          if (prev === null) return 0;
           return prev + 1 >= works.length - 1 ? works.length - 1 : prev + 1;
         });
       },
@@ -97,17 +97,12 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
       { control: false },
     );
 
-    useKeyboardEvent(
-      'keydown',
-      'Escape',
-      (e) => {
-        if (isTextfieldFocused()) return;
-        e.preventDefault();
+    useKeyboardEvent('keydown', 'Escape', (e) => {
+      if (isTextfieldFocused()) return;
+      e.preventDefault();
 
-        setSelectedIndex(undefined);
-      },
-      [],
-    );
+      setSelectedIndex(null);
+    });
 
     return (
       <>
@@ -116,7 +111,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
             key={chunkIndex}
             fallbackHeight={chunk.length * 8 + 'rem'}
             forceRender={
-              selectedIndex !== undefined &&
+              selectedIndex !== null &&
               selectedIndex >= (chunkIndex - 1) * workCardChunkSize &&
               selectedIndex <= (chunkIndex + 1) * workCardChunkSize
             }
@@ -144,7 +139,7 @@ const WorkListCards: FC<WorkListCardsProps> = memo(
 );
 
 interface WorksListProps {
-  onSelectWork: (selectedWork: Work | undefined) => void;
+  onSelectWork: (selectedWork: Work | null) => void;
 }
 
 export const WorksList: FC<WorksListProps> = ({ onSelectWork }) => {

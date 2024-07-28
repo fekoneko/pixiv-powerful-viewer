@@ -12,7 +12,7 @@ export const useKeyboardEvent = (
   type: 'keypress' | 'keyup' | 'keydown',
   keyCode: string | string[],
   callback: (e: KeyboardEvent) => void,
-  deps: DependencyList,
+  deps?: DependencyList,
   modifiers?: Modifiers,
 ) => {
   useEventListener(
@@ -23,10 +23,10 @@ export const useKeyboardEvent = (
       if (
         (typeof keyCode === 'object' ? keyCode.includes(event.code) : event.code === keyCode) &&
         (!modifiers ||
-          ((modifiers.control === undefined || event.ctrlKey === !!modifiers.control) &&
-            (modifiers.shift === undefined || event.shiftKey === !!modifiers.shift) &&
-            (modifiers.alt === undefined || event.altKey === !!modifiers.alt) &&
-            (modifiers.meta === undefined || event.metaKey === !!modifiers.meta)))
+          ((modifiers.control === undefined || event.ctrlKey === modifiers.control) &&
+            (modifiers.shift === undefined || event.shiftKey === modifiers.shift) &&
+            (modifiers.alt === undefined || event.altKey === modifiers.alt) &&
+            (modifiers.meta === undefined || event.metaKey === modifiers.meta)))
       ) {
         callback(event);
       }

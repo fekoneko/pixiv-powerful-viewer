@@ -10,7 +10,7 @@ import { WorkDetails } from './WorkDetails';
 import { ExitFullscreenButton } from '@/components/collection-explorer/ExitFullscreenButton';
 
 export const CollectionExplorer: FC = () => {
-  const [selectedWork, setSelectedWork] = useState<Work>();
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const { fullscreenState, fullscreenStyles, exitFullscreen, toggleFullscreen } =
     useFullscreen(viewerRef);

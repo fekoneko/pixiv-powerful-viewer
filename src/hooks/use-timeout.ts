@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 export const useTimeout = (): [
-  timeout: ReturnType<typeof setTimeout> | undefined,
+  timeoutId: ReturnType<typeof setTimeout> | undefined,
   updateTimeout: typeof setTimeout,
 ] => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
