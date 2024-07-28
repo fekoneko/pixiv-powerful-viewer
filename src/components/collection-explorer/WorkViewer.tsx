@@ -1,13 +1,13 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { FullscreenState } from '@/hooks/use-fullscreen';
-import { isTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { ImageView } from './ImageView';
-import { twMerge } from 'tailwind-merge';
 
-const showControlsDelay = 1500;
+const SHOW_CONTROLS_DELAY = 1500;
 
 interface WorkViewProps {
   work: Work | null;
@@ -21,37 +21,41 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
 
   const showControls = useCallback(() => {
     setControlsShown(true);
-    updateShowControlsTimeout(() => setControlsShown(false), showControlsDelay);
+    updateShowControlsTimeout(() => setControlsShown(false), SHOW_CONTROLS_DELAY);
   }, [updateShowControlsTimeout]);
+
+  const showPreviousPage = useCallback(() => {
+    if (!work?.assets?.length) return;
+    setPageNumber((prev) => (prev > 0 ? prev - 1 : work.assets!.length - 1));
+    showControls();
+  }, [work?.assets, showControls]);
+
+  const showNextPage = useCallback(() => {
+    if (!work?.assets?.length) return;
+    setPageNumber((prev) => (prev < work.assets!.length - 1 ? prev + 1 : 0));
+    showControls();
+  }, [work?.assets, showControls]);
 
   useKeyboardEvent(
     'keydown',
     ['ArrowLeft', 'KeyA'],
-    async (e) => {
-      if (isTextfieldFocused()) return;
+    (e) => {
+      if (checkTextfieldFocused()) return;
       e.preventDefault();
-
-      if (!work?.assets?.length) return;
-      setPageNumber((prev) => (prev > 0 ? prev - 1 : work.assets!.length - 1));
-
-      showControls();
+      showPreviousPage();
     },
-    [work, showControls],
+    [showPreviousPage],
   );
 
   useKeyboardEvent(
     'keydown',
     ['ArrowRight', 'KeyD'],
-    async (e) => {
-      if (isTextfieldFocused()) return;
+    (e) => {
+      if (checkTextfieldFocused()) return;
       e.preventDefault();
-
-      if (!work?.assets?.length) return;
-      setPageNumber((prev) => (prev < work.assets!.length - 1 ? prev + 1 : 0));
-
-      showControls();
+      showNextPage();
     },
-    [work, showControls],
+    [showNextPage],
   );
 
   useEffect(() => {

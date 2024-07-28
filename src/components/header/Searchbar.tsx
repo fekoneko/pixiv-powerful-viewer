@@ -1,5 +1,6 @@
 import { FC, useRef, useState } from 'react';
 import { useKeyboardEvent, useSearch, useWanakana } from '@/hooks';
+import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 export const Searchbar: FC = () => {
   const { search, setSearch } = useSearch();
@@ -14,7 +15,16 @@ export const Searchbar: FC = () => {
     inputRef.current?.focus();
   };
 
-  useKeyboardEvent('keydown', ['Slash', 'Backslash'], () => inputRef.current?.focus(), [inputRef]);
+  useKeyboardEvent(
+    'keydown',
+    ['Slash', 'Backslash'],
+    (e) => {
+      if (checkTextfieldFocused()) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    },
+    [inputRef],
+  );
 
   useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef]);
 

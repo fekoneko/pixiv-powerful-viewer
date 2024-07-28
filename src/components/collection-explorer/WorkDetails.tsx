@@ -1,233 +1,109 @@
-import { FC, Fragment, useCallback, useMemo, useRef, useState } from 'react';
-import { useAnimateScroll, useCollection, useKeyboardEvent } from '@/hooks';
-import { isTextfieldFocused } from '@/utils/is-textfield-focused';
+import { FC, Fragment } from 'react';
 import { openExternal } from '@/utils/open';
 import { Work } from '@/types/collection';
-import { twMerge } from 'tailwind-merge';
 
-interface WorkDetailsContentsProps {
+interface WorkDetailsProps {
   work: Work;
-  expanded: boolean;
+  isExpanded: boolean;
 }
 
-const WorkDetailsContents: FC<WorkDetailsContentsProps> = ({ work, expanded }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const animateScroll = useAnimateScroll(scrollContainerRef);
+export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
+  <div className="flex flex-col gap-1.5">
+    <h3 className="flex items-baseline justify-center gap-3 text-lg font-semibold text-text-accent">
+      {work.title}
+      <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+        (id: {work.id})
+      </span>
+    </h3>
 
-  useKeyboardEvent(
-    'keydown',
-    ['ArrowUp', 'KeyW'],
-    (e) => {
-      e.preventDefault();
-
-      const scrollContainerElement = scrollContainerRef.current;
-      if (!scrollContainerElement) return;
-
-      const currentScrollTop = scrollContainerElement.scrollTop;
-      animateScroll.start({
-        from: { y: scrollContainerRef.current?.scrollTop },
-        y: currentScrollTop - 150,
-        reset: true,
-      });
-    },
-    [scrollContainerRef],
-    { control: true },
-  );
-
-  useKeyboardEvent(
-    'keydown',
-    ['ArrowDown', 'KeyS'],
-    (e) => {
-      e.preventDefault();
-
-      const scrollContainerElement = scrollContainerRef.current;
-      if (!scrollContainerElement) return;
-
-      const currentScrollTop = scrollContainerElement.scrollTop;
-      animateScroll.start({
-        from: { y: scrollContainerRef.current?.scrollTop },
-        y: currentScrollTop + 150,
-        reset: true,
-      });
-    },
-    [scrollContainerRef],
-    { control: true },
-  );
-
-  return (
-    <div
-      ref={scrollContainerRef}
-      className="flex flex-col gap-1.5 overflow-x-hidden overflow-y-scroll px-3 pb-5"
-    >
-      <h3 className="flex items-baseline justify-center gap-3 text-lg font-semibold text-text-accent">
-        {work.title}
+    <p className="flex items-baseline justify-center gap-3 font-semibold">
+      by {work.userName}
+      {work.id !== null && (
         <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
-          (id: {work.id})
+          (id: {work.userId})
         </span>
-      </h3>
+      )}
+    </p>
+    <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
 
-      <p className="flex items-baseline justify-center gap-3 font-semibold">
-        by {work.userName}
-        {work.id !== null && (
-          <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
-            (id: {work.userId})
-          </span>
-        )}
-      </p>
-      <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+    {work.description && (
+      <>
+        <div>
+          {work.description.split('\n').map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+        <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+      </>
+    )}
 
-      {work.description && (
-        <>
-          <div>
-            {work.description.split('\n').map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-          <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
-        </>
+    <div className="grid grid-cols-[auto_1fr] gap-2">
+      {work.tags && <p>tags:　</p>}
+      {work.tags && (
+        <p className="whitespace-nowrap">
+          {work.tags.map((tag, index) => (
+            <Fragment key={index}>
+              {index !== 0 && <span className="opacity-50">・</span>}
+              <wbr />
+              <span>{tag}</span>
+            </Fragment>
+          ))}
+        </p>
       )}
 
-      <div className="grid grid-cols-[auto_1fr] gap-2">
-        {work.tags && <p>tags:　</p>}
-        {work.tags && (
-          <p className="whitespace-nowrap">
-            {work.tags.map((tag, index) => (
-              <Fragment key={index}>
-                {index !== 0 && <span className="opacity-50">・</span>}
-                <wbr />
-                <span>{tag}</span>
-              </Fragment>
-            ))}
-          </p>
-        )}
+      {work.ai !== null && <p />}
+      {work.ai !== null && (
+        <p>
+          {work.ai ? (
+            <strong className="text-red-600">AI-generated</strong>
+          ) : (
+            <>
+              <strong>Not</strong> AI-generated
+            </>
+          )}
+        </p>
+      )}
 
-        {work.ai !== null && <p />}
-        {work.ai !== null && (
-          <p>
-            {work.ai ? (
-              <strong className="text-red-600">AI-generated</strong>
-            ) : (
-              <>
-                <strong>Not</strong> AI-generated
-              </>
-            )}
-          </p>
-        )}
+      {work.uploadTime && <p>uploaded:　</p>}
+      {work.uploadTime && <p>{new Date(work.uploadTime).toLocaleString()}</p>}
 
-        {work.uploadTime && <p>uploaded:　</p>}
-        {work.uploadTime && <p>{new Date(work.uploadTime).toLocaleString()}</p>}
+      {work.bookmarks !== null && <p>bookmarks:　</p>}
+      {work.bookmarks !== null && (
+        <p>
+          {work.bookmarks.toString()} <span className="text-lg">♥️</span>
+          {'　'}
+          <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
+        </p>
+      )}
 
-        {work.bookmarks !== null && <td>bookmarks:　</td>}
-        {work.bookmarks !== null && (
-          <p>
-            {work.bookmarks.toString()} <span className="text-lg">♥️</span>
-            {'　'}
-            <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
-          </p>
-        )}
-
-        {work.url && <p />}
-        {work.url && (
-          <a
-            href="#"
-            target="blank"
-            tabIndex={expanded ? 0 : -1}
-            className="text-blue-500 hover:underline"
-            onClick={(e) => {
-              e.preventDefault();
-              openExternal(work.url!); // TODO: Handle error
-            }}
-          >
-            Go to Pixiv page
-          </a>
-        )}
-
-        <p />
+      {work.url && <p />}
+      {work.url && (
         <a
           href="#"
-          tabIndex={expanded ? 0 : -1}
+          target="blank"
+          tabIndex={isExpanded ? 0 : -1}
           className="text-blue-500 hover:underline"
           onClick={(e) => {
             e.preventDefault();
-            openExternal(work.path); // TODO: Handle error
+            openExternal(work.url!); // TODO: Handle error
           }}
         >
-          Show in file explorer
+          Go to Pixiv page
         </a>
-      </div>
-    </div>
-  );
-};
-
-interface WorkDetailsProps {
-  work: Work | null;
-  onToggleFullscreen: () => void;
-}
-
-export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) => {
-  const [expanded, setExpanded] = useState(false);
-  const { toggleFavorite, checkFavorited } = useCollection();
-  const isFavorited = useMemo(() => work && checkFavorited(work), [work, checkFavorited]);
-
-  const toggleExpanded = useCallback(() => setExpanded((prev) => !prev), []);
-
-  useKeyboardEvent('keydown', 'Space', (e) => {
-    if (!work || isTextfieldFocused()) return;
-    e.preventDefault();
-
-    toggleExpanded();
-  });
-
-  useKeyboardEvent(
-    'keydown',
-    'Enter',
-    (e) => {
-      if (!work || isTextfieldFocused()) return;
-      e.preventDefault();
-
-      toggleFavorite(work);
-    },
-    [toggleFavorite],
-    { control: false },
-  );
-
-  if (!work) return null;
-
-  return (
-    <div
-      className={twMerge(
-        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] duration-1000',
-        expanded ? 'h-1/2' : 'h-10',
       )}
-    >
-      <div className={twMerge('flex h-10 gap-1 p-1', expanded && 'shadow- z-10')}>
-        <button onClick={toggleExpanded} className="flex min-w-1 grow gap-1 focus:outline-none">
-          <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
-            {expanded ? '▼' : '▲'}
-          </div>
-          <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
-            {expanded ? 'Details' : work.title}
-          </h2>
-        </button>
 
-        <div className="flex gap-1">
-          <button
-            onClick={() => toggleFavorite(work)}
-            className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
-          >
-            {isFavorited ? 'Favorited⭐' : 'Favorite'}
-          </button>
-          <div className="my-2 w-[2px] rounded-full bg-text/40" />
-          <button
-            onClick={onToggleFullscreen}
-            className="rounded-md px-3 hover:bg-text/20 focus:bg-text/20 focus:outline-none"
-          >
-            Fullscreen
-          </button>
-        </div>
-      </div>
-
-      <WorkDetailsContents work={work} expanded={expanded} />
+      <p />
+      <a
+        href="#"
+        tabIndex={isExpanded ? 0 : -1}
+        className="text-blue-500 hover:underline"
+        onClick={(e) => {
+          e.preventDefault();
+          openExternal(work.path); // TODO: Handle error
+        }}
+      >
+        Show in file explorer
+      </a>
     </div>
-  );
-};
+  </div>
+);

@@ -1,10 +1,11 @@
-import { FC, RefObject, memo, useEffect, useRef } from 'react';
+import { FC, RefObject, memo, useCallback, useEffect, useRef } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
+import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { ImageView } from './ImageView';
-import { twMerge } from 'tailwind-merge';
+import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 interface WorkCardContents {
   work: Work;
@@ -62,13 +63,11 @@ export const WorkCard: FC<WorkCardProps> = memo(
   ({ work, index, onSelect, scrollContainerRef, animateScroll, active }) => {
     const cardRef = useRef<HTMLButtonElement>(null);
 
-    useEffect(() => {
-      if (!active) return;
-
+    const focusOnThisCard = useCallback(() => {
       const cardElement = cardRef.current;
       if (!cardElement) return;
 
-      if (document.activeElement?.tagName !== 'INPUT') {
+      if (!checkTextfieldFocused()) {
         cardElement.focus({ preventScroll: true });
       }
 
@@ -84,7 +83,11 @@ export const WorkCard: FC<WorkCardProps> = memo(
         to: { y: scrollPosition },
         reset: true,
       });
-    }, [active, animateScroll, scrollContainerRef]);
+    }, [cardRef, scrollContainerRef, animateScroll]);
+
+    useEffect(() => {
+      if (active) focusOnThisCard();
+    }, [active, focusOnThisCard]);
 
     return (
       <button

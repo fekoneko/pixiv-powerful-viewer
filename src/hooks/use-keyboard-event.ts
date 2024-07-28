@@ -31,6 +31,6 @@ export const useKeyboardEvent = (
         callback(event);
       }
     },
-    [...(deps ?? []), modifiers],
+    [...(deps ?? []), keyCode, modifiers],
   );
 };

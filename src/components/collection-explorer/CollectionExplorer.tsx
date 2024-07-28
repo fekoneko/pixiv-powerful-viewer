@@ -1,12 +1,12 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { animated } from '@react-spring/web';
 import { useKeyboardEvent, useFullscreen } from '@/hooks';
-import { isTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorksList } from './WorksList';
 import { WorkViewer } from './WorkViewer';
-import { WorkDetails } from './WorkDetails';
+import { WorkDetailsAccordion } from './WorkDetailsAccordion';
 import { ExitFullscreenButton } from '@/components/collection-explorer/ExitFullscreenButton';
 
 export const CollectionExplorer: FC = () => {
@@ -18,10 +18,8 @@ export const CollectionExplorer: FC = () => {
   useKeyboardEvent(
     'keydown',
     'KeyF',
-    (e) => {
-      if (!selectedWork || isTextfieldFocused()) return;
-      e.preventDefault();
-
+    () => {
+      if (checkTextfieldFocused() || !selectedWork) return;
       toggleFullscreen();
     },
     [toggleFullscreen],
@@ -30,10 +28,8 @@ export const CollectionExplorer: FC = () => {
   useKeyboardEvent(
     'keydown',
     'Escape',
-    (e) => {
-      if (fullscreenState === 'normal' || isTextfieldFocused()) return;
-      e.preventDefault();
-
+    () => {
+      if (checkTextfieldFocused() || fullscreenState === 'normal') return;
       exitFullscreen();
     },
     [exitFullscreen],
@@ -55,7 +51,7 @@ export const CollectionExplorer: FC = () => {
             </animated.div>
           </div>
 
-          <WorkDetails work={selectedWork} onToggleFullscreen={toggleFullscreen} />
+          <WorkDetailsAccordion work={selectedWork} onToggleFullscreen={toggleFullscreen} />
         </div>
       </main>
 
