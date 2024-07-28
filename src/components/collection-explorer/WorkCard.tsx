@@ -23,7 +23,7 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
             />
           )}
         </div>
-        <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg border border-text/50 bg-background px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
+        <p className="bg-paper absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
           x{work.assets.length}
         </p>
       </div>
@@ -78,11 +78,7 @@ export const WorkCard: FC<WorkCardProps> = memo(
         cardElement.offsetTop +
         cardElement.offsetHeight / 2 -
         scrollContainerElement.offsetHeight / 2;
-      animateScroll.start({
-        from: { y: scrollContainerRef.current?.scrollTop },
-        to: { y: scrollPosition },
-        reset: true,
-      });
+      animateScroll.start({ to: { y: scrollPosition } });
     }, [cardRef, scrollContainerRef, animateScroll]);
 
     useEffect(() => {
@@ -95,8 +91,8 @@ export const WorkCard: FC<WorkCardProps> = memo(
         onClick={() => onSelect(index)}
         tabIndex={-1}
         className={twMerge(
-          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none',
-          active ? 'border-text/60 bg-text/20' : 'hover:bg-text/10',
+          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-lg p-1 shadow-md focus:outline-none',
+          active ? 'bg-paper-accent' : 'bg-paper hover:bg-paper-hover',
         )}
       >
         <WorkCardContents work={work} />

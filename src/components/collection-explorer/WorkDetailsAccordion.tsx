@@ -67,7 +67,7 @@ export const WorkDetailsAccordion: FC<WorkDetailsAccordionProps> = ({
       toggleFavorite(work);
     },
     [toggleFavorite],
-    { control: false },
+    { shift: true, control: false },
   );
 
   useKeyboardEvent(
@@ -99,7 +99,7 @@ export const WorkDetailsAccordion: FC<WorkDetailsAccordionProps> = ({
   return (
     <div
       className={twMerge(
-        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] duration-1000',
+        'bg-paper flex min-h-10 flex-col overflow-y-hidden rounded-lg shadow-lg transition-[height] duration-1000',
         isExpanded ? 'h-1/2' : 'h-10',
       )}
     >

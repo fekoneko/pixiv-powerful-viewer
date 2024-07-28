@@ -7,7 +7,7 @@ export const ThemeButton: FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="absolute bottom-2 right-2 rounded-full px-[0.58rem] py-2 text-lg hover:bg-text/10 focus:bg-text/10 focus:outline-none"
+      className="focus:bg-paper/80 hover:bg-paper/80 absolute bottom-2 right-2 rounded-full px-[0.58rem] py-2 text-lg focus:outline-none"
     >
       {theme === 'dark' ? '🌙' : '💡'}
     </button>

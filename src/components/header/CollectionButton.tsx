@@ -42,12 +42,12 @@ export const CollectionButton: FC = () => {
     <div className="flex">
       <button
         onClick={showPickCollectionDialog}
-        className="whitespace-nowrap rounded-xl px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="whitespace-nowrap rounded-lg px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
         {collectionName ?? '< Select collection >'}
       </button>
       {recentPaths && (
-        <div className="rounded-xl has-[:focus]:bg-text-header/20 has-[:hover]:bg-text-header/20">
+        <div className="rounded-lg has-[:focus]:bg-text-header/20 has-[:hover]:bg-text-header/20">
           <select
             ref={recentSelectRef}
             className="mt-0.5 w-[16.5px] cursor-pointer bg-transparent [zoom:1.4] focus:outline-none"

@@ -24,7 +24,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
         </span>
       )}
     </p>
-    <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+    <div className="mb-2 mt-1 h-px w-full self-center rounded-full bg-text/30" />
 
     {work.description && (
       <>
@@ -33,7 +33,7 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
-        <div className="mb-2 mt-1 h-[2px] min-h-[2px] w-full self-center rounded-full bg-text/30" />
+        <div className="mb-2 mt-1 h-px w-full self-center rounded-full bg-text/30" />
       </>
     )}
 

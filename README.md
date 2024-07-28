@@ -40,7 +40,7 @@ This app allows you to view and search collection saved by [Powerful Pixiv Downl
 
 - `↑` / `↓` or `W` / `S` - select previous / next work
 - `←` / `→` or `A` / `D` - navigate pages within a work
-- `Enter` - add selected work to favorites
+- `Shift + Enter` - add selected work to favorites
 - `Ctrl + Enter` - view favorite works
 - `F` - toggle fullscreen mode
 - `Space` - open work details (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll the menu)
@@ -56,7 +56,7 @@ This app allows you to view and search collection saved by [Powerful Pixiv Downl
 > I didn't really ask for permission, but they're the great artist, I encourage you to [check out their work](https://www.pixiv.net/users/1688603) :)
 
 > [!NOTE]
-> Also these screenshots were taken on the _Electron_ version of the app. Sinse then I decided to move it to _Tauri_, but it looks mostly the same still
+> Also these screenshots were taken on the _Electron_ version of the app. Sinse then I decided to move it to _Tauri_ and changed the colors a bit. I hope I'll retake these screenshots before release :)
 
 ![image](https://github.com/fekoneko/pixiv-powerful-viewer/assets/55813967/f90a36f0-162d-419d-936d-ccf0a970b090)
 

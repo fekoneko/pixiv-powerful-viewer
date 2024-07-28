@@ -25,14 +25,14 @@ export const FavoriteButton: FC = () => {
       toggleFavorites();
     },
     [toggleFavorites],
-    { control: true },
+    { control: true, shift: false },
   );
 
   return (
     <button
       role="button"
       onClick={toggleFavorites}
-      className="absolute bottom-2 left-2 rounded-full px-[0.58rem] py-2 text-lg hover:bg-text/10 focus:bg-text/10 focus:outline-none"
+      className="hover:bg-paper/80 focus:bg-paper/80 absolute bottom-2 left-2 rounded-full px-[0.58rem] py-2 text-lg focus:outline-none"
     >
       {search === '#favorites' ? '❌' : '⭐'}
     </button>

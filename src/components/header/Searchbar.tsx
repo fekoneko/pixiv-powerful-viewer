@@ -36,7 +36,7 @@ export const Searchbar: FC = () => {
         e.preventDefault();
         inputRef.current?.blur();
       }}
-      className="flex min-w-0 grow basis-40 gap-1 rounded-full border-2 border-text-header"
+      className="flex min-w-0 grow basis-40 gap-1 rounded-full border border-text-header"
     >
       <input
         ref={inputRef}

@@ -70,8 +70,9 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
     useKeyboardEvent(
       'keydown',
       ['ArrowUp', 'KeyW'],
-      () => {
+      (e) => {
         if (checkTextfieldFocused() || !checkAndUpdateKeyboardTimeout()) return;
+        e.preventDefault();
         selectPrevious();
       },
       [checkAndUpdateKeyboardTimeout, selectPrevious],
@@ -81,8 +82,9 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
     useKeyboardEvent(
       'keydown',
       ['ArrowDown', 'KeyS'],
-      () => {
+      (e) => {
         if (checkTextfieldFocused() || !checkAndUpdateKeyboardTimeout()) return;
+        e.preventDefault();
         selectNext();
       },
       [checkAndUpdateKeyboardTimeout, selectNext],
