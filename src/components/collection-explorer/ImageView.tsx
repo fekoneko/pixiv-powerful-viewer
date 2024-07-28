@@ -6,7 +6,7 @@ export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   asset: ImageAsset;
 }
 
-export const AssetImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
+export const ImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
   useEffect(() => {
     const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     imageElement.setAttribute('id', asset.path);

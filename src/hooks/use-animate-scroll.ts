@@ -7,14 +7,13 @@ export type AnimateScroll = SpringRef<Scroll>;
 export const useAnimateScroll = (scrollContainerRef?: RefObject<HTMLElement>) => {
   const [, animateScroll]: [scroll: any, animateScroll: AnimateScroll] = useSpring(() => ({
     from: {
-      x: scrollContainerRef ? (scrollContainerRef.current?.scrollLeft ?? 0) : scrollX,
-      y: scrollContainerRef ? (scrollContainerRef.current?.scrollTop ?? 0) : scrollY,
+      x: scrollContainerRef?.current?.scrollLeft ?? scrollX,
+      y: scrollContainerRef?.current?.scrollTop ?? scrollY,
     },
-    onChange: (result) =>
-      (scrollContainerRef ? scrollContainerRef.current : window)?.scrollTo(
-        result.value.x,
-        result.value.y,
-      ),
+    onChange: (result) => {
+      const target = scrollContainerRef?.current ?? window;
+      target.scrollTo(result.value.x, result.value.y);
+    },
     reset: true,
   }));
 

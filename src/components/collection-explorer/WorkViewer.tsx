@@ -1,18 +1,19 @@
 import { FC, useEffect, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
+import { FullscreenState } from '@/hooks/use-fullscreen';
 import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
-import { AssetImageView } from './AssetImageView';
+import { ImageView } from './ImageView';
 
 const showControlsDelay = 1500;
 
 interface WorkViewProps {
   work: Work | undefined;
-  fullscreenMode?: boolean;
+  fullscreenState: FullscreenState;
 }
 
-export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
+export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [controlsShown, setControlsShown] = useState(false);
   const [, updateShowControlsTimeout] = useTimeout();
@@ -60,18 +61,19 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenMode }) => {
     <div
       onMouseMove={showControls}
       className={
-        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius] duration-1000' +
+        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg transition-[border-radius]' +
         (!controlsShown ? ' cursor-none' : '') +
-        (!fullscreenMode ? ' rounded-xl border-2 border-text/30' : '')
+        (fullscreenState !== 'fullscreen' ? ' rounded-xl' : '') +
+        (fullscreenState === 'normal' ? ' border-2 border-text/30' : '')
       }
     >
       {work?.assets?.length && work.assets[pageNumber] ? (
         <>
-          <AssetImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
+          <ImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
             <div className="absolute size-full bg-background" />
-            <AssetImageView
+            <ImageView
               asset={work.assets[pageNumber]}
               className="size-full scale-[3] blur-[0.4rem]"
             />

@@ -3,7 +3,7 @@ import { Fragment } from 'react/jsx-runtime';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { Work } from '@/types/collection';
 
-import { AssetImageView } from './AssetImageView';
+import { ImageView } from './ImageView';
 
 interface WorkCardContents {
   work: Work;
@@ -15,7 +15,7 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
       <div className="relative size-full">
         <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
           {work.assets.length && (
-            <AssetImageView
+            <ImageView
               asset={work.assets[0]}
               className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
             />
