@@ -51,7 +51,7 @@ export const Searchbar: FC = () => {
       <button
         onClick={toggleKanaConversion}
         type="button"
-        className="aspect-square rounded-3xl px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="w-10 rounded-3xl px-3 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
         title="Toggle romaji-to-kana conversion"
       >
         {kanaConversion ? 'カ' : 'A'}

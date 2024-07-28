@@ -74,8 +74,6 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
           work,
         ];
 
-        console.log('newFavorites', newFavorites);
-
         setFavorites(newFavorites);
         await writeCollectionList(collectionPath, 'favorites', newFavorites);
       } catch (error) {

@@ -10,11 +10,11 @@ export const useWanakana = (
   enabled?: boolean,
 ) => {
   useEffect(() => {
-    if (!enabled) return;
     const bindElement = bindRef.current;
-    if (!bindElement) return;
+    if (!enabled || !bindElement) return;
 
     bind(bindElement, options);
+
     return () => unbind(bindElement);
   }, [enabled, bindRef, options]);
 };
