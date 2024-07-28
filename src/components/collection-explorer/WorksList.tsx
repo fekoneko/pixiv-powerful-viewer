@@ -6,6 +6,7 @@ import { Work } from '@/types/collection';
 
 import { WorkCard } from './WorkCard';
 import { RenderInViewport } from './RenderInViewport';
+import { twMerge } from 'tailwind-merge';
 
 const workCardChunkSize = 20;
 const keyboardSelectionDelay = 150;
@@ -159,11 +160,11 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork }) => {
   return (
     <div className="flex flex-col">
       <div
-        className={
-          (!scrolledToTheTop ? 'work-list-gradient-top ' : '') +
-          (!scrolledToTheBottom ? 'work-list-gradient-bottom ' : '') +
-          'flex grow flex-col overflow-hidden'
-        }
+        className={twMerge(
+          !scrolledToTheTop && 'work-list-gradient-top',
+          !scrolledToTheBottom && 'work-list-gradient-bottom',
+          'flex grow flex-col overflow-hidden',
+        )}
       >
         <div
           ref={scrollContainerRef}

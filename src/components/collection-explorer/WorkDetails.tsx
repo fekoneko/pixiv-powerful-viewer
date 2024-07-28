@@ -3,6 +3,7 @@ import { useAnimateScroll, useCollection, useKeyboardEvent } from '@/hooks';
 import { isTextfieldFocused } from '@/utils/is-textfield-focused';
 import { openExternal } from '@/utils/open';
 import { Work } from '@/types/collection';
+import { twMerge } from 'tailwind-merge';
 
 interface WorkDetailsContentsProps {
   work: Work;
@@ -237,12 +238,12 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, onToggleFullscreen }) 
 
   return (
     <div
-      className={
-        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] duration-1000' +
-        (expanded ? ' h-1/2' : ' h-10')
-      }
+      className={twMerge(
+        'flex min-h-10 flex-col overflow-y-hidden rounded-xl border-2 border-text/30 shadow-lg transition-[height] duration-1000',
+        expanded ? 'h-1/2' : 'h-10',
+      )}
     >
-      <div className={'flex h-10 gap-1 p-1' + (expanded ? ' shadow- z-10' : '')}>
+      <div className={twMerge('flex h-10 gap-1 p-1', expanded && 'shadow- z-10')}>
         <button onClick={toggleExpanded} className="flex min-w-1 grow gap-1 focus:outline-none">
           <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
             {expanded ? '▼' : '▲'}

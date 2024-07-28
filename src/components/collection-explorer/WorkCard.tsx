@@ -4,6 +4,7 @@ import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { Work } from '@/types/collection';
 
 import { ImageView } from './ImageView';
+import { twMerge } from 'tailwind-merge';
 
 interface WorkCardContents {
   work: Work;
@@ -90,10 +91,10 @@ export const WorkCard: FC<WorkCardProps> = memo(
         ref={cardRef}
         onClick={() => onSelect(index)}
         tabIndex={-1}
-        className={
-          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none' +
-          (active ? ' border-text/60 bg-text/20' : ' hover:bg-text/10')
-        }
+        className={twMerge(
+          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-xl border-2 border-text/30 p-1 shadow-md focus:outline-none',
+          active ? 'border-text/60 bg-text/20' : 'hover:bg-text/10',
+        )}
       >
         <WorkCardContents work={work} />
       </button>
