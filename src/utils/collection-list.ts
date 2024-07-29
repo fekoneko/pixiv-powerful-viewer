@@ -17,10 +17,11 @@ export const readCollectionList = async (
   listName: string,
   collectionWorks: Work[],
 ): Promise<Work[] | null> => {
-  const relativePaths: string[] = await invoke('read_collection_list', {
+  const relativePaths: string[] | null = await invoke('read_collection_list', {
     collectionPath: collectionPath,
     listName: listName,
   });
+  if (!relativePaths) return null;
 
   return [...new Set(relativePaths)]
     .map((relativePath) => collectionWorks.find((work) => work.relativePath === relativePath))

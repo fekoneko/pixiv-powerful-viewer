@@ -5,6 +5,7 @@ import { isInCollectionList } from '@/utils/collection-list';
 import { readCollectionList, writeCollectionList } from '@/utils/collection-list';
 import { sep } from '@tauri-apps/api/path';
 import { Work, WorkLike } from '@/types/collection';
+import { useOutput } from '@/hooks';
 
 export interface CollectionContextValue {
   collectionPath: string | null;
@@ -30,28 +31,46 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collectionWorks, setCollectionWorks] = useState<Work[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [favorites, setFavorites] = useState<Work[] | null>(null);
+  const { newOutput, updateOutputStatus, logToOutput } = useOutput();
 
-  const switchCollection = useCallback(async (collectionPath: string) => {
-    setCollectionPath(collectionPath);
-    setCollectionName(collectionPath.split(sep).reverse()[0]);
-    setIsLoading(true);
+  const switchCollection = useCallback(
+    async (collectionPath: string) => {
+      const collectionName = collectionPath.split(sep).reverse()[0];
 
-    try {
-      const [works, warnings] = await readCollectionUtil(collectionPath);
-      warnings.forEach(console.warn);
-      setCollectionWorks(works);
-      // TODO: warnings.forEach(showToast);
+      setCollectionPath(collectionPath);
+      setCollectionName(collectionName);
 
-      const favorites = await readCollectionList(collectionPath, 'favorites', works);
-      setFavorites(favorites);
-    } catch (error) {
-      // TODO: showToast(error instanceof Error ? error.message : String(error));
-      setCollectionWorks(null);
-      setFavorites(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      setIsLoading(true);
+      newOutput({
+        pendingMessage: 'Loading collection...',
+        successMessage: 'Collection loaded',
+        errorMessage: 'Failed to load collection',
+      });
+
+      try {
+        const [works, warnings] = await readCollectionUtil(collectionPath);
+        setCollectionWorks(works);
+        warnings.forEach((warning) => logToOutput(warning, 'warning'));
+
+        const favorites = await readCollectionList(collectionPath, 'favorites', works);
+        setFavorites(favorites);
+        console.log(favorites);
+        if (!favorites) logToOutput('No favorites found in this collection', 'info');
+
+        updateOutputStatus('success');
+      } catch (error) {
+        setCollectionWorks(null);
+        setFavorites(null);
+
+        const message = error instanceof Error ? error.message : String(error);
+        logToOutput(message, 'error');
+        updateOutputStatus('error');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [newOutput, updateOutputStatus, logToOutput],
+  );
 
   const searchCollection = useCallback(
     (query: string) => {

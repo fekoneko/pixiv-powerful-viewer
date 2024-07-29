@@ -4,6 +4,7 @@ export { useEventListener } from './use-event-listener';
 export { useFullscreen } from './use-fullscreen';
 export { useKeyboardEvent } from './use-keyboard-event';
 export { useLocalStorage } from './use-local-storage';
+export { useOutput } from './use-output';
 export { useTimeout } from './use-timeout';
 export { useSearch } from './use-search';
 export { useWanakana } from './use-wanakana';

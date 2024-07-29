@@ -1,24 +1,27 @@
 import { FC } from 'react';
 
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { OutputProvider } from '@/providers/OutputProvider';
 import { CollectionProvider } from '@/providers/CollectionProvider';
 import { SearchProvider } from '@/providers/SearchProvider';
 
 import { Header } from '@/components/header';
 import { CollectionExplorer } from '@/components/collection-explorer';
 import { FavoriteButton, ThemeButton } from '@/components/hover-buttons';
-import { ThemeProvider } from '@/providers/ThemeProvider';
 
 export const App: FC = () => (
   <ThemeProvider>
-    <CollectionProvider>
-      <SearchProvider>
-        <Header />
+    <OutputProvider>
+      <CollectionProvider>
+        <SearchProvider>
+          <Header />
 
-        <CollectionExplorer />
+          <CollectionExplorer />
 
-        <FavoriteButton />
-        <ThemeButton />
-      </SearchProvider>
-    </CollectionProvider>
+          <FavoriteButton />
+          <ThemeButton />
+        </SearchProvider>
+      </CollectionProvider>
+    </OutputProvider>
   </ThemeProvider>
 );

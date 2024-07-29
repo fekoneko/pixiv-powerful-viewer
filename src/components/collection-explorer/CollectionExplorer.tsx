@@ -8,7 +8,7 @@ import { WorksList } from './WorksList';
 import { WorkViewer } from './WorkViewer';
 import { WorkDetailsAccordion } from './WorkDetailsAccordion';
 import { ExitFullscreenButton } from '@/components/collection-explorer/ExitFullscreenButton';
-import { OperationOutputAccordion } from '@/components/collection-explorer/OperationOutputAccordion';
+import { OutputAccordion } from '@/components/collection-explorer/OutputAccordion';
 
 export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
@@ -45,7 +45,7 @@ export const CollectionExplorer: FC = () => {
       <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden px-[10%]">
         <div className="flex flex-col py-2">
           <WorksList onSelectWork={setSelectedWork} allowDeselect={fullscreenState === 'normal'} />
-          <OperationOutputAccordion />
+          <OutputAccordion />
         </div>
 
         <div className="flex flex-col gap-2 py-2">

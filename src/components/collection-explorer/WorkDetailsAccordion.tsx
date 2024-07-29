@@ -35,11 +35,7 @@ export const WorkDetailsAccordion: FC<WorkDetailsAccordionProps> = ({
   return (
     <Accordion
       hotkey={{ key: 'Space', modifiers: { control: false } }}
-      mainSection={(isExpanded) => (
-        <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
-          {isExpanded ? 'Details' : work.title}
-        </h2>
-      )}
+      mainSection={(isExpanded) => <h2>{isExpanded ? 'Details' : work.title}</h2>}
       rightSection={() => (
         <>
           <button

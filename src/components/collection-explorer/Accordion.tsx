@@ -103,9 +103,9 @@ export const Accordion: FC<AccordionProps> = ({ mainSection, contents, rightSect
           <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
             {isExpanded ? '▼' : '▲'}
           </div>
-          <h2 className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
+          <div className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
             {mainSection(isExpanded)}
-          </h2>
+          </div>
         </button>
 
         <div className="flex gap-1">{rightSection?.(isExpanded)}</div>

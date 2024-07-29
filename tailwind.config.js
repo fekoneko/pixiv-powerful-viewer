@@ -13,6 +13,8 @@ export const plugins = [
       text: '#9999aa',
       'text-accent': '#ccccdd',
       'text-header': '#ffffff',
+      'text-warning': '#ccb900',
+      'text-error': '#dd0000',
     },
     light: {
       primary: '#0096fa',
@@ -23,6 +25,8 @@ export const plugins = [
       text: '#777790',
       'text-accent': '#444466',
       'text-header': '#ffffff',
+      'text-warning': '#aa9900',
+      'text-error': '#ff0000',
     },
   }),
 ];
