@@ -8,6 +8,8 @@ export const readCollection = async (
 
 // TODO: Implement better search
 export const searchCollection = (collectionWorks: Work[], query: string): Work[] => {
+  if (!query) return collectionWorks;
+
   const searchKeywords = query
     .split(',')
     .map((keyword) =>

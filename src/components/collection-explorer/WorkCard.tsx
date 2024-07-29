@@ -19,11 +19,11 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
           {work.assets.length && (
             <ImageView
               asset={work.assets[0]}
-              className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
+              className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.18] [:hover>&]:shadow-md"
             />
           )}
         </div>
-        <p className="bg-paper absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
+        <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg bg-paper px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
           x{work.assets.length}
         </p>
       </div>

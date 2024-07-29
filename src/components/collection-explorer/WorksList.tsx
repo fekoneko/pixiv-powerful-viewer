@@ -32,7 +32,7 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="-ml-4 flex min-h-0 grow flex-col">
       <div
         className={twMerge(
           !scrolledToTheTop && 'work-list-gradient-top',

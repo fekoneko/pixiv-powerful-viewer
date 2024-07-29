@@ -16,7 +16,7 @@ export const readCollectionList = async (
   collectionPath: string,
   listName: string,
   collectionWorks: Work[],
-): Promise<Work[]> => {
+): Promise<Work[] | null> => {
   const relativePaths: string[] = await invoke('read_collection_list', {
     collectionPath: collectionPath,
     listName: listName,

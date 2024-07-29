@@ -1,7 +1,7 @@
 import { DependencyList } from 'react';
 import { useEventListener } from '@/hooks';
 
-type Modifiers = {
+export type Modifiers = {
   control?: boolean;
   shift?: boolean;
   alt?: boolean;

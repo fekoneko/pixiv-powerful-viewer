@@ -54,12 +54,9 @@ pub async fn read_collection(
 
     let collection_path = Path::new(&collection_path);
     if !collection_path.is_dir() {
-        return Ok((
-            vec![],
-            vec![format!(
-                "Collection is not a directory: {}",
-                collection_path.display()
-            )],
+        return Err(format!(
+            "Collection is not a directory: {}",
+            collection_path.display()
         ));
     }
 
@@ -336,15 +333,16 @@ fn add_asset(asset: &PathBuf, work: &mut Work) {
 pub async fn read_collection_list(
     collection_path: String,
     list_name: String,
-) -> Result<Vec<String>, String> {
+) -> Option<Vec<String>> {
     let path = format!("{collection_path}{MAIN_SEPARATOR}.{list_name}");
 
-    fs::read_to_string(path)
-        .await
-        .map_err(|error| error.to_string())?
-        .lines()
-        .map(|line| Ok(line.to_string()))
-        .collect()
+    if let Ok(list_contents) = fs::read_to_string(path).await {
+        let lines = list_contents.lines().map(|line| line.to_string()).collect();
+
+        Some(lines)
+    } else {
+        None
+    }
 }
 
 #[tauri::command]

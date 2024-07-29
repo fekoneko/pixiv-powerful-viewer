@@ -37,9 +37,10 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
     setIsLoading(true);
 
     try {
-      const [works] = await readCollectionUtil(collectionPath);
+      const [works, warnings] = await readCollectionUtil(collectionPath);
+      warnings.forEach(console.warn);
       setCollectionWorks(works);
-      // TODO: errors.forEach(showToast);
+      // TODO: warnings.forEach(showToast);
 
       const favorites = await readCollectionList(collectionPath, 'favorites', works);
       setFavorites(favorites);
