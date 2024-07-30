@@ -40,12 +40,14 @@ This app allows you to view and search collection saved by [Powerful Pixiv Downl
 
 - `↑` / `↓` or `W` / `S` - select previous / next work
 - `←` / `→` or `A` / `D` - navigate pages within a work
+- `/` or `\` - go to searchbar (`Esc` to exit)
+- `F` - toggle fullscreen mode
+- `` Alt + ` `` - toggle romaji-to-kana conversion in search
 - `Shift + Enter` - add selected work to favorites
 - `Ctrl + Enter` - view favorite works
-- `F` - toggle fullscreen mode
-- `Space` - open work details (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll the menu)
-- `/` or `\` - go to search field (`Esc` to exit)
-- `` Ctrl + ` `` - toggle romaji-to-kana conversion
+- `` Ctrl + ` `` - show / hide output console
+- `Ctrl + Space` - expand output console (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll the menu)
+- `Space` - expand work details panel (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll the menu)
 - `Ctrl + O` - open collection
 - `Ctrl + Tab` - focus on _recent collections_ button
 

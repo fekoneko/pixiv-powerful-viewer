@@ -91,10 +91,15 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
       { control: false },
     );
 
-    useKeyboardEvent('keydown', 'Escape', () => {
-      if (checkTextfieldFocused() || !allowDeselect) return;
-      setSelectedIndex(null);
-    });
+    useKeyboardEvent(
+      'keydown',
+      'Escape',
+      () => {
+        if (checkTextfieldFocused() || !allowDeselect) return;
+        setSelectedIndex(null);
+      },
+      [allowDeselect],
+    );
 
     useEffect(makeSelectionValid, [makeSelectionValid]);
 

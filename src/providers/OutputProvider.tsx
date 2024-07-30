@@ -22,7 +22,6 @@ export interface OutputContextValue {
   newOutput: (output: Omit<Output, 'logs' | 'status'>) => void;
   updateOutputStatus: (status: OutputStatus) => void;
   logToOutput: (message: string, status?: OutputLogStatus) => void;
-  clearOutput: () => void;
 }
 
 export const OutputContext = createContext<OutputContextValue | null>(null);
@@ -44,10 +43,6 @@ export const OutputProvider: FC<PropsWithChildren> = ({ children }) => {
     );
   }, []);
 
-  const clearOutput = useCallback(() => {
-    setOutput(null);
-  }, []);
-
   return (
     <OutputContext.Provider
       value={{
@@ -55,7 +50,6 @@ export const OutputProvider: FC<PropsWithChildren> = ({ children }) => {
         newOutput,
         updateOutputStatus,
         logToOutput,
-        clearOutput,
       }}
     >
       {children}

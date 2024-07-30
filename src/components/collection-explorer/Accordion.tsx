@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useRef, useState } from 'react';
+import { FC, HTMLAttributes, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { twMerge } from 'tailwind-merge';
@@ -30,14 +30,22 @@ const WithHotkey: FC<WithHotkeyProps> = ({ hotkey, toggleExpanded }) => {
   return null;
 };
 
-export interface AccordionProps {
+export interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
   mainSection: (isExpanded: boolean) => ReactNode;
   contents: (isExpanded: boolean) => ReactNode;
   rightSection?: (isExpanded: boolean) => ReactNode;
   hotkey?: Hotkey;
+  forceCollapsed?: boolean;
 }
 
-export const Accordion: FC<AccordionProps> = ({ mainSection, contents, rightSection, hotkey }) => {
+export const Accordion: FC<AccordionProps> = ({
+  mainSection,
+  contents,
+  rightSection,
+  hotkey,
+  forceCollapsed,
+  ...divProps
+}) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -91,17 +99,23 @@ export const Accordion: FC<AccordionProps> = ({ mainSection, contents, rightSect
     { control: true },
   );
 
+  useEffect(() => {
+    if (forceCollapsed) setIsExpanded(false);
+  }, [forceCollapsed]);
+
   return (
     <div
+      {...divProps}
       className={twMerge(
         'flex h-10 flex-col gap-1 overflow-y-hidden rounded-lg bg-paper shadow-lg transition-[min-height] duration-500',
         isExpanded ? 'min-h-[50%]' : 'min-h-10',
+        divProps.className,
       )}
     >
       <div className={twMerge('flex h-10 gap-1 p-1', isExpanded && 'shadow- z-10')}>
         <button onClick={toggleExpanded} className="flex min-w-1 grow gap-1 focus:outline-none">
-          <div className="items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
-            {isExpanded ? '▼' : '▲'}
+          <div className="w-7 items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
+            {forceCollapsed ? '' : isExpanded ? '▼' : '▲'}
           </div>
           <div className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
             {mainSection(isExpanded)}
@@ -115,7 +129,7 @@ export const Accordion: FC<AccordionProps> = ({ mainSection, contents, rightSect
         {contents(isExpanded)}
       </div>
 
-      {hotkey && <WithHotkey hotkey={hotkey} toggleExpanded={toggleExpanded} />}
+      {hotkey && !forceCollapsed && <WithHotkey hotkey={hotkey} toggleExpanded={toggleExpanded} />}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useTimeout = (): [
   timeoutId: ReturnType<typeof setTimeout> | undefined,
@@ -14,6 +14,9 @@ export const useTimeout = (): [
     });
     return newTimeoutId;
   }, []) as typeof setTimeout;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => clearTimeout(timeoutId), []);
 
   return [timeoutId, updateTimeout];
 };

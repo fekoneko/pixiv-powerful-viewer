@@ -28,7 +28,7 @@ export const Searchbar: FC = () => {
 
   useKeyboardEvent('keydown', 'Escape', () => inputRef.current?.blur(), [inputRef]);
 
-  useKeyboardEvent('keydown', 'Backquote', toggleKanaConversion, [], { control: true });
+  useKeyboardEvent('keydown', 'Backquote', toggleKanaConversion, [], { alt: true });
 
   return (
     <form
