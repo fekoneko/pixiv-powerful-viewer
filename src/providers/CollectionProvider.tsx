@@ -54,7 +54,6 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
         const favorites = await readCollectionList(collectionPath, 'favorites', works);
         setFavorites(favorites);
-        console.log(favorites);
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
         updateOutputStatus('success');

@@ -65,7 +65,8 @@ export const OutputAccordion: FC = () => {
 
   return (
     <Accordion
-      className={twMerge('transition-all duration-200', isHidden && '-mt-12 translate-y-12')}
+      className={twMerge('mb-2 transition-all duration-200', isHidden && '-mt-12 translate-y-12')}
+      // TODO: Should I move isExpanded state a level higher (question mark??)
       hotkey={{ key: 'Space', modifiers: { control: true } }}
       forceCollapsed={isHidden || output?.logs.length === 0}
       mainSection={() => {

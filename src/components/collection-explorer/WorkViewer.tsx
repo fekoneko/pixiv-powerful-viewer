@@ -66,7 +66,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
     <div
       onMouseMove={showControls}
       className={twMerge(
-        'bg-paper relative z-20 flex grow basis-0 items-center justify-center overflow-hidden shadow-lg',
+        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden bg-paper shadow-lg',
         fullscreenState !== 'fullscreen' && 'rounded-lg',
         work && !controlsShown && 'cursor-none',
       )}
@@ -76,12 +76,12 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
           <ImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
-            <div className="bg-paper absolute size-full" />
+            <div className="absolute size-full bg-paper" />
             <ImageView
               asset={work.assets[pageNumber]}
               className="size-full scale-[3] blur-[0.4rem]"
             />
-            <div className="bg-paper/40 absolute size-full" />
+            <div className="absolute size-full bg-paper/40" />
           </div>
 
           <button

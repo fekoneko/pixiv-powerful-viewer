@@ -42,14 +42,14 @@ export const CollectionExplorer: FC = () => {
 
   return (
     <>
-      <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden px-[10%]">
-        <div className="flex flex-col py-2">
+      <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden px-[8%]">
+        <div className="flex flex-col">
           <WorksList onSelectWork={setSelectedWork} allowDeselect={fullscreenState === 'normal'} />
           <OutputAccordion />
         </div>
 
-        <div className="flex flex-col gap-2 py-2">
-          <div ref={viewerRef} className="grow">
+        <div className="flex flex-col gap-2">
+          <div ref={viewerRef} className="mt-2 grow">
             <animated.div style={fullscreenStyles} className="flex flex-col">
               <WorkViewer work={selectedWork} fullscreenState={fullscreenState} />
             </animated.div>
