@@ -7,8 +7,8 @@ import { Work } from '@/types/collection';
 import { WorksList } from './WorksList';
 import { WorkViewer } from './WorkViewer';
 import { WorkDetailsAccordion } from './WorkDetailsAccordion';
-import { ExitFullscreenButton } from '@/components/collection-explorer/ExitFullscreenButton';
-import { OutputAccordion } from '@/components/collection-explorer/OutputAccordion';
+import { ExitFullscreenButton } from './ExitFullscreenButton';
+import { OutputAccordion } from './OutputAccordion';
 
 export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
@@ -48,8 +48,8 @@ export const CollectionExplorer: FC = () => {
           <OutputAccordion />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div ref={viewerRef} className="mt-2 grow">
+        <div className="flex flex-col">
+          <div ref={viewerRef} className="my-2 grow">
             <animated.div style={fullscreenStyles} className="flex flex-col">
               <WorkViewer work={selectedWork} fullscreenState={fullscreenState} />
             </animated.div>

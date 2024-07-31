@@ -3,7 +3,7 @@ import { useKeyboardEvent, useSearch, useWanakana } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 export const Searchbar: FC = () => {
-  const { search, setSearch } = useSearch();
+  const { query: search, setSearch } = useSearch();
   const [kanaConversion, setKanaConversion] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInputInFocus, setIsInputInFocus] = useState(false);

@@ -1,11 +1,12 @@
-import { PropsWithChildren, createContext, useCallback, useState } from 'react';
-import { readCollection as readCollectionUtil } from '@/utils/collection';
+import { PropsWithChildren, createContext, useCallback, useRef, useState } from 'react';
+import { createSearchIndex, readCollection } from '@/utils/collection';
 import { searchCollection as searchCollectionUtil } from '@/utils/collection';
 import { isInCollectionList } from '@/utils/collection-list';
 import { readCollectionList, writeCollectionList } from '@/utils/collection-list';
+import { useOutput } from '@/hooks';
 import { sep } from '@tauri-apps/api/path';
 import { Work, WorkLike } from '@/types/collection';
-import { useOutput } from '@/hooks';
+import { Document } from 'flexsearch';
 
 export interface CollectionContextValue {
   collectionPath: string | null;
@@ -13,7 +14,7 @@ export interface CollectionContextValue {
   collectionWorks: Work[] | null;
   switchCollection: (collectionPath: string) => Promise<void>;
   isLoading: boolean;
-  searchCollection: (query: string) => Work[] | null;
+  searchCollection: (query: string) => Promise<Work[] | null>;
 
   favorites: Work[] | null;
   addToFavorites: (work: Work) => Promise<void>;
@@ -31,6 +32,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collectionWorks, setCollectionWorks] = useState<Work[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [favorites, setFavorites] = useState<Work[] | null>(null);
+  const searchIndexRef = useRef<Document<Work> | null>(null);
   const { newOutput, updateOutputStatus, logToOutput } = useOutput();
 
   const switchCollection = useCallback(
@@ -48,7 +50,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       });
 
       try {
-        const [works, warnings] = await readCollectionUtil(collectionPath);
+        const [works, warnings] = await readCollection(collectionPath);
         setCollectionWorks(works);
         warnings.forEach((warning) => logToOutput(warning, 'warning'));
 
@@ -56,10 +58,14 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         setFavorites(favorites);
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
+        searchIndexRef.current = createSearchIndex();
+        works.forEach((work) => searchIndexRef.current?.add(work)); // TODO: addAsync
+
         updateOutputStatus('success');
       } catch (error) {
         setCollectionWorks(null);
         setFavorites(null);
+        searchIndexRef.current = null;
 
         const message = error instanceof Error ? error.message : String(error);
         logToOutput(message, 'error');
@@ -72,11 +78,12 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   );
 
   const searchCollection = useCallback(
-    (query: string) => {
-      if (!collectionWorks) return null;
+    async (query: string) => {
+      if (!collectionWorks || !searchIndexRef.current) return null;
+      if (query === '') return collectionWorks;
       if (query === '#favorites') return favorites;
 
-      return searchCollectionUtil(collectionWorks, query);
+      return searchCollectionUtil(collectionWorks, searchIndexRef.current, query);
     },
     [collectionWorks, favorites],
   );
@@ -113,8 +120,10 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
         setFavorites(newFavorites);
         await writeCollectionList(collectionPath, 'favorites', newFavorites);
-      } catch (error) {
+      } catch {
         // TODO: showToast(error instanceof Error ? error.message : String(error));
+        // TODO: actually it would make sense to put it in the same output as the collection loading,
+        // but change title or something to indicate that error occured, idk
       }
     },
     [collectionPath, isLoading, favorites],
@@ -126,7 +135,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
       setFavorites([]);
       await writeCollectionList(collectionPath, 'favorites', []);
-    } catch (error) {
+    } catch {
       // TODO: showToast(error instanceof Error ? error.message : String(error));
     }
   }, [collectionPath, isLoading]);

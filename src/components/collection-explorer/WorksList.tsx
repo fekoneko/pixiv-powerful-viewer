@@ -1,8 +1,8 @@
-import { FC, useMemo, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useSearch } from '@/hooks';
 import { Work } from '@/types/collection';
 
-import { WorkListChunks } from '@/components/collection-explorer/WorkListChunks';
+import { WorkListChunks } from './WorkListChunks';
 
 interface WorksListProps {
   onSelectWork: (selectedWork: Work | null) => void;
@@ -12,10 +12,20 @@ interface WorksListProps {
 export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) => {
   const { search } = useSearch();
   const { searchCollection, clearFavorites } = useCollection();
-  const works = useMemo(() => searchCollection(search), [search, searchCollection]);
+  const [works, setWorks] = useState<Work[] | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
+
+  useEffect(() => {
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+    searchCollection(search).then((works) => !signal.aborted && setWorks(works));
+    // TODO: maybe handle loading state
+
+    return () => abortControllerRef.current?.abort();
+  }, [search, searchCollection]);
 
   return (
     <div className="-ml-3.5 flex min-h-0 grow flex-col">
