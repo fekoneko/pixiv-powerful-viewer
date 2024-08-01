@@ -33,48 +33,53 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(false);
   const [favorites, setFavorites] = useState<Work[] | null>(null);
   const searchIndexRef = useRef<Document<Work> | null>(null);
-  const { newOutput, updateOutputStatus, logToOutput } = useOutput();
+  const AbortControllerRef = useRef<AbortController | null>(null);
+
+  const { newOutput, settleOutput, logToOutput } = useOutput();
 
   const switchCollection = useCallback(
     async (collectionPath: string) => {
       const collectionName = collectionPath.split(sep).reverse()[0];
-
       setCollectionPath(collectionPath);
       setCollectionName(collectionName);
 
       setIsLoading(true);
-      newOutput({
-        pendingMessage: 'Loading collection...',
-        successMessage: 'Collection loaded',
-        errorMessage: 'Failed to load collection',
-      });
+      newOutput();
+
+      AbortControllerRef.current?.abort();
+      AbortControllerRef.current = new AbortController();
+      const signal = AbortControllerRef.current.signal;
 
       try {
         const [works, warnings] = await readCollection(collectionPath);
-        setCollectionWorks(works);
+        if (signal.aborted) return;
         warnings.forEach((warning) => logToOutput(warning, 'warning'));
 
         const favorites = await readCollectionList(collectionPath, 'favorites', works);
-        setFavorites(favorites);
+        if (signal.aborted) return;
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
+        setCollectionWorks(works);
+        setFavorites(favorites);
         searchIndexRef.current = createSearchIndex();
         works.forEach((work) => searchIndexRef.current?.add(work)); // TODO: addAsync
 
-        updateOutputStatus('success');
+        setIsLoading(false);
+        settleOutput();
       } catch (error) {
+        if (signal.aborted) return;
+        const message = error instanceof Error ? error.message : String(error);
+        logToOutput(message, 'error');
+
         setCollectionWorks(null);
         setFavorites(null);
         searchIndexRef.current = null;
 
-        const message = error instanceof Error ? error.message : String(error);
-        logToOutput(message, 'error');
-        updateOutputStatus('error');
-      } finally {
         setIsLoading(false);
+        settleOutput();
       }
     },
-    [newOutput, updateOutputStatus, logToOutput],
+    [newOutput, settleOutput, logToOutput],
   );
 
   const searchCollection = useCallback(

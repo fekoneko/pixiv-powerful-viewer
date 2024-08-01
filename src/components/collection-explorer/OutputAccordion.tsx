@@ -1,28 +1,31 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { useKeyboardEvent, useOutput, useTimeout } from '@/hooks';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { useKeyboardEvent, useOutput } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { OutputLog } from '@/providers/OutputProvider';
 
 import { Accordion } from './Accordion';
 
 const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
-  if (log.status === 'info')
-    return (
-      <p className="text-sm text-text">
-        <span className="rounded border border-text px-1.5">INFO</span> {log.message}
-      </p>
-    );
+  let badgeTextColor;
+  let bargeBorderColor;
 
-  if (log.status === 'warning')
-    return (
-      <p className="text-sm text-text-warning">
-        <span className="rounded border border-text-warning px-1.5">WARNING</span> {log.message}
-      </p>
-    );
+  if (log.status === 'error') {
+    badgeTextColor = 'text-text-error';
+    bargeBorderColor = 'border-text-error';
+  } else if (log.status === 'warning') {
+    badgeTextColor = 'text-text-warning';
+    bargeBorderColor = 'border-text-warning';
+  } else {
+    badgeTextColor = 'text-text';
+    bargeBorderColor = 'border-text';
+  }
 
   return (
-    <p className="text-sm text-text-error">
-      <span className="rounded border border-text-error px-1.5">ERROR</span> {log.message}
+    <p className={twMerge('text-sm', badgeTextColor)}>
+      <span className={twMerge('rounded border px-1.5', bargeBorderColor)}>
+        {log.status.toUpperCase()}
+      </span>{' '}
+      {log.message}
     </p>
   );
 };
@@ -33,12 +36,6 @@ const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
 export const OutputAccordion: FC = () => {
   const { output } = useOutput();
   const [isHidden, setIsHidden] = useState(true);
-  const [, updateHidingTimeout] = useTimeout();
-
-  const hasWarningsOrErrors = useMemo(
-    () => output?.logs.find((log) => log.status !== 'info'),
-    [output],
-  );
 
   const toggleHidden = useCallback(() => setIsHidden((prev) => !prev), []);
 
@@ -54,25 +51,31 @@ export const OutputAccordion: FC = () => {
   );
 
   useEffect(() => {
-    if (output?.status === 'pending' || output?.status === 'error' || hasWarningsOrErrors) {
-      setIsHidden(false);
-    } else if (output?.status === 'success') {
-      updateHidingTimeout(() => setIsHidden(true), 1000);
-    } else {
-      setIsHidden(true);
-    }
-  }, [output?.status, updateHidingTimeout, hasWarningsOrErrors]);
+    if (!output?.status) setIsHidden(true);
+    else setIsHidden(false);
+  }, [output?.status]);
 
   return (
     <Accordion
-      className={twMerge('mb-2 transition-all duration-200', isHidden && '-mt-12 translate-y-12')}
+      className={twMerge(
+        'mb-2 transition-all duration-200',
+        isHidden && '-mt-12 translate-y-12',
+        output?.errorsCount && 'error-flash',
+        !output?.errorsCount && output?.warningsCount && 'warning-flash',
+        // TODO: Make new(Warnings / Errors)Count (not seen) property
+      )}
       // TODO: Should I move isExpanded state a level higher (question mark??)
       hotkey={{ key: 'Space', modifiers: { control: true } }}
-      forceCollapsed={isHidden || output?.logs.length === 0}
-      mainSection={() => {
-        if (output?.status === 'pending') return <p>{output.pendingMessage}</p>;
-        if (output?.status === 'success') return <p>{output.successMessage}</p>;
-        if (output?.status === 'error') return <p>{output.errorMessage}</p>;
+      forceCollapsed={isHidden || !output?.logs.length}
+      mainSection={(isExpanded) => {
+        // TODO: Display info / errors / warnings count
+        if (isExpanded) return <p>Collection output</p>;
+        if (!output) return null;
+        if (output.status === 'pending') return <p>Loading collection...</p>;
+        if (output.errorsCount) return <p>Failed to load collection</p>;
+        if (output.warningsCount) return <p>Some problems occured</p>;
+        if (output.infoCount) return <p>Collection output</p>;
+        return <p>Collection loaded</p>;
       }}
       rightSection={() => (
         <button

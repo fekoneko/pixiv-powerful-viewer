@@ -12,6 +12,30 @@
   src: url(@/assets/fonts/segoe-ui.ttf);
 }
 
+@keyframes error-flash {
+  20% {
+    color: theme('colors.text-error');
+  }
+  30% {
+    color: theme('colors.text-error');
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
+}
+
+@keyframes warning-flash {
+  20% {
+    color: theme('colors.text-warning');
+  }
+  30% {
+    color: theme('colors.text-warning');
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
+}
+
 @layer base {
   :root {
     font-family: 'Noto Sans JP', 'Segoe UI', Arial, sans-serif;
@@ -36,6 +60,15 @@
   }
   ::-webkit-scrollbar-thumb {
     @apply rounded-full bg-text/30 hover:bg-text/50;
+  }
+}
+
+@layer utilities {
+  .error-flash {
+    animation: error-flash 0.4s ease;
+  }
+  .warning-flash {
+    animation: warning-flash 0.4s ease;
   }
 }
 

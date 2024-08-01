@@ -3,7 +3,7 @@ import { CollectionContext, CollectionContextValue } from '@/providers/Collectio
 
 export const useCollection = (): CollectionContextValue => {
   const context = useContext(CollectionContext);
-  if (!context) throw new Error('useCollection must be used within a CollectionProvider');
+  if (!context) throw new Error('useCollection must be used within CollectionProvider');
 
   return context;
 };
