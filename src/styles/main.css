@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  src: url(@/assets/fonts/noto-sans-jp.ttf);
+  unicode-range: U+3000-303f, U+3040-309f, U+30a0-30ff, U+ff00-ffef, U+4e00-9faf;
+}
+@font-face {
+  font-family: 'Segoe UI';
+  src: url(@/assets/fonts/segoe-ui.ttf);
+}
+
+@keyframes error-flash {
+  20% {
+    color: theme('colors.text-error');
+  }
+  30% {
+    color: theme('colors.text-error');
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
+}
+
+@keyframes warning-flash {
+  20% {
+    color: theme('colors.text-warning');
+  }
+  30% {
+    color: theme('colors.text-warning');
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
+}
+
+@layer base {
+  :root {
+    font-family: 'Noto Sans JP', 'Segoe UI', Arial, sans-serif;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+  }
+
+  button,
+  a {
+    @apply transition-colors;
+  }
+
+  ::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply m-2 bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-text/30 hover:bg-text/50;
+  }
+}
+
+@layer utilities {
+  .error-flash {
+    animation: error-flash 0.4s ease;
+  }
+  .warning-flash {
+    animation: warning-flash 0.4s ease;
+  }
+}
+
+@layer components {
+  .work-list-mask {
+    mask-image: linear-gradient(
+      transparent 0,
+      white calc(0.8rem),
+      white calc(100% - 0.8rem),
+      transparent 100%
+    );
+  }
+}

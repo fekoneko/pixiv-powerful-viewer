@@ -1,0 +1,24 @@
+[package]
+name = "pixiv-powerful-viewer"
+version = "1.0.0-3"
+description = "This app allows you to view and search collection saved by Powerful Pixiv Downloader browser extension locally"
+authors = ["fekoneko"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = [ "protocol-asset", "dialog-open", "shell-open"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+futures = "0.3.30"
+tokio = "1.39.1"
+imagesize = "0.13.0"
+opener = "0.7.1"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
