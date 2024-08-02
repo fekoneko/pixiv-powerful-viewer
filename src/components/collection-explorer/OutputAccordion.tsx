@@ -68,7 +68,6 @@ export const OutputAccordion: FC = () => {
       hotkey={{ key: 'Space', modifiers: { control: true } }}
       forceCollapsed={isHidden || !output?.logs.length}
       mainSection={(isExpanded) => {
-        // TODO: Display info / errors / warnings count
         if (isExpanded) return <p>Collection output</p>;
         if (!output) return null;
         if (output.status === 'pending') return <p>Loading collection...</p>;
@@ -78,12 +77,24 @@ export const OutputAccordion: FC = () => {
         return <p>Collection loaded</p>;
       }}
       rightSection={() => (
-        <button
-          onClick={toggleHidden}
-          className="flex items-baseline rounded-md px-3 pb-2 pt-0.5 text-2xl leading-none hover:bg-text/20 focus:bg-text/20 focus:outline-none"
-        >
-          ×
-        </button>
+        <>
+          {output && (
+            <div className="my-0.5 flex items-center gap-2.5">
+              <p className="text-text">{output.infoCount}</p>
+              <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+              <p className="text-text-warning">{output.warningsCount}</p>
+              <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+              <p className="text-text-error">{output.errorsCount}</p>
+            </div>
+          )}
+
+          <button
+            onClick={toggleHidden}
+            className="flex items-baseline rounded-md px-2.5 pb-2 pt-0.5 text-2xl leading-none hover:bg-text/20 focus:bg-text/20 focus:outline-none"
+          >
+            ×
+          </button>
+        </>
       )}
       contents={() => (
         <div className="flex flex-col gap-2">

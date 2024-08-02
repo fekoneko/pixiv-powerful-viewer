@@ -112,12 +112,15 @@ export const Accordion: FC<AccordionProps> = ({
         divProps.className,
       )}
     >
-      <div className={twMerge('flex h-10 gap-1 p-1', isExpanded && 'shadow- z-10')}>
-        <button onClick={toggleExpanded} className="flex min-w-1 grow gap-1 focus:outline-none">
-          <div className="w-7 items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
+      <div className="flex min-h-10 gap-1 p-1">
+        <button
+          onClick={toggleExpanded}
+          className="flex min-w-10 grow items-stretch gap-1 focus:outline-none"
+        >
+          <div className="flex w-7 items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
             {forceCollapsed ? '' : isExpanded ? '▼' : '▲'}
           </div>
-          <div className="grow overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
+          <div className="flex grow items-center overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
             {mainSection(isExpanded)}
           </div>
         </button>
