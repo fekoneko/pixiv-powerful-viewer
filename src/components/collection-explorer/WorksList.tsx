@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { useAnimateScroll, useCollection, useSearch } from '@/hooks';
+import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
 import { Work } from '@/types/collection';
 
 import { WorkListChunks } from './WorkListChunks';
@@ -10,7 +10,7 @@ interface WorksListProps {
 }
 
 export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) => {
-  const { search } = useSearch();
+  const { searchQuery } = useSearchQuery();
   const { searchCollection, clearFavorites } = useCollection();
   const [works, setWorks] = useState<Work[] | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -21,11 +21,11 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
   useEffect(() => {
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
-    searchCollection(search).then((works) => !signal.aborted && setWorks(works));
+    searchCollection(searchQuery).then((works) => !signal.aborted && setWorks(works));
     // TODO: maybe handle loading state
 
     return () => abortControllerRef.current?.abort();
-  }, [search, searchCollection]);
+  }, [searchQuery, searchCollection]);
 
   return (
     <div className="-ml-3.5 flex min-h-0 grow flex-col">
@@ -43,7 +43,7 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
         </div>
       </div>
 
-      {search === '#favorites' && (
+      {searchQuery === '#favorites' && (
         <button
           onClick={clearFavorites}
           className="pb-2 hover:text-text-accent hover:underline focus:text-text-accent focus:outline-none"

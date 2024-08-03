@@ -1,20 +1,20 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { useKeyboardEvent, useSearch } from '@/hooks';
+import { useKeyboardEvent, useSearchQuery } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 export const FavoriteButton: FC = () => {
-  const { search, setSearch } = useSearch();
+  const { searchQuery, setSearchQuery } = useSearchQuery();
   const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
   const toggleFavorites = useCallback(
-    () => setSearch((prev) => (prev === '#favorites' ? prevSearchRequest : '#favorites')),
-    [setSearch, prevSearchRequest],
+    () => setSearchQuery((prev) => (prev === '#favorites' ? prevSearchRequest : '#favorites')),
+    [setSearchQuery, prevSearchRequest],
   );
 
   useEffect(() => {
-    if (search === '#favorites') return;
-    setPrevSearchRequest(search);
-  }, [search]);
+    if (searchQuery === '#favorites') return;
+    setPrevSearchRequest(searchQuery);
+  }, [searchQuery]);
 
   useKeyboardEvent(
     'keydown',
@@ -34,7 +34,7 @@ export const FavoriteButton: FC = () => {
       onClick={toggleFavorites}
       className="absolute bottom-2 left-2 rounded-full px-[0.58rem] py-2 text-lg hover:bg-paper/80 focus:bg-paper/80 focus:outline-none"
     >
-      {search === '#favorites' ? '❌' : '⭐'}
+      {searchQuery === '#favorites' ? '❌' : '⭐'}
     </button>
   );
 };

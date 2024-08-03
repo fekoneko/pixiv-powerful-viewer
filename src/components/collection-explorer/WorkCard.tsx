@@ -15,10 +15,10 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
   <>
     {!!work.assets?.length && (
       <div className="relative size-full">
-        <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
+        <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:translate-x-1 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
           <ImageView
             asset={work.assets[0]}
-            className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.18] [:hover>&]:shadow-md"
+            className="pointer-events-none absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
           />
         </div>
         <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg bg-paper px-2 text-text shadow-md transition-colors [:hover>&]:invisible">

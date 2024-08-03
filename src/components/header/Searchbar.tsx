@@ -1,9 +1,9 @@
 import { FC, useRef, useState } from 'react';
-import { useKeyboardEvent, useSearch, useWanakana } from '@/hooks';
+import { useKeyboardEvent, useSearchQuery, useWanakana } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 export const Searchbar: FC = () => {
-  const { query: search, setSearch } = useSearch();
+  const { searchQuery, setSearchQuery } = useSearchQuery();
   const [kanaConversion, setKanaConversion] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInputInFocus, setIsInputInFocus] = useState(false);
@@ -42,8 +42,8 @@ export const Searchbar: FC = () => {
         ref={inputRef}
         placeholder={isInputInFocus ? 'Search here' : 'Press / to search'}
         className="min-w-0 grow bg-transparent py-1.5 pl-3 placeholder:text-text-header/80 focus:outline-none"
-        value={search}
-        onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+        value={searchQuery}
+        onInput={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
         onFocus={() => setIsInputInFocus(true)}
         onBlur={() => setIsInputInFocus(false)}
       />

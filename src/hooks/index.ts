@@ -6,5 +6,5 @@ export { useKeyboardEvent } from './use-keyboard-event';
 export { useLocalStorage } from './use-local-storage';
 export { useOutput } from './use-output';
 export { useTimeout } from './use-timeout';
-export { useSearch } from './use-search';
+export { useSearchQuery } from './use-search-query';
 export { useWanakana } from './use-wanakana';

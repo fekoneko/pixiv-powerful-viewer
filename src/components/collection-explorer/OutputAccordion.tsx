@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { OutputLog } from '@/providers/OutputProvider';
 
 import { Accordion } from './Accordion';
+import { LoadingSpinner } from '@/components/common';
 
 const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
   let badgeTextColor;
@@ -70,7 +71,8 @@ export const OutputAccordion: FC = () => {
       mainSection={(isExpanded) => {
         if (isExpanded) return <p>Collection output</p>;
         if (!output) return null;
-        if (output.status === 'pending') return <p>Loading collection...</p>;
+        if (output.status === 'pending')
+          return [<p key={0}>Loading collection</p>, <LoadingSpinner key={1} className="ml-1.5" />];
         if (output.errorsCount) return <p>Failed to load collection</p>;
         if (output.warningsCount) return <p>Some problems occured</p>;
         if (output.infoCount) return <p>Collection output</p>;
@@ -78,15 +80,13 @@ export const OutputAccordion: FC = () => {
       }}
       rightSection={() => (
         <>
-          {output && (
-            <div className="my-0.5 flex items-center gap-2.5">
-              <p className="text-text">{output.infoCount}</p>
-              <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
-              <p className="text-text-warning">{output.warningsCount}</p>
-              <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
-              <p className="text-text-error">{output.errorsCount}</p>
-            </div>
-          )}
+          <div className="my-0.5 flex items-center gap-2.5">
+            <p className="text-text">{output?.infoCount ?? 0}</p>
+            <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+            <p className="text-text-warning">{output?.warningsCount ?? 0}</p>
+            <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+            <p className="text-text-error">{output?.errorsCount ?? 0}</p>
+          </div>
 
           <button
             onClick={toggleHidden}
