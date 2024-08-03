@@ -44,8 +44,8 @@ export const OutputProvider: FC<PropsWithChildren> = ({ children }) => {
 
       const logs = [...output.logs, { message, status }];
       if (status === 'info') return { ...output, infoCount: output.infoCount + 1, logs };
-      if (status === 'warning') return { ...output, warningsCount: output.infoCount + 1, logs };
-      if (status === 'error') return { ...output, errorsCount: output.infoCount + 1, logs };
+      if (status === 'warning') return { ...output, warningsCount: output.warningsCount + 1, logs };
+      if (status === 'error') return { ...output, errorsCount: output.errorsCount + 1, logs };
       return output;
     });
   }, []);

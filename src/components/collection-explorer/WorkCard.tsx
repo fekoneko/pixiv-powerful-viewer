@@ -13,23 +13,21 @@ interface WorkCardContents {
 
 const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents) => (
   <>
-    {work.assets?.length ? (
+    {!!work.assets?.length && (
       <div className="relative size-full">
         <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
-          {work.assets.length && (
-            <ImageView
-              asset={work.assets[0]}
-              className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.18] [:hover>&]:shadow-md"
-            />
-          )}
+          <ImageView
+            asset={work.assets[0]}
+            className="absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.18] [:hover>&]:shadow-md"
+          />
         </div>
         <p className="absolute right-0 top-0 -mr-2 -mt-0.5 rounded-lg bg-paper px-2 text-text shadow-md transition-colors [:hover>&]:invisible">
           x{work.assets.length}
         </p>
       </div>
-    ) : (
-      <div />
     )}
+    {!work.assets?.length && <div />}
+
     <div className="overflow-hidden p-2 text-left">
       <h2 className="whitespace-nowrap text-lg font-bold text-text-accent">
         {work.title ?? 'Untitled'}
@@ -38,13 +36,15 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
         {work.userName ?? 'Unknown author'}
       </p>
       <p className="whitespace-nowrap text-sm">
-        {work.tags?.map((tag, index) => (
-          <Fragment key={index}>
-            {index !== 0 && <span className="opacity-50">・</span>}
-            <wbr />
-            <span>{tag}</span>
-          </Fragment>
-        )) ?? <span>no tags</span>}
+        {!!work.tags?.length &&
+          work.tags.map((tag, index) => (
+            <Fragment key={index}>
+              {index !== 0 && <span className="opacity-50">・</span>}
+              <wbr />
+              <span>{tag}</span>
+            </Fragment>
+          ))}
+        {!work.tags?.length && <span>No tags</span>}
       </p>
     </div>
   </>

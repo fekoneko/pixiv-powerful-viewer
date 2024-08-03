@@ -50,9 +50,11 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       try {
         const [works, warnings] = await readCollection(collectionPath);
         if (signal.aborted) return;
-        warnings.forEach((warning) => {
-          logToOutput(warning, 'warning');
-          console.warn(warning);
+        warnings.forEach((warning) => logToOutput(warning, 'warning'));
+
+        works.forEach((work) => {
+          if (work.id !== null) return;
+          logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
         });
 
         const favorites = await readCollectionList(collectionPath, 'favorites', works);
@@ -61,6 +63,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
         searchWorkerRef.current = new SearchWorker();
         await indexWorks(searchWorkerRef.current, works);
+        if (signal.aborted) return;
 
         setCollectionWorks(works);
         setFavorites(favorites);
@@ -71,7 +74,6 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         if (signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
         logToOutput(message, 'error');
-        console.error(error);
 
         setCollectionWorks(null);
         setFavorites(null);
