@@ -18,7 +18,7 @@ fn main() {
             handlers::read_collection,
             handlers::read_collection_list,
             handlers::write_collection_list,
-            handlers::open
+            handlers::open_external
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
