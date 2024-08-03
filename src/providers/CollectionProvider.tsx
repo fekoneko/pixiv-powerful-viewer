@@ -3,7 +3,7 @@ import { readCollection, indexWorks, searchWorks, SearchWorker } from '@/lib/col
 import { isInCollectionList, readCollectionList, writeCollectionList } from '@/lib/collection';
 import { useOutput } from '@/hooks';
 import { sep } from '@tauri-apps/api/path';
-import { Work, WorkKeyFields } from '@/types/collection';
+import { Work, WorkRelativePathField } from '@/types/collection';
 
 export interface CollectionContextValue {
   collectionPath: string | null;
@@ -15,10 +15,10 @@ export interface CollectionContextValue {
 
   favorites: Work[] | null;
   addToFavorites: (work: Work) => Promise<void>;
-  removeFromFavorites: (work: WorkKeyFields) => Promise<void>;
+  removeFromFavorites: (work: WorkRelativePathField) => Promise<void>;
   toggleFavorite: (work: Work) => Promise<void>;
   clearFavorites: () => Promise<void>;
-  checkFavorited: (work: WorkKeyFields) => boolean;
+  checkFavorited: (work: WorkRelativePathField) => boolean;
 }
 
 export const CollectionContext = createContext<CollectionContextValue | null>(null);
@@ -61,10 +61,12 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         if (signal.aborted) return;
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
+        const previousSearchWorker = searchWorkerRef.current;
         searchWorkerRef.current = new SearchWorker();
         await indexWorks(searchWorkerRef.current, works);
         if (signal.aborted) return;
 
+        previousSearchWorker?.terminate();
         setCollectionWorks(works);
         setFavorites(favorites);
 
@@ -119,7 +121,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   );
 
   const removeFromFavorites = useCallback(
-    async (work: WorkKeyFields) => {
+    async (work: WorkRelativePathField) => {
       try {
         if (collectionPath === null || isLoading) throw new Error('Collection is not loaded');
 
@@ -150,7 +152,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   }, [collectionPath, isLoading]);
 
   const checkFavorited = useCallback(
-    (work: WorkKeyFields) => favorites !== null && isInCollectionList(work, favorites),
+    (work: WorkRelativePathField) => favorites !== null && isInCollectionList(work, favorites),
     [favorites],
   );
 

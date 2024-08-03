@@ -12,6 +12,7 @@ export interface ImageAsset {
 }
 
 export interface Work {
+  key: number;
   path: string;
   relativePath: string;
   title: string;
@@ -32,8 +33,12 @@ export interface Work {
   uploadTime: string | null;
 }
 
-export interface WorkKeyFields {
+export interface WorkRelativePathField {
   relativePath: string;
+}
+
+export interface WorkKeyField {
+  key: number;
 }
 
 export interface WorkSearchableFields {

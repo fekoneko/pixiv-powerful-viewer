@@ -1,7 +1,7 @@
 import FlexSearch from 'flexsearch';
 import kuromoji, { Tokenizer, IpadicFeatures } from 'kuromoji';
 import { toKatakana } from 'wanakana';
-import { Work, WorkKeyFields, WorkSearchableFields } from '@/types/collection';
+import { Work, WorkKeyField, WorkSearchableFields } from '@/types/collection';
 
 export type MessageType = 'index' | 'search';
 
@@ -17,7 +17,7 @@ export type SearchWorkerResponse = {
   error: unknown | null;
 };
 
-type SearchIndex = FlexSearch.Document<WorkKeyFields & WorkSearchableFields>;
+type SearchIndex = FlexSearch.Document<WorkKeyField & WorkSearchableFields>;
 
 const createSearchIndex = async (): Promise<SearchIndex> => {
   const tokenizer = await new Promise<Tokenizer<IpadicFeatures>>((resolve, reject) =>
@@ -40,14 +40,14 @@ const createSearchIndex = async (): Promise<SearchIndex> => {
     tokenize: 'full',
     encode: tokenize,
     document: {
-      id: 'relativePath',
+      id: 'key',
       index: ['title', 'userName', 'tags', 'description'],
     },
   });
 };
 
-const indxWork = (searchIndex: SearchIndex, newWorks: Work[]) => {
-  newWorks.forEach((work) => searchIndex.add(work.relativePath, work));
+const indexWork = (searchIndex: SearchIndex, newWorks: Work[]) => {
+  newWorks.forEach((work) => searchIndex.add(work.key, work));
   works.push(...newWorks);
 };
 
@@ -57,8 +57,7 @@ const searchWorks = (searchIndex: SearchIndex, query: string): Work[] => {
   return works
     .map((work): [Work, number] => {
       const frequency = results.reduce(
-        (occurences, { result }) =>
-          result.includes(work.relativePath) ? occurences + 1 : occurences,
+        (occurences, { result }) => (result.includes(work.key) ? occurences + 1 : occurences),
         0,
       );
       return [work, frequency];
@@ -75,17 +74,9 @@ addEventListener('message', async ({ data }: MessageEvent<SearchWorkerRequest>) 
   try {
     const searchIndex = await searchIndexPromise;
 
-    searchIndex.add('foo/bar/baz.md', {
-      relativePath: 'foo/bar/baz.md',
-      title: 'baz',
-      userName: 'foo',
-      tags: ['baz', 'qux'],
-      description: 'baz description',
-    });
-
     switch (data.type) {
       case 'index':
-        indxWork(searchIndex, data.payload as Work[]);
+        indexWork(searchIndex, data.payload as Work[]);
         return postMessage({ id: data.id, payload: undefined, error: null });
 
       case 'search':

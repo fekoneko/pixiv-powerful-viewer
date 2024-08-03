@@ -127,7 +127,7 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
 
           return (
             <WorkCard
-              key={work.relativePath}
+              key={work.key}
               work={work}
               index={workIndex}
               onSelect={setSelectedIndex}

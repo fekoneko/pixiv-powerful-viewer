@@ -11,6 +11,7 @@ use crate::Pids;
 #[derive(serde::Serialize)]
 #[allow(non_snake_case)]
 pub struct Work {
+    key: u64,
     path: String,
     relativePath: String,
     title: String,
@@ -86,6 +87,7 @@ async fn load_works(
 
     let mut works: Vec<Work> = vec![];
     let mut errors: Vec<String> = vec![];
+    let mut work_key: u64 = 0;
     let initial_path: PathBuf = collection_path.into();
     let mut to_visit: Vec<PathBuf> = vec![initial_path.clone()];
 
@@ -102,7 +104,7 @@ async fn load_works(
                 if asset_group.len() == 0 {
                     continue;
                 }
-                match parse_work(&asset_group, &path).await {
+                match parse_work(&asset_group, &path, work_key).await {
                     Ok(Some(mut work)) => {
                         work.relativePath = path
                             .strip_prefix(&initial_path)
@@ -110,8 +112,8 @@ async fn load_works(
                             .display()
                             .to_string();
 
-                        // println!("Parsed work: '{}'", work.title);
                         works.push(work);
+                        work_key += 1;
                     }
                     Ok(None) => (),
                     Err(error) => {
@@ -125,7 +127,11 @@ async fn load_works(
     Ok((works, errors))
 }
 
-async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> io::Result<Option<Work>> {
+async fn parse_work(
+    asset_group: &Vec<PathBuf>,
+    work_path: &Path,
+    work_key: u64,
+) -> io::Result<Option<Work>> {
     let mut image_assets: Vec<&PathBuf> = vec![];
     let mut meta_asset: Option<&PathBuf> = None;
 
@@ -166,7 +172,7 @@ async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> io::Result<
 
     image_assets.sort_unstable_by_key(|asset| -> u64 { get_page_index(asset).unwrap_or(u64::MAX) });
 
-    let mut work = get_required_metadata(work_path);
+    let mut work = get_required_metadata(work_path, work_key);
 
     if let Some(meta_asset) = meta_asset {
         add_metadata_from_file(meta_asset, &mut work).await?;
@@ -179,8 +185,9 @@ async fn parse_work(asset_group: &Vec<PathBuf>, work_path: &Path) -> io::Result<
     Ok(Some(work))
 }
 
-fn get_required_metadata(work_path: &Path) -> Work {
+fn get_required_metadata(work_path: &Path, work_key: u64) -> Work {
     Work {
+        key: work_key,
         path: String::from(work_path.to_str().unwrap_or_default()),
         relativePath: String::from(""),
         title: String::from(
