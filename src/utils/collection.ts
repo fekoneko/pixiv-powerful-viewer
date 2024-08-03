@@ -1,28 +1,45 @@
 import { invoke } from '@tauri-apps/api';
-import { Work } from '@/types/collection';
+import { Work, WorkKeyFields, WorkSearchableFields } from '@/types/collection';
 import FlexSearch, { Document } from 'flexsearch';
+import { ipadicTokenizer } from '@/lib/kuromoji';
+import { toKatakana } from 'wanakana';
 
 export const readCollection = async (
   collectionPath: string,
 ): Promise<[works: Work[], errors: string[]]> => invoke('read_collection', { collectionPath });
 
 // TODO: add (ageRestriction, ai, bookmarks, uploadTime) search support
-export const createSearchIndex = () =>
-  new FlexSearch.Document<Work>({
+export const createSearchIndex = async () => {
+  const tokenizer = await ipadicTokenizer;
+
+  const tokenize = (text: string) =>
+    text.split(/[\s,.　、。]/g).flatMap((part) =>
+      tokenizer.tokenize(part).map((token) => {
+        let word =
+          !token.reading || token.reading === '*' ? toKatakana(token.surface_form) : token.reading;
+        return word;
+      }),
+    );
+
+  return new FlexSearch.Document<WorkKeyFields & WorkSearchableFields>({
+    tokenize: 'full',
+    encode: tokenize,
+    // worker: true, // TODO: fix this broken module to enable this option, duh
     document: {
       id: 'relativePath',
-      index: [
-        { field: 'title', tokenize: 'full' },
-        { field: 'tags', tokenize: 'full' },
-        { field: 'userName', tokenize: 'full' },
-        { field: 'description', tokenize: 'full' },
-      ],
+      index: ['title', 'userName', 'tags', 'description'],
     },
   });
+};
+
+export const indexWorks = async (
+  searchIndex: Document<WorkKeyFields & WorkSearchableFields>,
+  works: Work[],
+) => Promise.all(works.map((work) => searchIndex.addAsync(work.relativePath, work)));
 
 export const searchCollection = async (
+  searchIndex: Document<WorkKeyFields & WorkSearchableFields>,
   works: Work[],
-  searchIndex: Document<Work>,
   query: string,
 ): Promise<Work[]> => {
   const results = await searchIndex.searchAsync(query);

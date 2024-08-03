@@ -1,10 +1,10 @@
 import { invoke } from '@tauri-apps/api';
-import { Work, WorkLike } from '@/types/collection';
+import { Work, WorkKeyFields } from '@/types/collection';
 
 export const writeCollectionList = async (
   collectionPath: string,
   listName: string,
-  list: WorkLike[],
+  list: WorkKeyFields[],
 ): Promise<void> =>
   invoke('write_collection_list', {
     collectionPath,
@@ -28,5 +28,5 @@ export const readCollectionList = async (
     .filter((work) => work !== undefined);
 };
 
-export const isInCollectionList = (work: WorkLike, collection: WorkLike[]): boolean =>
+export const isInCollectionList = (work: WorkKeyFields, collection: WorkKeyFields[]): boolean =>
   collection.some((collectionWork) => collectionWork.relativePath === work.relativePath);

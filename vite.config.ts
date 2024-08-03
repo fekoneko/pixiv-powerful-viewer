@@ -5,7 +5,12 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
-  resolve: { alias: { '@': resolve('src') } },
+  resolve: {
+    alias: {
+      '@': resolve('src'),
+      kuromoji: resolve('public/kuromoji.js'), // TODO: do something about it
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

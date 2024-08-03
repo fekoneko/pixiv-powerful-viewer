@@ -32,6 +32,13 @@ export interface Work {
   uploadTime: string | null;
 }
 
-export interface WorkLike {
+export interface WorkKeyFields {
   relativePath: string;
+}
+
+export interface WorkSearchableFields {
+  title: string;
+  userName: string;
+  tags: string[] | null;
+  description: string | null;
 }
