@@ -1,12 +1,9 @@
 import { PropsWithChildren, createContext, useCallback, useRef, useState } from 'react';
-import { createSearchIndex, indexWorks, readCollection } from '@/utils/collection';
-import { searchCollection as searchCollectionUtil } from '@/utils/collection';
-import { isInCollectionList } from '@/utils/collection-list';
-import { readCollectionList, writeCollectionList } from '@/utils/collection-list';
+import { readCollection, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
+import { isInCollectionList, readCollectionList, writeCollectionList } from '@/lib/collection';
 import { useOutput } from '@/hooks';
 import { sep } from '@tauri-apps/api/path';
-import { Work, WorkKeyFields, WorkSearchableFields } from '@/types/collection';
-import { Document } from 'flexsearch';
+import { Work, WorkKeyFields } from '@/types/collection';
 
 export interface CollectionContextValue {
   collectionPath: string | null;
@@ -32,7 +29,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const [collectionWorks, setCollectionWorks] = useState<Work[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [favorites, setFavorites] = useState<Work[] | null>(null);
-  const searchIndexRef = useRef<Document<WorkKeyFields & WorkSearchableFields> | null>(null);
+  const searchWorkerRef = useRef<Worker | null>(null);
   const AbortControllerRef = useRef<AbortController | null>(null);
 
   const { newOutput, settleOutput, logToOutput } = useOutput();
@@ -53,14 +50,17 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       try {
         const [works, warnings] = await readCollection(collectionPath);
         if (signal.aborted) return;
-        warnings.forEach((warning) => logToOutput(warning, 'warning'));
+        warnings.forEach((warning) => {
+          logToOutput(warning, 'warning');
+          console.warn(warning);
+        });
 
         const favorites = await readCollectionList(collectionPath, 'favorites', works);
         if (signal.aborted) return;
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
-        searchIndexRef.current = await createSearchIndex();
-        await indexWorks(searchIndexRef.current, works);
+        searchWorkerRef.current = new SearchWorker();
+        await indexWorks(searchWorkerRef.current, works);
 
         setCollectionWorks(works);
         setFavorites(favorites);
@@ -71,10 +71,11 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         if (signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
         logToOutput(message, 'error');
+        console.error(error);
 
         setCollectionWorks(null);
         setFavorites(null);
-        searchIndexRef.current = null;
+        searchWorkerRef.current = null;
 
         setIsLoading(false);
         settleOutput();
@@ -85,11 +86,11 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
   const searchCollection = useCallback(
     async (query: string) => {
-      if (!collectionWorks || !searchIndexRef.current) return null;
+      if (!collectionWorks || !searchWorkerRef.current) return null;
       if (query === '') return collectionWorks;
       if (query === '#favorites') return favorites;
 
-      return searchCollectionUtil(searchIndexRef.current, collectionWorks, query);
+      return searchWorks(searchWorkerRef.current, query);
     },
     [collectionWorks, favorites],
   );
