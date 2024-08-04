@@ -1,7 +1,7 @@
 [package]
 name = "pixiv-powerful-viewer"
 version = "1.0.0-3"
-description = "This app allows you to view and search collection saved by Powerful Pixiv Downloader browser extension locally"
+description = "Pixiv Powerful Viewer"
 authors = ["fekoneko"]
 edition = "2021"
 

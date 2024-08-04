@@ -51,7 +51,10 @@ export const Accordion: FC<AccordionProps> = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
   const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpanded = useCallback(() => setIsExpanded((prev) => !prev), []);
+  const toggleExpanded = useCallback(
+    () => setIsExpanded((prev) => (forceCollapsed ? false : !prev)),
+    [forceCollapsed],
+  );
 
   const scrollUp = useCallback(() => {
     const scrollContainerElement = scrollContainerRef.current;
@@ -114,7 +117,7 @@ export const Accordion: FC<AccordionProps> = ({
         divProps.className,
       )}
     >
-      <div className={twMerge('flex min-h-10 gap-1 py-1', isExpanded && 'border-border border-b')}>
+      <div className={twMerge('flex min-h-10 gap-1 py-1', isExpanded && 'border-b border-border')}>
         <button
           onClick={toggleExpanded}
           className="flex min-w-10 grow items-stretch gap-1 focus:outline-none"
