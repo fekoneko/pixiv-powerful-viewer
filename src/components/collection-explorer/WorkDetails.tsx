@@ -9,22 +9,22 @@ interface WorkDetailsProps {
 
 export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
   <div className="flex flex-col gap-1.5">
-    <h3 className="flex items-baseline justify-center gap-3 text-lg font-semibold text-text-accent">
-      {work.title}
-      <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+    <div className="flex flex-wrap items-baseline justify-center gap-x-3 text-lg font-semibold text-text-accent">
+      <h3 className="text-center">{work.title}</h3>
+      <p className="whitespace-nowrap text-sm opacity-50" dir="ltr">
         (id: {work.id})
-      </span>
-    </h3>
+      </p>
+    </div>
 
-    <p className="flex items-baseline justify-center gap-3 font-semibold">
-      by {work.userName}
+    <div className="flex flex-wrap items-baseline justify-center gap-x-3 font-semibold">
+      <p className="text-center">by {work.userName}</p>
       {work.id !== null && (
-        <span className="whitespace-nowrap text-sm opacity-50" dir="ltr">
+        <p className="whitespace-nowrap text-sm opacity-50" dir="ltr">
           (id: {work.userId})
-        </span>
+        </p>
       )}
-    </p>
-    <div className="mb-2 mt-1 h-px w-full self-center rounded-full bg-text/30" />
+    </div>
+    <div className="bg-border mb-2 mt-1 h-px w-full self-center rounded-full" />
 
     {work.description && (
       <>
@@ -33,12 +33,12 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
-        <div className="mb-2 mt-1 h-px w-full self-center rounded-full bg-text/30" />
+        <div className="bg-border mb-2 mt-1 h-px w-full self-center rounded-full" />
       </>
     )}
 
-    <div className="grid grid-cols-[auto_1fr] gap-2">
-      {work.tags && <p>tags:　</p>}
+    <div className="grid grid-cols-[auto_1fr] gap-x-[5%] gap-y-2">
+      {work.tags && <p>tags:</p>}
       {work.tags && (
         <p className="whitespace-nowrap">
           {work.tags.map((tag, index) => (
@@ -51,29 +51,46 @@ export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
         </p>
       )}
 
-      {work.ai !== null && <p />}
-      {work.ai !== null && (
-        <p>
-          {work.ai ? (
-            <strong className="text-red-600">AI-generated</strong>
-          ) : (
-            <>
-              <strong>Not</strong> AI-generated
-            </>
-          )}
-        </p>
+      {(work.ai !== null || work.ageRestriction) && <p />}
+      {(work.ai !== null || work.ageRestriction) && (
+        <div className="flex flex-wrap gap-x-1">
+          {work.ageRestriction &&
+            (() => {
+              switch (work.ageRestriction) {
+                case 'all-ages':
+                  return <p>All ages</p>;
+                case 'r-18':
+                  return <p className="font-semibold text-red-500">R-18</p>;
+                case 'r-18g':
+                  return <p className="font-semibold text-red-500">R-18G</p>;
+              }
+            })()}
+
+          {work.ai !== null && work.ageRestriction && <span className="opacity-50">・</span>}
+
+          {work.ai !== null &&
+            (() => {
+              if (work.ai) return <p className="font-semibold text-red-500">AI-generated</p>;
+              return (
+                <p>
+                  <strong>Not</strong> AI-generated
+                </p>
+              );
+            })()}
+        </div>
       )}
 
-      {work.uploadTime && <p>uploaded:　</p>}
+      {work.uploadTime && <p>uploaded:</p>}
       {work.uploadTime && <p>{new Date(work.uploadTime).toLocaleString()}</p>}
 
-      {work.bookmarks !== null && <p>bookmarks:　</p>}
+      {work.bookmarks !== null && <p>bookmarks:</p>}
       {work.bookmarks !== null && (
-        <p>
-          {work.bookmarks.toString()} <span className="text-lg">♥️</span>
-          {'　'}
+        <div className="flex flex-wrap items-center gap-x-3">
+          <p>
+            {work.bookmarks.toString()} <span className="text-lg">♥️</span>
+          </p>
           <span className="whitespace-nowrap text-sm opacity-50">(before downloaded)</span>
-        </p>
+        </div>
       )}
 
       {work.url && <p />}

@@ -40,10 +40,10 @@ export const CollectionButton: FC = () => {
 
   // TODO: Make it overflow prettier
   return (
-    <div className="flex">
+    <div className="flex overflow-hidden">
       <button
         onClick={showPickCollectionDialog}
-        className="whitespace-nowrap rounded-lg px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="text-overflow-mask min-w-0 overflow-hidden whitespace-nowrap rounded-lg px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
         {collectionName ?? '< Select collection >'}
       </button>

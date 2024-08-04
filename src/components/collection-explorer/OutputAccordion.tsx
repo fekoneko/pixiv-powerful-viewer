@@ -74,7 +74,8 @@ export const OutputAccordion: FC = () => {
       mainSection={(isExpanded) => {
         if (isExpanded) return <p>Collection output</p>;
         if (!output) return null;
-        if (output.status === 'pending') return <p>Loading collection...</p>;
+        if (output.status === 'pending')
+          return <p className="animate-pulse">Loading collection...</p>;
         if (output.errorsCount) return <p>Failed to load collection</p>;
         if (output.warningsCount) return <p>Some problems occured</p>;
         if (output.infoCount) return <p>Collection output</p>;
@@ -84,9 +85,9 @@ export const OutputAccordion: FC = () => {
         <>
           <div className="my-0.5 flex items-center gap-2.5">
             <p className="text-text">{output?.infoCount ?? 0}</p>
-            <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+            <div className="bg-border my-2 h-1/2 w-px rounded-full pt-px" />
             <p className="text-text-warning">{output?.warningsCount ?? 0}</p>
-            <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+            <div className="bg-border my-2 h-1/2 w-px rounded-full pt-px" />
             <p className="text-text-error">{output?.errorsCount ?? 0}</p>
           </div>
 

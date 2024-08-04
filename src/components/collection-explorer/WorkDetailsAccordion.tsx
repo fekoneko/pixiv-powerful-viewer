@@ -45,7 +45,7 @@ export const WorkDetailsAccordion: FC<WorkDetailsAccordionProps> = ({
           >
             {isFavorited ? 'Favorited⭐' : 'Favorite'}
           </button>
-          <div className="my-2 h-1/2 w-px rounded-full bg-paper-accent pt-px" />
+          <div className="bg-border my-2 h-1/2 w-px rounded-full pt-px" />
           <button
             onClick={onToggleFullscreen}
             className="rounded-md px-2.5 hover:bg-text/20 focus:bg-text/20 focus:outline-none"

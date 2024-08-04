@@ -28,7 +28,7 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
     )}
     {!work.assets?.length && <div />}
 
-    <div className="overflow-hidden p-2 text-left">
+    <div className="text-overflow-mask overflow-hidden p-2 text-left">
       <h2 className="whitespace-nowrap text-lg font-bold text-text-accent">
         {work.title ?? 'Untitled'}
       </h2>

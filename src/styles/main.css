@@ -78,10 +78,10 @@
   .warning-flash {
     animation: warning-flash 1s ease;
   }
-}
-
-@layer components {
-  .work-list-mask {
+  .text-overflow-mask {
+    mask-image: linear-gradient(to right, white 0, white calc(100% - 0.8rem), transparent 100%);
+  }
+  .scroll-overflow-mask {
     mask-image: linear-gradient(
       transparent 0,
       white calc(0.8rem),

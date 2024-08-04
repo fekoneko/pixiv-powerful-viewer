@@ -15,6 +15,7 @@ export const plugins = [
       'text-header': '#ffffff',
       'text-warning': '#ccb900',
       'text-error': '#dd0000',
+      border: '#4a4a5d',
     },
     light: {
       primary: '#0096fa',
@@ -27,6 +28,7 @@ export const plugins = [
       'text-header': '#ffffff',
       'text-warning': '#aa9900',
       'text-error': '#ff0000',
+      border: '#c7cadd',
     },
   }),
 ];

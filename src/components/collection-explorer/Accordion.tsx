@@ -109,12 +109,12 @@ export const Accordion: FC<AccordionProps> = ({
     <div
       {...divProps}
       className={twMerge(
-        'flex h-10 flex-col gap-1 overflow-y-hidden rounded-lg bg-paper shadow-lg transition-[min-height] duration-500',
+        'flex h-10 flex-col gap-1 overflow-y-hidden rounded-lg bg-paper px-1 shadow-lg transition-[min-height] duration-500',
         isExpanded ? 'min-h-[50%]' : 'min-h-10',
         divProps.className,
       )}
     >
-      <div className="flex min-h-10 gap-1 p-1">
+      <div className={twMerge('flex min-h-10 gap-1 py-1', isExpanded && 'border-border border-b')}>
         <button
           onClick={toggleExpanded}
           className="flex min-w-10 grow items-stretch gap-1 focus:outline-none"
@@ -122,7 +122,7 @@ export const Accordion: FC<AccordionProps> = ({
           <div className="flex w-7 items-center justify-center rounded-md p-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
             {icon ? icon(isExpanded) : forceCollapsed ? '' : isExpanded ? '▼' : '▲'}
           </div>
-          <div className="flex grow items-center overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
+          <div className="text-overflow-mask flex grow items-center overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
             {mainSection(isExpanded)}
           </div>
         </button>
@@ -130,7 +130,10 @@ export const Accordion: FC<AccordionProps> = ({
         <div className="flex gap-1">{rightSection?.(isExpanded)}</div>
       </div>
 
-      <div ref={scrollContainerRef} className="overflow-x-hidden overflow-y-scroll px-3 pb-5">
+      <div
+        ref={scrollContainerRef}
+        className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll px-2 pb-5 pt-2"
+      >
         {contents(isExpanded)}
       </div>
 

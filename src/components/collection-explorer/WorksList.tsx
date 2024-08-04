@@ -29,7 +29,7 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
 
   return (
     <div className="-ml-3.5 flex min-h-0 grow flex-col">
-      <div className="work-list-mask flex grow flex-col overflow-hidden">
+      <div className="scroll-overflow-mask flex grow flex-col overflow-hidden">
         <div
           ref={scrollContainerRef}
           className="size-full grow overflow-y-scroll pl-2 [direction:rtl]"
