@@ -4,6 +4,7 @@ import { Work } from '@/types/collection';
 
 import { WorkListChunks } from './WorkListChunks';
 import { WorksListSkeleton } from '@/components/collection-explorer/WorksListSkeleton';
+import { twMerge } from 'tailwind-merge';
 
 interface WorksListProps {
   onSelectWork: (selectedWork: Work | null) => void;
@@ -12,7 +13,7 @@ interface WorksListProps {
 
 export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) => {
   const { searchQuery } = useSearchQuery();
-  const { searchCollection, clearFavorites } = useCollection();
+  const { searchCollection, clearFavorites, isLoading } = useCollection();
   const [works, setWorks] = useState<Work[] | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -34,8 +35,13 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
           ref={scrollContainerRef}
           className="size-full grow overflow-y-scroll pl-2 [direction:rtl]"
         >
-          <div className="flex min-h-full w-full flex-col gap-2 py-2 [direction:ltr]">
-            {works !== null && (
+          <div
+            className={twMerge(
+              'flex min-h-full w-full flex-col gap-2 py-2 [direction:ltr]',
+              !works && 'h-full pb-0',
+            )}
+          >
+            {works && (
               <WorkListChunks
                 works={works}
                 onSelectWork={onSelectWork}
@@ -45,7 +51,7 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
               />
             )}
 
-            {works === null && <WorksListSkeleton />}
+            {!works && <WorksListSkeleton isAnimated={isLoading} />}
           </div>
         </div>
       </div>

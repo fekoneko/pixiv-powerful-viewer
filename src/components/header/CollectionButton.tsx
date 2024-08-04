@@ -1,13 +1,12 @@
 import { FC, useEffect, useRef } from 'react';
 import { useLocalStorage, useKeyboardEvent, useCollection } from '@/hooks';
 import { dialog } from '@tauri-apps/api';
+import { CollectionButtonTutorial } from '@/components/header/CollectionButtonTutorial';
 
 export const CollectionButton: FC = () => {
   const { collectionPath, collectionName, switchCollection } = useCollection();
-  const [recentPaths, setRecentPaths] = useLocalStorage<string[]>(
-    'recentCollections',
-    console.error,
-  );
+  const [tutorialEnabled, setTutorialEnabled] = useLocalStorage<boolean>('tutorial');
+  const [recentPaths, setRecentPaths] = useLocalStorage<string[]>('recent-collections');
   const recentSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
@@ -24,7 +23,8 @@ export const CollectionButton: FC = () => {
         return [collectionPath, ...filteredPrev];
       } else return [collectionPath];
     });
-  }, [collectionPath, setRecentPaths]);
+    setTutorialEnabled(false);
+  }, [collectionPath, setRecentPaths, setTutorialEnabled]);
 
   const showPickCollectionDialog = async () => {
     const collectionPath = await dialog.open({ directory: true, multiple: false });
@@ -38,14 +38,13 @@ export const CollectionButton: FC = () => {
     control: true,
   });
 
-  // TODO: Make it overflow prettier
   return (
-    <div className="flex overflow-hidden">
+    <div className="relative flex min-w-0">
       <button
         onClick={showPickCollectionDialog}
-        className="text-overflow-mask min-w-0 overflow-hidden whitespace-nowrap rounded-lg px-2 py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
+        className="min-w-0 overflow-hidden whitespace-nowrap rounded-lg py-1.5 hover:bg-text-header/20 focus:bg-text-header/20 focus:outline-none"
       >
-        {collectionName ?? '< Select collection >'}
+        <p className="text-overflow-mask px-2">{collectionName ?? '< Select collection >'}</p>
       </button>
       {recentPaths && (
         <div className="rounded-lg has-[:focus]:bg-text-header/20 has-[:hover]:bg-text-header/20">
@@ -62,6 +61,8 @@ export const CollectionButton: FC = () => {
           </select>
         </div>
       )}
+
+      {(tutorialEnabled === null || tutorialEnabled) && <CollectionButtonTutorial />}
     </div>
   );
 };
