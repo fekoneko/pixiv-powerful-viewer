@@ -8,7 +8,7 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       '@': resolve('src'),
-      kuromoji: resolve('public/kuromoji.js'), // TODO: do something about it
+      kuromoji: resolve('modules/kuromoji.js'),
     },
   },
 

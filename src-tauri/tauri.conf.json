@@ -17,7 +17,15 @@
       },
       "protocol": {
         "asset": true,
-        "assetScope": ["**"]
+        "assetScope": [
+          "**/*.jpg",
+          "**/*.png",
+          "**/*.gif",
+          "**/*.webm",
+          "**/*.webp",
+          "**/*.apng",
+          "**/*.txt"
+        ]
       }
     },
     "windows": [
@@ -30,7 +38,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
+      "csp": "default-src 'self'; img-src 'self' asset: data: https://asset.localhost"
     },
     "bundle": {
       "active": true,
