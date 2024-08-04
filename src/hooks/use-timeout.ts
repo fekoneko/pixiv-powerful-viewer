@@ -4,7 +4,7 @@ export const useTimeout = (): [
   timeoutId: ReturnType<typeof setTimeout> | undefined,
   updateTimeout: typeof setTimeout,
 ] => {
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
+  const [timeoutId, setTimeoutId] = useState<Timer>();
 
   const updateTimeout = useCallback((...args: Parameters<typeof setTimeout>) => {
     const newTimeoutId = setTimeout(...args);

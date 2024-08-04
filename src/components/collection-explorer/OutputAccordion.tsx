@@ -4,7 +4,8 @@ import { twMerge } from 'tailwind-merge';
 import { OutputLog } from '@/providers/OutputProvider';
 
 import { Accordion } from './Accordion';
-import { LoadingSpinner } from '@/components/common';
+import { Icon } from '@/components/common/Icon';
+import { loadingSpinner } from '@/assets/icons';
 
 const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
   let badgeTextColor;
@@ -31,9 +32,6 @@ const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
   );
 };
 
-// TODO: Make a loading spinner here and near CollectionButton
-// Also make some sign when it's hasWarningsOrErrors
-// And make a button somewhere to show / hide this accordion without keyboard
 export const OutputAccordion: FC = () => {
   const { output } = useOutput();
   const [isHidden, setIsHidden] = useState(true);
@@ -68,11 +66,15 @@ export const OutputAccordion: FC = () => {
       // TODO: Should I move isExpanded state a level higher (question mark??)
       hotkey={{ key: 'Space', modifiers: { control: true } }}
       forceCollapsed={isHidden || !output?.logs.length}
+      icon={
+        output?.status === 'pending'
+          ? () => <Icon src={loadingSpinner} className="size-full self-center bg-text-accent" />
+          : undefined
+      }
       mainSection={(isExpanded) => {
         if (isExpanded) return <p>Collection output</p>;
         if (!output) return null;
-        if (output.status === 'pending')
-          return [<p key={0}>Loading collection</p>, <LoadingSpinner key={1} className="ml-1.5" />];
+        if (output.status === 'pending') return <p>Loading collection...</p>;
         if (output.errorsCount) return <p>Failed to load collection</p>;
         if (output.warningsCount) return <p>Some problems occured</p>;
         if (output.infoCount) return <p>Collection output</p>;

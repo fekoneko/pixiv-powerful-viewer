@@ -13,26 +13,34 @@
 }
 
 @keyframes error-flash {
-  20% {
+  10% {
+    color: theme('colors.text-error');
+    transform: translateY(0);
+  }
+  15% {
     color: theme('colors.text-error');
   }
   30% {
-    color: theme('colors.text-error');
-  }
-  50% {
     transform: translateY(-0.3rem);
+  }
+  80% {
+    transform: translateY(0);
   }
 }
 
 @keyframes warning-flash {
-  20% {
+  10% {
+    color: theme('colors.text-warning');
+    transform: translateY(0);
+  }
+  15% {
     color: theme('colors.text-warning');
   }
   30% {
-    color: theme('colors.text-warning');
-  }
-  50% {
     transform: translateY(-0.3rem);
+  }
+  80% {
+    transform: translateY(0);
   }
 }
 
@@ -65,10 +73,10 @@
 
 @layer utilities {
   .error-flash {
-    animation: error-flash 0.4s ease;
+    animation: error-flash 1s ease;
   }
   .warning-flash {
-    animation: warning-flash 0.4s ease;
+    animation: warning-flash 1s ease;
   }
 }
 

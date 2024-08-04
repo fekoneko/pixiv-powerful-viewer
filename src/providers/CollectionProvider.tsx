@@ -113,7 +113,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
         setFavorites(newFavorites);
         await writeCollectionList(collectionPath, 'favorites', newFavorites);
-      } catch (error) {
+      } catch {
         // TODO: showToast(error instanceof Error ? error.message : String(error));
       }
     },

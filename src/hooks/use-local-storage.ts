@@ -16,7 +16,7 @@ export const useLocalStorage = <T = any>(
       const newContent = JSON.parse(readJson);
       setContent(newContent);
     } catch (error) {
-      onError && onError(error);
+      if (onError) onError(error);
     }
   }, [key, content, onError]);
 

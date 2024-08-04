@@ -3,6 +3,7 @@ import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
 import { Work } from '@/types/collection';
 
 import { WorkListChunks } from './WorkListChunks';
+import { WorksListSkeleton } from '@/components/collection-explorer/WorksListSkeleton';
 
 interface WorksListProps {
   onSelectWork: (selectedWork: Work | null) => void;
@@ -22,7 +23,6 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
     searchCollection(searchQuery).then((works) => !signal.aborted && setWorks(works));
-    // TODO: maybe handle loading state
 
     return () => abortControllerRef.current?.abort();
   }, [searchQuery, searchCollection]);
@@ -30,15 +30,22 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
   return (
     <div className="-ml-3.5 flex min-h-0 grow flex-col">
       <div className="work-list-mask flex grow flex-col overflow-hidden">
-        <div ref={scrollContainerRef} className="grow overflow-y-scroll pl-2 [direction:rtl]">
-          <div className="flex flex-col gap-2 py-2 [direction:ltr]">
-            <WorkListChunks
-              works={works ?? []}
-              onSelectWork={onSelectWork}
-              allowDeselect={allowDeselect}
-              scrollContainerRef={scrollContainerRef}
-              animateScroll={animateScroll}
-            />
+        <div
+          ref={scrollContainerRef}
+          className="size-full grow overflow-y-scroll pl-2 [direction:rtl]"
+        >
+          <div className="flex min-h-full w-full flex-col gap-2 py-2 [direction:ltr]">
+            {works !== null && (
+              <WorkListChunks
+                works={works}
+                onSelectWork={onSelectWork}
+                allowDeselect={allowDeselect}
+                scrollContainerRef={scrollContainerRef}
+                animateScroll={animateScroll}
+              />
+            )}
+
+            {works === null && <WorksListSkeleton />}
           </div>
         </div>
       </div>

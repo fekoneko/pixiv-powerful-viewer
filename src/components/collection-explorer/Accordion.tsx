@@ -31,6 +31,7 @@ const WithHotkey: FC<WithHotkeyProps> = ({ hotkey, toggleExpanded }) => {
 };
 
 export interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
+  icon?: (isExpanded: boolean) => ReactNode;
   mainSection: (isExpanded: boolean) => ReactNode;
   contents: (isExpanded: boolean) => ReactNode;
   rightSection?: (isExpanded: boolean) => ReactNode;
@@ -39,6 +40,7 @@ export interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Accordion: FC<AccordionProps> = ({
+  icon,
   mainSection,
   contents,
   rightSection,
@@ -117,8 +119,8 @@ export const Accordion: FC<AccordionProps> = ({
           onClick={toggleExpanded}
           className="flex min-w-10 grow items-stretch gap-1 focus:outline-none"
         >
-          <div className="flex w-7 items-center rounded-md px-2 py-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
-            {forceCollapsed ? '' : isExpanded ? '▼' : '▲'}
+          <div className="flex w-7 items-center justify-center rounded-md p-1 text-sm transition-colors [:focus>&]:text-text-accent [:hover>&]:text-text-accent">
+            {icon ? icon(isExpanded) : forceCollapsed ? '' : isExpanded ? '▼' : '▲'}
           </div>
           <div className="flex grow items-center overflow-hidden whitespace-nowrap text-left text-lg font-semibold">
             {mainSection(isExpanded)}

@@ -24,7 +24,9 @@
       {
         "title": "Pixiv Powerful Viewer",
         "width": 1000,
-        "height": 650
+        "height": 650,
+        "minWidth": 640,
+        "minHeight": 320
       }
     ],
     "security": {
