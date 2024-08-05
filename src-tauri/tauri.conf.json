@@ -18,6 +18,9 @@
       "dialog": {
         "open": true
       },
+      "window": {
+        "setFullscreen": true
+      },
       "protocol": {
         "asset": true,
         "assetScope": [
@@ -37,7 +40,8 @@
         "width": 1000,
         "height": 650,
         "minWidth": 640,
-        "minHeight": 320
+        "minHeight": 320,
+        "center": true
       }
     ],
     "security": {
