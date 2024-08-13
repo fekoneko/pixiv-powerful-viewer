@@ -19,16 +19,21 @@ export type OutputLogStatus = 'info' | 'warning' | 'error';
 
 export interface OutputContextValue {
   output: Output | null;
+  isOutputShown: boolean;
 
   newOutput: () => void;
   settleOutput: () => void;
   logToOutput: (message: string, status?: OutputLogStatus) => void;
+  showOutput: () => void;
+  hideOutput: () => void;
+  toggleOutput: () => void;
 }
 
 export const OutputContext = createContext<OutputContextValue | null>(null);
 
 export const OutputProvider: FC<PropsWithChildren> = ({ children }) => {
   const [output, setOutput] = useState<Output | null>(null);
+  const [isOutputShown, setIsOutputShown] = useState(false);
 
   const newOutput = useCallback(() => {
     setOutput({ status: 'pending', logs: [], infoCount: 0, warningsCount: 0, errorsCount: 0 });
@@ -50,13 +55,22 @@ export const OutputProvider: FC<PropsWithChildren> = ({ children }) => {
     });
   }, []);
 
+  const showOutput = useCallback(() => setIsOutputShown(true), []);
+  const hideOutput = useCallback(() => setIsOutputShown(false), []);
+  const toggleOutput = useCallback(() => setIsOutputShown((prev) => !prev), []);
+
   return (
     <OutputContext.Provider
       value={{
         output,
+        isOutputShown,
+
         newOutput,
         settleOutput,
         logToOutput,
+        showOutput,
+        hideOutput,
+        toggleOutput,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ export const plugins = [
     dark: {
       primary: '#0096fa',
       paper: '#303041',
-      'paper-hover': '#363648',
+      'paper-hover': '#3c3c4d',
       'paper-accent': '#414153',
       background: '#272738',
       text: '#9999aa',

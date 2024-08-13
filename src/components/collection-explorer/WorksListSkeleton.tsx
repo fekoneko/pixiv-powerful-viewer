@@ -14,7 +14,7 @@ export const WorksListSkeleton: FC<WorksListSkeletonProps> = ({ isAnimated }) =>
           <div
             key={index}
             className={twMerge(
-              'h-36 gap-2 rounded-md bg-paper shadow-md',
+              'h-36 gap-2 rounded-md border border-border bg-paper shadow-md',
               isAnimated && 'animate-pulse',
             )}
             style={{ animationDuration: '2s', animationDelay: index * 0.5 + 's' }}

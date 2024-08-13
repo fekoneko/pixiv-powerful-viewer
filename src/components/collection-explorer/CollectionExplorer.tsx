@@ -42,8 +42,8 @@ export const CollectionExplorer: FC = () => {
 
   return (
     <>
-      <main className="grid size-full grow grid-cols-2 grid-rows-1 gap-2 overflow-hidden px-[8%]">
-        <div className="flex flex-col">
+      <main className="grid size-full grid-cols-2 grid-rows-1 gap-2 overflow-hidden">
+        <div className="ml-3.5 flex flex-col ">
           <WorksList onSelectWork={setSelectedWork} allowDeselect={fullscreenState === 'normal'} />
           <OutputAccordion />
         </div>
