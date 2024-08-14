@@ -21,6 +21,7 @@ interface WorkListChunksProps {
 export const WorkListChunks: FC<WorkListChunksProps> = memo(
   ({ works, onSelectWork, allowDeselect, scrollContainerRef, animateScroll }) => {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const previousWorksRef = useRef<Work[]>(works);
     const keyboardAllowedRef = useRef(true);
     const [, updateKeyboardTimeout] = useTimeout();
 
@@ -58,15 +59,6 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
       });
     }, [works.length]);
 
-    const makeSelectionValid = useCallback(() => {
-      setSelectedIndex((prev) => {
-        if (prev === null || works.length === 0) return null;
-        if (prev > works.length - 1) return works.length - 1;
-        if (prev < 0) return 0;
-        return prev;
-      });
-    }, [works.length]);
-
     useKeyboardEvent(
       'keydown',
       ['ArrowUp', 'KeyW'],
@@ -101,7 +93,26 @@ export const WorkListChunks: FC<WorkListChunksProps> = memo(
       [allowDeselect],
     );
 
-    useEffect(makeSelectionValid, [makeSelectionValid]);
+    useEffect(() => {
+      const previousWorks = previousWorksRef.current;
+      previousWorksRef.current = works;
+
+      setSelectedIndex((selectedIndex) => {
+        if (selectedIndex === null || works.length === 0) return null;
+
+        const prevSelectedWork = previousWorks[selectedIndex] ?? null;
+        const newSelectedWork = works[selectedIndex] ?? null;
+
+        if (prevSelectedWork && prevSelectedWork.key !== newSelectedWork?.key) {
+          const newSelectedIndex = works.findIndex((work) => work.key === prevSelectedWork.key);
+          if (newSelectedIndex !== -1) return newSelectedIndex;
+        }
+
+        if (selectedIndex > works.length - 1) return works.length - 1;
+        if (selectedIndex < 0) return 0;
+        return selectedIndex;
+      });
+    }, [works]);
 
     useEffect(() => {
       onSelectWork(selectedIndex !== null ? (works[selectedIndex] ?? null) : null);
