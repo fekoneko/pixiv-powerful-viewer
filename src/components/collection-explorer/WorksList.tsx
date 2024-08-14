@@ -31,13 +31,10 @@ export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) =
   return (
     <div className="-ml-3.5 flex min-h-0 grow flex-col">
       <div className="scroll-overflow-mask flex grow flex-col overflow-hidden">
-        <div
-          ref={scrollContainerRef}
-          className="size-full grow overflow-y-scroll pl-2 [direction:rtl]"
-        >
+        <div ref={scrollContainerRef} className="grow overflow-y-scroll pl-2 [direction:rtl]">
           <div
             className={twMerge(
-              'flex min-h-full w-full flex-col gap-2 py-2 [direction:ltr]',
+              'flex min-h-full w-full flex-col gap-2 overflow-hidden py-2 [direction:ltr]',
               !works && 'h-full pb-0',
             )}
           >
