@@ -4,9 +4,9 @@ import { ThemeButton } from '@/components/sidebar/ThemeButton';
 import { FC } from 'react';
 
 export const Sidebar: FC = () => (
-  <aside className="flex flex-col justify-end gap-2 p-2">
-    <FavoritesButton />
+  <aside className="flex flex-col justify-end gap-2 py-2">
     <ThemeButton />
+    <FavoritesButton />
     <OutputButton />
   </aside>
 );

@@ -25,10 +25,10 @@ export const App: FC = () => {
             <div className="grid size-full grid-rows-[3rem_1fr] bg-background text-text transition-colors">
               <Header />
 
-              <div className="grid grid-cols-[3.5rem_1fr_3.5rem] overflow-hidden px-3">
-                <Sidebar />
-                <CollectionExplorer />
+              <div className="grid grid-cols-[3.5rem_1fr_3.5rem] gap-3 overflow-hidden px-2">
                 <div />
+                <CollectionExplorer />
+                <Sidebar />
               </div>
             </div>
           </SearchQueryProvider>
