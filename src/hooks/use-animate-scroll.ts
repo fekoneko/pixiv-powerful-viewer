@@ -8,6 +8,7 @@ export const useAnimateScroll = (scrollContainerRef: RefObject<HTMLElement>) => 
   const [, animateScroll] = useSpring(() => ({
     from: { x: 0, y: 0 },
     onChange: (result) => {
+      if (animateScroll.current[0]?.idle) return;
       scrollContainerRef.current?.scrollTo(result.value.x, result.value.y);
     },
     reset: true,
