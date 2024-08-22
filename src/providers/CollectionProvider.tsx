@@ -1,6 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useRef, useState } from 'react';
 import { readCollection, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
 import { isInCollectionList, readCollectionList, writeCollectionList } from '@/lib/collection';
+import { formatTime } from '@/utils/format-time';
 import { useOutput } from '@/hooks';
 import { sep } from '@tauri-apps/api/path';
 import { Work, WorkRelativePathField } from '@/types/collection';
@@ -40,7 +41,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
       const collectionName = collectionPath.split(sep).reverse()[0];
       setCollectionPath(collectionPath);
-      setCollectionName(collectionName);
+      setCollectionName(collectionName?.length ? collectionName : collectionPath);
       setIsLoading(true);
       newOutput();
 
@@ -81,7 +82,8 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       }
 
       setIsLoading(false);
-      logToOutput(`Collection loaded in ${Date.now() - startTime}ms`, 'info');
+      const timeElapsed = Date.now() - startTime;
+      logToOutput(`Loading setteled in ${formatTime(timeElapsed)}`, 'info');
       settleOutput();
     },
     [newOutput, settleOutput, logToOutput],
