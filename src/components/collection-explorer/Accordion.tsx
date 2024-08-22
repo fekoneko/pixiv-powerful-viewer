@@ -135,7 +135,7 @@ export const Accordion: FC<AccordionProps> = ({
 
       <div
         ref={scrollContainerRef}
-        className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll px-2 pb-5 pt-2"
+        className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll break-words px-2 pb-5 pt-2"
       >
         {contents(isExpanded)}
       </div>
