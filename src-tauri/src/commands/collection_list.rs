@@ -10,7 +10,6 @@ pub async fn read_collection_list(
 
     if let Ok(list_contents) = fs::read_to_string(path).await {
         let lines = list_contents.lines().map(|line| line.to_string()).collect();
-
         Some(lines)
     } else {
         None

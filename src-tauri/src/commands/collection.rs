@@ -1,11 +1,14 @@
 use crate::Pids;
-use std::io;
+use futures::future::join_all;
+use futures::io;
+use std::future::Future;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::u64;
 use std::vec;
 use tauri::State;
 use tokio::fs;
+use tokio::sync::Mutex;
 
 #[derive(serde::Serialize)]
 #[allow(non_snake_case)]
@@ -50,7 +53,7 @@ pub async fn read_collection(
     pids: State<'_, Pids>,
 ) -> Result<(Vec<Work>, Vec<String>), String> {
     let pid = pids.read_collection_pid.clone();
-    *pid.lock().unwrap() += 1;
+    *pid.lock().await += 1;
 
     let collection_path = Path::new(&collection_path);
     if !collection_path.is_dir() {
@@ -60,70 +63,99 @@ pub async fn read_collection(
         ));
     }
 
-    load_works(collection_path, pid.clone()).await
+    load_works(collection_path.into(), pid).await
 }
 
 async fn load_works(
-    collection_path: impl Into<PathBuf>,
+    collection_path: PathBuf,
     pid: Arc<Mutex<usize>>,
 ) -> Result<(Vec<Work>, Vec<String>), String> {
-    let original_pid = *pid.lock().unwrap();
+    let original_pid = *pid.lock().await;
+    let works: Mutex<Vec<Work>> = Mutex::new(vec![]);
+    let errors: Mutex<Vec<String>> = Mutex::new(vec![]);
+    let work_key: Mutex<u64> = Mutex::new(0);
 
-    async fn one_level(path: PathBuf, to_visit: &mut Vec<PathBuf>) -> io::Result<Vec<PathBuf>> {
-        let mut dir = fs::read_dir(path).await?;
-        let mut asset_group = vec![];
+    for_each_asset_group(
+        collection_path.clone(),
+        collection_path,
+        &works,
+        &errors,
+        &work_key,
+        &|path, collection_path, asset_group, work_key| {
+            let pid = pid.lock();
+            async move {
+                if *pid.await != original_pid {
+                    return Err(String::from("Reading collection was cancelled"));
+                }
+                if asset_group.len() > 0 {
+                    match parse_work(&asset_group, &path, work_key).await {
+                        Ok(Some(mut work)) => {
+                            work.relativePath = path
+                                .strip_prefix(&collection_path)
+                                .unwrap_or(Path::new(""))
+                                .display()
+                                .to_string();
 
-        while let Some(child) = dir.next_entry().await? {
-            if child.metadata().await?.is_dir() {
-                to_visit.push(child.path());
-            } else {
-                asset_group.push(child.path())
+                            return Ok(Some(work));
+                        }
+                        Ok(None) => (),
+                        Err(error) => {
+                            return Err(format!("Failed to parse '{}': {error}", path.display()));
+                        }
+                    }
+                }
+                Ok(None)
             }
-        }
+        },
+    )
+    .await
+    .map_err(|error| format!("Unexpected file system error: {error}"))?;
 
-        Ok(asset_group)
-    }
+    Ok((works.into_inner(), errors.into_inner()))
+}
 
-    let mut works: Vec<Work> = vec![];
-    let mut errors: Vec<String> = vec![];
-    let mut work_key: u64 = 0;
-    let initial_path: PathBuf = collection_path.into();
-    let mut to_visit: Vec<PathBuf> = vec![initial_path.clone()];
+async fn for_each_asset_group<C, F>(
+    path: PathBuf,
+    collection_path: PathBuf,
+    works: &Mutex<Vec<Work>>,
+    errors: &Mutex<Vec<String>>,
+    work_key: &Mutex<u64>,
+    callback: &C,
+) -> io::Result<()>
+where
+    C: Fn(PathBuf, PathBuf, Vec<PathBuf>, u64) -> F + Sync,
+    F: Future<Output = Result<Option<Work>, String>>,
+{
+    let mut dir_entires = fs::read_dir(path.clone()).await?;
+    let mut asset_group: Vec<PathBuf> = vec![];
+    let mut futures: Vec<_> = vec![];
 
-    while let Some(path) = to_visit.pop() {
-        if *pid.lock().unwrap() != original_pid {
-            return Err(format!(
-                "Reading collection {} was cancelled",
-                initial_path.display()
+    while let Some(entry) = dir_entires.next_entry().await? {
+        if entry.metadata().await?.is_dir() {
+            futures.push(for_each_asset_group(
+                entry.path(),
+                collection_path.clone(),
+                works,
+                errors,
+                work_key,
+                callback,
             ));
+        } else {
+            asset_group.push(entry.path());
         }
-
-        match one_level(path.clone(), &mut to_visit).await {
-            Ok(asset_group) => {
-                if asset_group.len() == 0 {
-                    continue;
-                }
-                match parse_work(&asset_group, &path, work_key).await {
-                    Ok(Some(mut work)) => {
-                        work.relativePath = path
-                            .strip_prefix(&initial_path)
-                            .unwrap_or(Path::new(""))
-                            .display()
-                            .to_string();
-
-                        works.push(work);
-                        work_key += 1;
-                    }
-                    Ok(None) => (),
-                    Err(error) => {
-                        errors.push(format!("Failed to parse '{}': {error}", path.display()));
-                    }
-                }
-            }
-            Err(error) => errors.push(format!("Failed to read '{}': {error}", path.display())),
-        };
     }
-    Ok((works, errors))
+    join_all(futures).await;
+
+    let mut work_key = work_key.lock().await;
+    match callback(path, collection_path, asset_group, *work_key).await {
+        Ok(Some(work)) => {
+            works.lock().await.push(work);
+            *work_key += 1;
+        }
+        Ok(None) => (),
+        Err(error) => errors.lock().await.push(error),
+    }
+    Ok(())
 }
 
 async fn parse_work(

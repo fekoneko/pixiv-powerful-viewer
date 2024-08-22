@@ -36,10 +36,11 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
   const switchCollection = useCallback(
     async (collectionPath: string) => {
+      const startTime = Date.now();
+
       const collectionName = collectionPath.split(sep).reverse()[0];
       setCollectionPath(collectionPath);
       setCollectionName(collectionName);
-
       setIsLoading(true);
       newOutput();
 
@@ -69,9 +70,6 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         previousSearchWorker?.terminate();
         setCollectionWorks(works);
         setFavorites(favorites);
-
-        setIsLoading(false);
-        settleOutput();
       } catch (error) {
         if (signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
@@ -80,10 +78,11 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         setCollectionWorks(null);
         setFavorites(null);
         searchWorkerRef.current = null;
-
-        setIsLoading(false);
-        settleOutput();
       }
+
+      setIsLoading(false);
+      logToOutput(`Collection loaded in ${Date.now() - startTime}ms`, 'info');
+      settleOutput();
     },
     [newOutput, settleOutput, logToOutput],
   );
