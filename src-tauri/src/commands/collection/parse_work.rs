@@ -9,39 +9,39 @@ use tokio::fs;
 pub async fn parse_work(
     collection_path: &Path,
     work_path: &Path,
-    asset_group: &Vec<PathBuf>,
+    asset_paths: &Vec<PathBuf>,
     work_key: u64,
 ) -> io::Result<Option<Work>> {
-    let mut image_assets: Vec<&PathBuf> = vec![];
-    let mut meta_asset: Option<&PathBuf> = None;
+    let mut image_paths: Vec<&PathBuf> = vec![];
+    let mut metafile_path: Option<&PathBuf> = None;
 
-    for asset in asset_group.iter() {
-        if let Some(extension) = asset.extension() {
+    for path in asset_paths.iter() {
+        if let Some(extension) = path.extension() {
             match extension.to_str().unwrap_or_default() {
-                "jpg" | "png" | "gif" | "webm" | "webp" | "apng" => image_assets.push(asset),
-                "txt" => meta_asset = Some(asset),
+                "jpg" | "png" | "gif" | "webm" | "webp" | "apng" => image_paths.push(path),
+                "txt" => metafile_path = Some(path),
                 _ => (),
             };
         }
     }
 
-    if image_assets.len() == 0 && meta_asset.is_none() {
+    if image_paths.len() == 0 && metafile_path.is_none() {
         return Ok(None);
     }
 
-    fn get_page_index(asset: &PathBuf) -> Option<u64> {
-        let asset_name = asset
+    fn get_page_index(path: &PathBuf) -> Option<u64> {
+        let image_name = path
             .file_name()
             .unwrap_or_default()
             .to_str()
             .unwrap_or_default();
-        if asset_name.len() == 0 {
+        if image_name.len() == 0 {
             return None;
         }
 
-        if let Some(left_index) = asset_name.rfind("(") {
-            if let Some(right_index) = asset_name[left_index + 1..].find(")") {
-                return asset_name[left_index + 1..left_index + right_index + 1]
+        if let Some(left_index) = image_name.rfind("(") {
+            if let Some(right_index) = image_name[left_index + 1..].find(")") {
+                return image_name[left_index + 1..left_index + right_index + 1]
                     .parse()
                     .ok();
             }
@@ -49,16 +49,16 @@ pub async fn parse_work(
         None
     }
 
-    image_assets.sort_unstable_by_key(|asset| -> u64 { get_page_index(asset).unwrap_or(u64::MAX) });
+    image_paths.sort_unstable_by_key(|path| -> u64 { get_page_index(path).unwrap_or(u64::MAX) });
 
     let mut work = get_required_metadata(collection_path, work_path, work_key);
 
-    if let Some(meta_asset) = meta_asset {
-        add_metadata_from_metafile(meta_asset, &mut work).await?;
+    if let Some(metafile_path) = metafile_path {
+        add_metadata_from_metafile(metafile_path, &mut work).await?;
     }
 
-    for asset in image_assets.iter() {
-        add_asset(asset, &mut work);
+    for path in image_paths.iter() {
+        add_image_asset(path, &mut work);
     }
 
     Ok(Some(work))
@@ -105,8 +105,8 @@ fn get_required_metadata(collection_path: &Path, work_path: &Path, work_key: u64
     }
 }
 
-async fn add_metadata_from_metafile(meta_asset: &PathBuf, work: &mut Work) -> io::Result<()> {
-    let raw_metadata = fs::read_to_string(meta_asset).await?;
+async fn add_metadata_from_metafile(metafile_path: &PathBuf, work: &mut Work) -> io::Result<()> {
+    let raw_metadata = fs::read_to_string(metafile_path).await?;
     let mut field_data: Vec<&str> = vec![];
     let mut field_name: Option<&str> = None;
 
@@ -204,15 +204,15 @@ fn parse_metafile_field(field_name: &str, field_data: &Vec<&str>, work: &mut Wor
     }
 }
 
-fn add_asset(asset: &PathBuf, work: &mut Work) {
-    if let Some(asset_name) = asset.file_name() {
-        if let Ok(asset_dimensions) = imagesize::size(asset) {
+fn add_image_asset(image: &PathBuf, work: &mut Work) {
+    if let Some(image_name) = image.file_name() {
+        if let Ok(image_dimensions) = imagesize::size(image) {
             work.assets.push(ImageAsset {
-                name: asset_name.to_string_lossy().to_string(),
-                path: asset.to_string_lossy().to_string(),
+                name: image_name.to_string_lossy().to_string(),
+                path: image.to_string_lossy().to_string(),
                 dimensions: ImageDimensions {
-                    width: asset_dimensions.width,
-                    height: asset_dimensions.height,
+                    width: image_dimensions.width,
+                    height: image_dimensions.height,
                 },
             });
         };

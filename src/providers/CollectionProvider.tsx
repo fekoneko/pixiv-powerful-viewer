@@ -83,7 +83,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
       setIsLoading(false);
       const timeElapsed = Date.now() - startTime;
-      logToOutput(`Loading setteled in ${formatTime(timeElapsed)}`, 'info');
+      logToOutput(`Setteled in ${formatTime(timeElapsed)}`, 'info');
       settleOutput();
     },
     [newOutput, settleOutput, logToOutput],
