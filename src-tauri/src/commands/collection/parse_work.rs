@@ -1,5 +1,4 @@
-use crate::commands::collection::structs::Work;
-use crate::commands::collection::structs::{ImageAsset, ImageDimensions};
+use crate::lib::{ImageAsset, ImageDimensions, Work};
 use futures::io;
 use std::path::{Path, PathBuf};
 use std::u64;

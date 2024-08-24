@@ -8,13 +8,13 @@ mod lib;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-pub struct Pids {
+pub struct GlobalState {
     read_collection_pid: Arc<Mutex<usize>>,
 }
 
 fn main() {
     tauri::Builder::default()
-        .manage(Pids {
+        .manage(GlobalState {
             read_collection_pid: Arc::new(Mutex::new(0)),
         })
         .invoke_handler(tauri::generate_handler![

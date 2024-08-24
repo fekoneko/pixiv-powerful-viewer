@@ -1,7 +1,7 @@
 use crate::commands::collection::parse_work;
-use crate::commands::collection::structs::Work;
 use crate::lib::SerializableArcMutex;
-use crate::Pids;
+use crate::lib::Work;
+use crate::GlobalState;
 use futures::future::join_all;
 use futures::io;
 use std::num::NonZeroUsize;
@@ -17,7 +17,7 @@ use tokio::sync::Mutex;
 #[tauri::command]
 pub async fn read_collection(
     collection_path: String,
-    pids: State<'_, Pids>,
+    pids: State<'_, GlobalState>,
 ) -> Result<
     (
         SerializableArcMutex<Vec<Work>>,

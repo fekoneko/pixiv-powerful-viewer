@@ -1,7 +1,6 @@
 mod parse_work;
 mod read_collection;
 mod read_collection_list;
-mod structs;
 mod write_collection_list;
 
 pub use parse_work::*;
