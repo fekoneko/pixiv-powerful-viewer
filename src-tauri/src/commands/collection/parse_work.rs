@@ -9,7 +9,6 @@ pub async fn parse_work(
     collection_path: &Path,
     work_path: &Path,
     asset_paths: &Vec<PathBuf>,
-    work_key: u64,
 ) -> io::Result<Option<Work>> {
     let mut image_paths: Vec<&PathBuf> = vec![];
     let mut metafile_path: Option<&PathBuf> = None;
@@ -50,7 +49,7 @@ pub async fn parse_work(
 
     image_paths.sort_unstable_by_key(|path| -> u64 { get_page_index(path).unwrap_or(u64::MAX) });
 
-    let mut work = get_required_metadata(collection_path, work_path, work_key);
+    let mut work = get_required_metadata(collection_path, work_path);
 
     if let Some(metafile_path) = metafile_path {
         add_metadata_from_metafile(metafile_path, &mut work).await?;
@@ -63,9 +62,8 @@ pub async fn parse_work(
     Ok(Some(work))
 }
 
-fn get_required_metadata(collection_path: &Path, work_path: &Path, work_key: u64) -> Work {
+fn get_required_metadata(collection_path: &Path, work_path: &Path) -> Work {
     Work {
-        key: work_key,
         path: String::from(work_path.to_str().unwrap_or_default()),
         relativePath: work_path
             .strip_prefix(&collection_path)

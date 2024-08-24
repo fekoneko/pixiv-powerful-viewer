@@ -7,10 +7,9 @@ use futures::future::join_all;
 use std::{
     num::NonZeroUsize,
     path::{Path, PathBuf},
-    sync::Arc,
     thread::available_parallelism,
     time::Duration,
-    u64, vec,
+    vec,
 };
 use tauri::{async_runtime, State};
 use tokio::{fs, io, sync::Mutex, time::sleep};
@@ -37,7 +36,6 @@ pub async fn start_reading_collection(
     let collection_path: PathBuf = Path::new(&collection_path).into();
     let original_pid = *pid.lock().await;
     let asset_goups = Mutex::new(vec![]);
-    let work_key = Arc::new(Mutex::new(0u64));
 
     println!(
         "Reading folder structure of '{}'...",
@@ -68,14 +66,12 @@ pub async fn start_reading_collection(
         let collection_path = collection_path.clone();
         let works = works.clone();
         let warnings = warnings.clone();
-        let work_key = work_key.clone();
 
         join_handles.push(async_runtime::spawn(process_asset_groups(
             asset_gorups_chunk,
             collection_path,
             works,
             warnings,
-            work_key,
             thread_id,
         )));
 
@@ -146,25 +142,14 @@ async fn process_asset_groups(
     collection_path: PathBuf,
     works: SharedBuffer<Work>,
     warnings: SharedBuffer<String>,
-    work_key: Arc<Mutex<u64>>,
     thread_id: usize,
 ) {
     let futures: Vec<_> = asset_goups
         .iter()
         .map(|asset_group| async {
-            let current_work_key = *work_key.lock().await;
-
-            match parse_work(
-                &collection_path,
-                &asset_group.0,
-                &asset_group.1,
-                current_work_key,
-            )
-            .await
-            {
+            match parse_work(&collection_path, &asset_group.0, &asset_group.1).await {
                 Ok(Some(work)) => {
                     works.0.lock().await.push(work);
-                    *work_key.lock().await += 1;
                 }
                 Ok(None) => (),
                 Err(error) => {

@@ -1,7 +1,6 @@
 #[derive(serde::Serialize)]
 #[allow(non_snake_case)]
 pub struct Work {
-    pub key: u64,
     pub path: String,
     pub relativePath: String,
     pub title: String,

@@ -58,20 +58,23 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         searchWorkerRef.current?.terminate();
         searchWorkerRef.current = new SearchWorker();
 
-        for await (const chunk of collectionReader()) {
+        for await (const { works: worksWithNoKey, warnings } of collectionReader()) {
           if (signal.aborted) return;
+          const newWorks = worksWithNoKey.map((work, index) => ({
+            ...work,
+            key: works.length + index,
+          }));
 
-          chunk.warnings.forEach((warning) => logToOutput(warning, 'warning'));
-          chunk.works.forEach((work) => {
+          warnings.forEach((warning) => logToOutput(warning, 'warning'));
+          newWorks.forEach((work) => {
             if (work.id !== null) return;
             logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
           });
 
-          console.log(chunk);
-          works = [...works, ...chunk.works];
+          works = [...works, ...newWorks];
           setCollectionWorks(works);
 
-          await indexWorks(searchWorkerRef.current, chunk.works);
+          await indexWorks(searchWorkerRef.current, newWorks);
           if (signal.aborted) return;
         }
 
