@@ -2,6 +2,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+mod lib {
+    pub mod serializable;
+}
 
 use std::sync::Arc;
 use tokio::sync::Mutex;
