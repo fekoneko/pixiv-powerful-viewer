@@ -91,7 +91,7 @@ export const WorkCard: FC<WorkCardProps> = memo(
         onClick={() => onSelect(index)}
         tabIndex={-1}
         className={twMerge(
-          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-lg p-1 shadow-md focus:outline-none',
+          'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-lg border border-border p-1 shadow-md focus:outline-none',
           active ? 'bg-paper-accent' : 'bg-paper hover:bg-paper-hover',
         )}
       >

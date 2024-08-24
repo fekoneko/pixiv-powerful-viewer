@@ -4,9 +4,41 @@ import { MessageType, SearchWorkerResponse } from '@/lib/collection/search-worke
 
 let searchWorkerCallId = 0;
 
-export const readCollection = async (
-  collectionPath: string,
-): Promise<[works: Work[], errors: string[]]> => invoke('read_collection', { collectionPath });
+export interface CollectionChunk {
+  finished: boolean;
+  works: Omit<Work, 'key'>[];
+  warnings: string[];
+}
+
+export type CollectionReader = () => AsyncGenerator<CollectionChunk>;
+
+export const getCollectionReader = (collectionPath: string): CollectionReader => {
+  let firstIteration = true;
+
+  return async function* () {
+    while (true) {
+      if (firstIteration) {
+        const { warnings } = await invoke<{ warnings: string[] }>('start_reading_collection', {
+          collectionPath,
+        });
+        firstIteration = false;
+
+        yield { finished: false, works: [], warnings };
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const chunk = await invoke<CollectionChunk>('poll_next_collection_chunk').catch(() => ({
+        finished: false,
+        works: [],
+        warnings: [],
+      }));
+
+      yield chunk;
+      if (chunk.finished) break;
+    }
+  };
+};
 
 const callSearchWorker = async (searchWorker: Worker, type: MessageType, payload: unknown) => {
   const id = searchWorkerCallId++;

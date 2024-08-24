@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useKeyboardEvent, useOutput } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { OutputLog } from '@/providers/OutputProvider';
@@ -33,39 +33,36 @@ const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
 };
 
 export const OutputAccordion: FC = () => {
-  const { output } = useOutput();
-  const [isHidden, setIsHidden] = useState(true);
-
-  const toggleHidden = useCallback(() => setIsHidden((prev) => !prev), []);
+  const { output, isOutputShown, toggleOutput, showOutput, hideOutput } = useOutput();
 
   useKeyboardEvent(
     'keydown',
     'Backquote',
     (e) => {
       e.preventDefault();
-      toggleHidden();
+      toggleOutput();
     },
-    [toggleHidden],
+    [toggleOutput],
     { control: true, alt: false },
   );
 
   useEffect(() => {
-    if (!output?.status) setIsHidden(true);
-    else setIsHidden(false);
-  }, [output?.status]);
+    if (!output?.status) hideOutput();
+    else showOutput();
+  }, [output?.status, showOutput, hideOutput]);
 
   return (
     <Accordion
       className={twMerge(
         'mb-2 transition-all duration-200',
-        isHidden && '-mt-12 translate-y-12',
+        !isOutputShown && '-mt-12 translate-y-12',
         output?.errorsCount && 'error-flash',
         !output?.errorsCount && output?.warningsCount && 'warning-flash',
         // TODO: Make new(Warnings / Errors)Count (not seen) property
       )}
       // TODO: Should I move isExpanded state a level higher (question mark??)
       hotkey={{ key: 'Space', modifiers: { control: true } }}
-      forceCollapsed={isHidden || !output?.logs.length}
+      forceCollapsed={!isOutputShown || !output?.logs.length}
       icon={
         output?.status === 'pending'
           ? () => <Icon src={loadingSpinner} className="size-full self-center bg-text-accent" />
@@ -85,14 +82,14 @@ export const OutputAccordion: FC = () => {
         <>
           <div className="my-0.5 flex items-center gap-2.5">
             <p className="text-text">{output?.infoCount ?? 0}</p>
-            <div className="bg-border my-2 h-1/2 w-px rounded-full pt-px" />
+            <div className="my-2 h-1/2 w-px rounded-full bg-border pt-px" />
             <p className="text-text-warning">{output?.warningsCount ?? 0}</p>
-            <div className="bg-border my-2 h-1/2 w-px rounded-full pt-px" />
+            <div className="my-2 h-1/2 w-px rounded-full bg-border pt-px" />
             <p className="text-text-error">{output?.errorsCount ?? 0}</p>
           </div>
 
           <button
-            onClick={toggleHidden}
+            onClick={toggleOutput}
             className="flex items-baseline rounded-md px-2.5 pb-2 pt-0.5 text-2xl leading-none hover:bg-text/20 focus:bg-text/20 focus:outline-none"
           >
             ×

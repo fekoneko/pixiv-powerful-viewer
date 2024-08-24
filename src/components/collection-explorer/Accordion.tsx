@@ -112,7 +112,7 @@ export const Accordion: FC<AccordionProps> = ({
     <div
       {...divProps}
       className={twMerge(
-        'flex h-10 flex-col gap-1 overflow-y-hidden rounded-lg bg-paper px-1 shadow-lg transition-[min-height] duration-500',
+        'flex h-10 flex-col gap-1 overflow-y-hidden rounded-lg border border-border bg-paper px-1 shadow-lg transition-[min-height] duration-500',
         isExpanded ? 'min-h-[50%]' : 'min-h-10',
         divProps.className,
       )}
@@ -135,7 +135,7 @@ export const Accordion: FC<AccordionProps> = ({
 
       <div
         ref={scrollContainerRef}
-        className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll px-2 pb-5 pt-2"
+        className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll break-words px-2 pb-5 pt-2"
       >
         {contents(isExpanded)}
       </div>

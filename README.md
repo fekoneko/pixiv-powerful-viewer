@@ -47,7 +47,8 @@ This app allows you to locally view and search collection saved by [Powerful Pix
 - `↑` / `↓` or `W` / `S` - select previous / next work
 - `←` / `→` or `A` / `D` - navigate pages within a work
 - `/` or `\` - go to searchbar (`Esc` to exit)
-- `F` - toggle fullscreen mode
+- `F` - toggle viewer fullscreen mode
+- `F11` - toggle window fullscreen mode
 - `` Alt + ` `` - toggle romaji-to-kana conversion in search
 - `Shift + Enter` - add selected work to favorites
 - `Ctrl + Enter` - view favorite works

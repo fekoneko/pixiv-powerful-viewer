@@ -1,6 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useRef, useState } from 'react';
-import { readCollection, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
+import { getCollectionReader, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
 import { isInCollectionList, readCollectionList, writeCollectionList } from '@/lib/collection';
+import { formatTime } from '@/utils/format-time';
 import { useOutput } from '@/hooks';
 import { sep } from '@tauri-apps/api/path';
 import { Work, WorkRelativePathField } from '@/types/collection';
@@ -36,10 +37,14 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
   const switchCollection = useCallback(
     async (collectionPath: string) => {
+      const startTime = Date.now();
       const collectionName = collectionPath.split(sep).reverse()[0];
-      setCollectionPath(collectionPath);
-      setCollectionName(collectionName);
+      let works: Work[] | null = null;
 
+      setCollectionPath(collectionPath);
+      setCollectionName(collectionName?.length ? collectionName : collectionPath);
+      setCollectionWorks(null);
+      setFavorites(null);
       setIsLoading(true);
       newOutput();
 
@@ -47,43 +52,58 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       AbortControllerRef.current = new AbortController();
       const signal = AbortControllerRef.current.signal;
 
+      searchWorkerRef.current?.terminate();
+      searchWorkerRef.current = new SearchWorker();
+
+      const collectionReader = getCollectionReader(collectionPath);
+
       try {
-        const [works, warnings] = await readCollection(collectionPath);
-        if (signal.aborted) return;
-        warnings.forEach((warning) => logToOutput(warning, 'warning'));
+        for await (const { works: worksWithNoKey, warnings } of collectionReader()) {
+          if (signal.aborted) return;
 
-        works.forEach((work) => {
-          if (work.id !== null) return;
-          logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
-        });
+          warnings.forEach((warning) => logToOutput(warning, 'warning'));
+          if (worksWithNoKey.length === 0) continue;
 
-        const favorites = await readCollectionList(collectionPath, 'favorites', works);
-        if (signal.aborted) return;
-        if (!favorites) logToOutput('No favorites found in this collection', 'info');
+          const newWorks = worksWithNoKey.map((work, index) => ({
+            ...work,
+            key: (works?.length ?? 0) + index,
+          }));
 
-        const previousSearchWorker = searchWorkerRef.current;
-        searchWorkerRef.current = new SearchWorker();
-        await indexWorks(searchWorkerRef.current, works);
-        if (signal.aborted) return;
+          newWorks.forEach((work) => {
+            if (work.id !== null) return;
+            logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
+          });
 
-        previousSearchWorker?.terminate();
-        setCollectionWorks(works);
-        setFavorites(favorites);
+          works = works ? [...works, ...newWorks] : newWorks;
+          setCollectionWorks(works);
 
-        setIsLoading(false);
-        settleOutput();
+          await indexWorks(searchWorkerRef.current, newWorks);
+          if (signal.aborted) return;
+        }
+
+        if (works) {
+          const favorites = await readCollectionList(collectionPath, 'favorites', works);
+          if (signal.aborted) return;
+
+          if (!favorites) logToOutput('No favorites found in this collection', 'info');
+          setFavorites(favorites);
+        }
+
+        setCollectionWorks((prev) => prev ?? []);
       } catch (error) {
         if (signal.aborted) return;
+
         const message = error instanceof Error ? error.message : String(error);
         logToOutput(message, 'error');
-
         setCollectionWorks(null);
         setFavorites(null);
         searchWorkerRef.current = null;
-
-        setIsLoading(false);
-        settleOutput();
       }
+
+      const timeElapsed = Date.now() - startTime;
+      logToOutput(`Setteled in ${formatTime(timeElapsed)}`, 'info');
+      settleOutput();
+      setIsLoading(false);
     },
     [newOutput, settleOutput, logToOutput],
   );

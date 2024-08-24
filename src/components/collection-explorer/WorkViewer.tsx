@@ -66,7 +66,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
     <div
       onMouseMove={showControls}
       className={twMerge(
-        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden bg-paper shadow-lg',
+        'relative z-20 flex grow basis-0 items-center justify-center overflow-hidden border border-border bg-paper shadow-lg',
         fullscreenState !== 'fullscreen' && 'rounded-lg',
         work && !controlsShown && 'cursor-none',
       )}

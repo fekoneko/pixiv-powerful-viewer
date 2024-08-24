@@ -89,4 +89,7 @@
       transparent 100%
     );
   }
+  .scroll-none::-webkit-scrollbar {
+    @apply size-0;
+  }
 }

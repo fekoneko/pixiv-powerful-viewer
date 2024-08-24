@@ -17,10 +17,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [setTheme]);
 
   return (
-    <div
-      data-theme={theme ?? 'dark'}
-      className="flex size-full flex-col overflow-hidden bg-background text-text transition-colors"
-    >
+    <div data-theme={theme ?? 'dark'} className="size-full">
       <ThemeContext.Provider value={{ theme: theme ?? 'light', toggleTheme }}>
         {children}
       </ThemeContext.Provider>
