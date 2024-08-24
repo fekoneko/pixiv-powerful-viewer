@@ -1,6 +1,6 @@
 [package]
 name = "pixiv-powerful-viewer"
-version = "1.0.0-3"
+version = "1.0.0-4"
 description = "Pixiv Powerful Viewer"
 authors = ["fekoneko"]
 edition = "2021"
