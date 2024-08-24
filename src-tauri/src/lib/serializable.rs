@@ -9,7 +9,11 @@ impl<T: ?Sized + Serialize> Serialize for SerializableArcMutex<T> {
     where
         S: Serializer,
     {
-        self.0.try_lock().unwrap().serialize(serializer)
+        if let Ok(guard) = self.0.try_lock() {
+            guard.serialize(serializer)
+        } else {
+            Err(serde::ser::Error::custom("Mutex is locked"))
+        }
     }
 }
 

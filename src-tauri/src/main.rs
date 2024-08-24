@@ -1,10 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![allow(special_module_name)]
 
 mod commands;
-mod lib {
-    pub mod serializable;
-}
+mod lib;
 
 use std::sync::Arc;
 use tokio::sync::Mutex;

@@ -1,6 +1,6 @@
 use crate::commands::collection::parse_work;
 use crate::commands::collection::structs::Work;
-use crate::lib::serializable::SerializableArcMutex;
+use crate::lib::SerializableArcMutex;
 use crate::Pids;
 use futures::future::join_all;
 use futures::io;
