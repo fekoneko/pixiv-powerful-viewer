@@ -2,6 +2,8 @@
 
 This app allows you to locally view and search collection saved by [Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh) browser extension.
 
+The app is build with _Tauri_ and uses _Rust_ on backend to load your collections faster.
+
 ## Download
 
 [Go to _Releases_ page](https://github.com/fekoneko/pixiv-powerful-viewer/releases)
@@ -20,10 +22,6 @@ This app allows you to locally view and search collection saved by [Powerful Pix
 
 > [!NOTE]
 > Novels are not yet supported. I think about adding the support in the future
-
-> [!NOTE]
-> Load time of huge collections can be quite long now. Since I moved all file system interractions to Rust I haven't implemented loading in chunks yet.
-> Stay tuned for the next release!
 
 ## Creating collection
 
@@ -65,6 +63,6 @@ This app allows you to locally view and search collection saved by [Powerful Pix
 > I didn't really ask for permission, but they're the great artist, and I encourage you to [check out their work](https://www.pixiv.net/users/1688603).
 > Please, don't sue me :)
 
-![image](https://github.com/user-attachments/assets/2dfe3aa3-a3bb-4fea-9a23-efeaf9bb4c72)
+![image](https://github.com/user-attachments/assets/e1a749f4-9fec-41f2-af89-52a9fc34116e)
 
-![image](https://github.com/user-attachments/assets/171326ff-1f0b-4649-a413-5b282c56a006)
+![image](https://github.com/user-attachments/assets/d5a0968c-7e15-4388-af5a-d180bfed2f16)
