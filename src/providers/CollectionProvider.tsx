@@ -38,10 +38,13 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const switchCollection = useCallback(
     async (collectionPath: string) => {
       const startTime = Date.now();
-
       const collectionName = collectionPath.split(sep).reverse()[0];
+      let works: Work[] | null = null;
+
       setCollectionPath(collectionPath);
       setCollectionName(collectionName?.length ? collectionName : collectionPath);
+      setCollectionWorks(null);
+      setFavorites(null);
       setIsLoading(true);
       newOutput();
 
@@ -49,15 +52,12 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       AbortControllerRef.current = new AbortController();
       const signal = AbortControllerRef.current.signal;
 
+      searchWorkerRef.current?.terminate();
+      searchWorkerRef.current = new SearchWorker();
+
+      const collectionReader = getCollectionReader(collectionPath);
+
       try {
-        const collectionReader = getCollectionReader(collectionPath);
-
-        let works: Work[] | null = null;
-        setCollectionWorks(null);
-        setFavorites(null);
-        searchWorkerRef.current?.terminate();
-        searchWorkerRef.current = new SearchWorker();
-
         for await (const { works: worksWithNoKey, warnings } of collectionReader()) {
           if (signal.aborted) return;
 
@@ -92,18 +92,18 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
         setCollectionWorks((prev) => prev ?? []);
       } catch (error) {
         if (signal.aborted) return;
+
         const message = error instanceof Error ? error.message : String(error);
         logToOutput(message, 'error');
-
         setCollectionWorks(null);
         setFavorites(null);
         searchWorkerRef.current = null;
       }
 
-      setIsLoading(false);
       const timeElapsed = Date.now() - startTime;
       logToOutput(`Setteled in ${formatTime(timeElapsed)}`, 'info');
       settleOutput();
+      setIsLoading(false);
     },
     [newOutput, settleOutput, logToOutput],
   );
