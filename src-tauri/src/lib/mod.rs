@@ -1,5 +1,5 @@
-mod serializable;
+mod shared_buffer;
 mod structs;
 
-pub use serializable::*;
+pub use shared_buffer::*;
 pub use structs::*;

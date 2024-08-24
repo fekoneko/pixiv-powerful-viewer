@@ -1,47 +1,46 @@
-use crate::commands::collection::parse_work;
-use crate::lib::SerializableArcMutex;
-use crate::lib::Work;
-use crate::GlobalState;
+use crate::{
+    commands::collection::parse_work,
+    lib::{SharedBuffer, Work},
+    GlobalState,
+};
 use futures::future::join_all;
-use futures::io;
-use std::num::NonZeroUsize;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use std::thread::available_parallelism;
-use std::u64;
-use std::vec;
+use std::{
+    num::NonZeroUsize,
+    path::{Path, PathBuf},
+    sync::Arc,
+    thread::available_parallelism,
+    time::Duration,
+    u64, vec,
+};
 use tauri::{async_runtime, State};
-use tokio::fs;
-use tokio::sync::Mutex;
+use tokio::{fs, io, sync::Mutex, time::sleep};
+
+#[derive(serde::Serialize)]
+pub struct Response {
+    warnings: SharedBuffer<String>,
+}
 
 #[tauri::command]
-pub async fn read_collection(
+pub async fn start_reading_collection(
     collection_path: String,
-    pids: State<'_, GlobalState>,
-) -> Result<
-    (
-        SerializableArcMutex<Vec<Work>>,
-        SerializableArcMutex<Vec<String>>,
-    ),
-    String,
-> {
-    let pid = pids.read_collection_pid.clone();
+    state: State<'_, GlobalState>,
+) -> Result<Response, String> {
+    let pid = state.read_collection_pid.clone();
+    let finished = state.read_collection_finished.clone();
+    let works = state.read_collection_works.clone();
+    let warnings = state.read_collection_warnings.clone();
     *pid.lock().await += 1;
+    *finished.lock().await = false;
+    *warnings.0.lock().await = vec![];
+    *works.0.lock().await = vec![];
 
     let collection_path: PathBuf = Path::new(&collection_path).into();
     let original_pid = *pid.lock().await;
     let asset_goups = Mutex::new(vec![]);
-    let works = SerializableArcMutex(Arc::new(Mutex::new(vec![] as Vec<Work>)));
-    let warnings = SerializableArcMutex(Arc::new(Mutex::new(vec![] as Vec<String>)));
     let work_key = Arc::new(Mutex::new(0u64));
 
-    let cancel_if = move || {
-        let pid = pid.try_lock();
-        pid.is_ok() && *pid.unwrap() != original_pid
-    };
-
     println!(
-        "Reading file structure of '{}'...",
+        "Reading folder structure of '{}'...",
         collection_path.display()
     );
 
@@ -58,22 +57,18 @@ pub async fn read_collection(
         - 1;
     let thread_chunk_size = collection_size / max_threads_count + 1;
     let mut join_handles: Vec<_> = vec![];
+    let mut thread_id: usize = 1;
 
     println!("Parsing the collection works ({})...", collection_size);
-    println!("Using {} threads + main thread", max_threads_count);
+    println!("Using {} threads", max_threads_count);
 
     for asset_gorups_chunk in asset_goups.chunks(thread_chunk_size) {
         let asset_gorups_chunk = asset_gorups_chunk.to_vec();
+        let chunk_size = asset_gorups_chunk.len();
         let collection_path = collection_path.clone();
         let works = works.clone();
         let warnings = warnings.clone();
         let work_key = work_key.clone();
-        let cancel_if = cancel_if.clone();
-
-        println!(
-            "Spawning new thread ({} works)...",
-            asset_gorups_chunk.len()
-        );
 
         join_handles.push(async_runtime::spawn(process_asset_groups(
             asset_gorups_chunk,
@@ -81,21 +76,42 @@ pub async fn read_collection(
             works,
             warnings,
             work_key,
-            cancel_if,
+            thread_id,
         )));
+
+        println!("Spawned thread #{thread_id} ({chunk_size} works)");
+        thread_id += 1;
     }
 
-    join_all(join_handles).await;
+    async_runtime::spawn(async move {
+        loop {
+            sleep(Duration::from_millis(500)).await;
 
-    println!("\nDone reading the collection\n");
+            if *pid.lock().await != original_pid {
+                join_handles
+                    .iter()
+                    .for_each(|join_handle| join_handle.abort());
+                println!("Reading the collection was canceled");
+                return;
+            }
+            if join_handles
+                .iter()
+                .all(|join_handle| join_handle.inner().is_finished())
+            {
+                println!("Done reading the collection");
+                *finished.lock().await = true;
+                return;
+            }
+        }
+    });
 
-    Ok((works, warnings))
+    Ok(Response { warnings })
 }
 
 async fn get_asset_groups(
     path: PathBuf,
     asset_goups: &Mutex<Vec<(PathBuf, Vec<PathBuf>)>>,
-    warnings: &SerializableArcMutex<Vec<String>>,
+    warnings: &SharedBuffer<String>,
 ) -> io::Result<()> {
     let mut dir_entires = fs::read_dir(path.clone()).await?;
     let mut asset_paths: Vec<PathBuf> = vec![];
@@ -128,28 +144,27 @@ async fn get_asset_groups(
 async fn process_asset_groups(
     asset_goups: Vec<(PathBuf, Vec<PathBuf>)>,
     collection_path: PathBuf,
-    works: SerializableArcMutex<Vec<Work>>,
-    warnings: SerializableArcMutex<Vec<String>>,
+    works: SharedBuffer<Work>,
+    warnings: SharedBuffer<String>,
     work_key: Arc<Mutex<u64>>,
-    cancel_if: impl Fn() -> bool + Sync + Send + 'static,
+    thread_id: usize,
 ) {
     let futures: Vec<_> = asset_goups
         .iter()
         .map(|asset_group| async {
-            if cancel_if() {
-                let message = String::from(format!(
-                    "Parsing work '{}' was canceled",
-                    asset_group.0.display()
-                ));
-                warnings.0.lock().await.push(message);
-                return;
-            }
+            let current_work_key = *work_key.lock().await;
 
-            let mut work_key = work_key.lock().await;
-            match parse_work(&collection_path, &asset_group.0, &asset_group.1, *work_key).await {
+            match parse_work(
+                &collection_path,
+                &asset_group.0,
+                &asset_group.1,
+                current_work_key,
+            )
+            .await
+            {
                 Ok(Some(work)) => {
                     works.0.lock().await.push(work);
-                    *work_key += 1;
+                    *work_key.lock().await += 1;
                 }
                 Ok(None) => (),
                 Err(error) => {
@@ -164,4 +179,5 @@ async fn process_asset_groups(
         .collect();
 
     join_all(futures).await;
+    println!("Thread #{thread_id} finished parsing");
 }

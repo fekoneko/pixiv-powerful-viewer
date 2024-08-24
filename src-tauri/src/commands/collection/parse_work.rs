@@ -1,9 +1,9 @@
 use crate::lib::{ImageAsset, ImageDimensions, Work};
-use futures::io;
-use std::path::{Path, PathBuf};
-use std::u64;
-use std::vec;
-use tokio::fs;
+use std::{
+    path::{Path, PathBuf},
+    u64, vec,
+};
+use tokio::{fs, io};
 
 pub async fn parse_work(
     collection_path: &Path,

@@ -8,6 +8,7 @@ pub async fn read_collection_list(
 ) -> Option<Vec<String>> {
     let path = format!("{collection_path}{MAIN_SEPARATOR}.{list_name}");
 
+    println!("Reading collection list '{}' from '{}'", list_name, path);
     if let Ok(list_contents) = fs::read_to_string(path).await {
         let lines = list_contents.lines().map(|line| line.to_string()).collect();
         Some(lines)

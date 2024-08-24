@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useRef, useState } from 'react';
-import { readCollection, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
+import { getCollectionReader, indexWorks, searchWorks, SearchWorker } from '@/lib/collection';
 import { isInCollectionList, readCollectionList, writeCollectionList } from '@/lib/collection';
 import { formatTime } from '@/utils/format-time';
 import { useOutput } from '@/hooks';
@@ -50,25 +50,35 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       const signal = AbortControllerRef.current.signal;
 
       try {
-        const [works, warnings] = await readCollection(collectionPath);
-        if (signal.aborted) return;
-        warnings.forEach((warning) => logToOutput(warning, 'warning'));
+        const collectionReader = getCollectionReader(collectionPath);
 
-        works.forEach((work) => {
-          if (work.id !== null) return;
-          logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
-        });
+        let works: Work[] = [];
+        setCollectionWorks(null);
+        setFavorites(null);
+        searchWorkerRef.current?.terminate();
+        searchWorkerRef.current = new SearchWorker();
+
+        for await (const chunk of collectionReader()) {
+          if (signal.aborted) return;
+
+          chunk.warnings.forEach((warning) => logToOutput(warning, 'warning'));
+          chunk.works.forEach((work) => {
+            if (work.id !== null) return;
+            logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
+          });
+
+          console.log(chunk);
+          works = [...works, ...chunk.works];
+          setCollectionWorks(works);
+
+          await indexWorks(searchWorkerRef.current, chunk.works);
+          if (signal.aborted) return;
+        }
 
         const favorites = await readCollectionList(collectionPath, 'favorites', works);
         if (signal.aborted) return;
         if (!favorites) logToOutput('No favorites found in this collection', 'info');
 
-        const previousSearchWorker = searchWorkerRef.current;
-        searchWorkerRef.current = new SearchWorker();
-        await indexWorks(searchWorkerRef.current, works);
-        if (signal.aborted) return;
-
-        previousSearchWorker?.terminate();
         setCollectionWorks(works);
         setFavorites(favorites);
       } catch (error) {

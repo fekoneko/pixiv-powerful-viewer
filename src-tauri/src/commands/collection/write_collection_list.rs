@@ -9,6 +9,7 @@ pub async fn write_collection_list(
 ) -> Result<(), String> {
     let path = format!("{collection_path}{MAIN_SEPARATOR}.{list_name}");
 
+    println!("Writing collection list '{}' to '{}'", list_name, path);
     fs::write(path, list.join("\n"))
         .await
         .map_err(|error| error.to_string())
