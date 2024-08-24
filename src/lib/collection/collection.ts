@@ -26,7 +26,7 @@ export const getCollectionReader = (collectionPath: string): CollectionReader =>
         yield { finished: false, works: [], warnings };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const chunk = await invoke<CollectionChunk>('poll_next_collection_chunk').catch(() => ({
         finished: false,

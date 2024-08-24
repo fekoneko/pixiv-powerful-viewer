@@ -52,7 +52,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
       try {
         const collectionReader = getCollectionReader(collectionPath);
 
-        let works: Work[] = [];
+        let works: Work[] | null = null;
         setCollectionWorks(null);
         setFavorites(null);
         searchWorkerRef.current?.terminate();
@@ -60,30 +60,36 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 
         for await (const { works: worksWithNoKey, warnings } of collectionReader()) {
           if (signal.aborted) return;
-          const newWorks = worksWithNoKey.map((work, index) => ({
-            ...work,
-            key: works.length + index,
-          }));
 
           warnings.forEach((warning) => logToOutput(warning, 'warning'));
+          if (worksWithNoKey.length === 0) continue;
+
+          const newWorks = worksWithNoKey.map((work, index) => ({
+            ...work,
+            key: (works?.length ?? 0) + index,
+          }));
+
           newWorks.forEach((work) => {
             if (work.id !== null) return;
             logToOutput(`Metadata wasn't found for '${work.title}'`, 'info');
           });
 
-          works = [...works, ...newWorks];
+          works = works ? [...works, ...newWorks] : newWorks;
           setCollectionWorks(works);
 
           await indexWorks(searchWorkerRef.current, newWorks);
           if (signal.aborted) return;
         }
 
-        const favorites = await readCollectionList(collectionPath, 'favorites', works);
-        if (signal.aborted) return;
-        if (!favorites) logToOutput('No favorites found in this collection', 'info');
+        if (works) {
+          const favorites = await readCollectionList(collectionPath, 'favorites', works);
+          if (signal.aborted) return;
 
-        setCollectionWorks(works);
-        setFavorites(favorites);
+          if (!favorites) logToOutput('No favorites found in this collection', 'info');
+          setFavorites(favorites);
+        }
+
+        setCollectionWorks((prev) => prev ?? []);
       } catch (error) {
         if (signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
