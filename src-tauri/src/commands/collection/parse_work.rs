@@ -1,4 +1,4 @@
-use crate::lib::{ImageAsset, ImageDimensions, Work};
+use crate::lib::{ImageAsset, ImageDimensions, NovelAsset, Work};
 use std::{
     path::{Path, PathBuf},
     u64, vec,
@@ -10,20 +10,30 @@ pub async fn parse_work(
     work_path: &Path,
     asset_paths: &Vec<PathBuf>,
 ) -> io::Result<Option<Work>> {
-    let mut image_paths: Vec<&PathBuf> = vec![];
+    let mut image_asset_paths: Vec<&PathBuf> = vec![];
+    let mut novel_asset_path: Option<&PathBuf> = None;
     let mut metafile_path: Option<&PathBuf> = None;
 
     for path in asset_paths.iter() {
+        if path
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .ends_with("-meta.txt")
+        {
+            metafile_path = Some(path);
+            continue;
+        }
         if let Some(extension) = path.extension() {
             match extension.to_str().unwrap_or_default() {
-                "jpg" | "png" | "gif" | "webm" | "webp" | "apng" => image_paths.push(path),
-                "txt" => metafile_path = Some(path),
+                "jpg" | "png" | "gif" | "webm" | "webp" | "apng" => image_asset_paths.push(path),
+                "txt" | "epub" => novel_asset_path = Some(path),
                 _ => (),
             };
         }
     }
 
-    if image_paths.len() == 0 && metafile_path.is_none() {
+    if image_asset_paths.len() == 0 && metafile_path.is_none() {
         return Ok(None);
     }
 
@@ -47,7 +57,8 @@ pub async fn parse_work(
         None
     }
 
-    image_paths.sort_unstable_by_key(|path| -> u64 { get_page_index(path).unwrap_or(u64::MAX) });
+    image_asset_paths
+        .sort_unstable_by_key(|path| -> u64 { get_page_index(path).unwrap_or(u64::MAX) });
 
     let mut work = get_required_metadata(collection_path, work_path);
 
@@ -55,8 +66,12 @@ pub async fn parse_work(
         add_metadata_from_metafile(metafile_path, &mut work).await?;
     }
 
-    for path in image_paths.iter() {
+    for path in image_asset_paths.iter() {
         add_image_asset(path, &mut work);
+    }
+
+    if let Some(novel_asset_path) = novel_asset_path {
+        add_novel_asset(novel_asset_path, &mut work);
     }
 
     Ok(Some(work))
@@ -65,7 +80,7 @@ pub async fn parse_work(
 fn get_required_metadata(collection_path: &Path, work_path: &Path) -> Work {
     Work {
         path: String::from(work_path.to_str().unwrap_or_default()),
-        relativePath: work_path
+        relative_path: work_path
             .strip_prefix(&collection_path)
             .unwrap_or(Path::new(""))
             .display()
@@ -77,7 +92,7 @@ fn get_required_metadata(collection_path: &Path, work_path: &Path) -> Work {
                 .to_str()
                 .unwrap_or_default(),
         ),
-        userName: String::from(
+        user_name: String::from(
             work_path
                 .iter()
                 .nth_back(1)
@@ -85,20 +100,21 @@ fn get_required_metadata(collection_path: &Path, work_path: &Path) -> Work {
                 .to_str()
                 .unwrap_or_default(),
         ),
-        assets: vec![],
+        image_assets: vec![],
+        novel_asset: None,
 
         id: None,
-        userId: None,
+        user_id: None,
         url: None,
-        imageUrl: None,
-        thumbnailUrl: None,
-        ageRestriction: None,
+        image_url: None,
+        thumbnail_url: None,
+        age_restriction: None,
         ai: None,
         description: None,
         tags: None,
         dimensions: None,
         bookmarks: None,
-        uploadTime: None,
+        upload_time: None,
     }
 }
 
@@ -133,10 +149,10 @@ fn parse_metafile_field(field_name: &str, field_data: &Vec<&str>, work: &mut Wor
     match field_name {
         "ID" => work.id = field_data.first().map(|value| value.parse().ok()).flatten(),
         "URL" => work.url = field_data.first().map(|value| String::from(*value)),
-        "Original" => work.imageUrl = field_data.first().map(|value| String::from(*value)),
-        "Thumbnail" => work.thumbnailUrl = field_data.first().map(|value| String::from(*value)),
+        "Original" => work.image_url = field_data.first().map(|value| String::from(*value)),
+        "Thumbnail" => work.thumbnail_url = field_data.first().map(|value| String::from(*value)),
         "xRestrict" => {
-            work.ageRestriction = field_data
+            work.age_restriction = field_data
                 .first()
                 .map(|value| match *value {
                     "AllAges" => Some(String::from("all-ages")),
@@ -158,10 +174,10 @@ fn parse_metafile_field(field_name: &str, field_data: &Vec<&str>, work: &mut Wor
         }
         "User" => {
             if let Some(first_line) = field_data.first() {
-                work.userName = String::from(*first_line)
+                work.user_name = String::from(*first_line)
             }
         }
-        "UserID" => work.userId = field_data.first().map(|value| value.parse().ok()).flatten(),
+        "UserID" => work.user_id = field_data.first().map(|value| value.parse().ok()).flatten(),
         "Title" => {
             if let Some(first_line) = field_data.first() {
                 work.title = String::from(*first_line)
@@ -196,22 +212,31 @@ fn parse_metafile_field(field_name: &str, field_data: &Vec<&str>, work: &mut Wor
             }
         }
         "Bookmark" => work.bookmarks = field_data.first().map(|value| value.parse().ok()).flatten(),
-        "Date" => work.uploadTime = field_data.first().map(|value| String::from(*value)),
+        "Date" => work.upload_time = field_data.first().map(|value| String::from(*value)),
         _ => (),
     }
 }
 
-fn add_image_asset(image: &PathBuf, work: &mut Work) {
-    if let Some(image_name) = image.file_name() {
-        if let Ok(image_dimensions) = imagesize::size(image) {
-            work.assets.push(ImageAsset {
+fn add_image_asset(imageasset_path: &PathBuf, work: &mut Work) {
+    if let Some(image_name) = imageasset_path.file_name() {
+        if let Ok(image_dimensions) = imagesize::size(imageasset_path) {
+            work.image_assets.push(ImageAsset {
                 name: image_name.to_string_lossy().to_string(),
-                path: image.to_string_lossy().to_string(),
+                path: imageasset_path.to_string_lossy().to_string(),
                 dimensions: ImageDimensions {
                     width: image_dimensions.width,
                     height: image_dimensions.height,
                 },
             });
         };
+    };
+}
+
+fn add_novel_asset(novel_asset_path: &PathBuf, work: &mut Work) {
+    if let Some(novel_asset_name) = novel_asset_path.file_name() {
+        work.novel_asset = Some(NovelAsset {
+            name: novel_asset_name.to_string_lossy().to_string(),
+            path: novel_asset_path.to_string_lossy().to_string(),
+        });
     };
 }

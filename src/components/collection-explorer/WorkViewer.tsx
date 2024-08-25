@@ -25,16 +25,16 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
   }, [updateShowControlsTimeout]);
 
   const showPreviousPage = useCallback(() => {
-    if (!work?.assets?.length) return;
-    setPageNumber((prev) => (prev > 0 ? prev - 1 : work.assets!.length - 1));
+    if (!work?.imageAssets?.length) return;
+    setPageNumber((prev) => (prev > 0 ? prev - 1 : work.imageAssets!.length - 1));
     showControls();
-  }, [work?.assets, showControls]);
+  }, [work?.imageAssets, showControls]);
 
   const showNextPage = useCallback(() => {
-    if (!work?.assets?.length) return;
-    setPageNumber((prev) => (prev < work.assets!.length - 1 ? prev + 1 : 0));
+    if (!work?.imageAssets?.length) return;
+    setPageNumber((prev) => (prev < work.imageAssets!.length - 1 ? prev + 1 : 0));
     showControls();
-  }, [work?.assets, showControls]);
+  }, [work?.imageAssets, showControls]);
 
   useKeyboardEvent(
     'keydown',
@@ -71,14 +71,14 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
         work && !controlsShown && 'cursor-none',
       )}
     >
-      {work?.assets?.[pageNumber] && (
+      {work?.imageAssets?.[pageNumber] && (
         <>
-          <ImageView asset={work.assets[pageNumber]} className="z-30 size-full" />
+          <ImageView asset={work.imageAssets[pageNumber]} className="z-30 size-full" />
 
           <div className="absolute z-20 flex size-full items-center justify-center">
             <div className="absolute size-full bg-paper" />
             <ImageView
-              asset={work.assets[pageNumber]}
+              asset={work.imageAssets[pageNumber]}
               className="size-full scale-[3] blur-[0.4rem]"
             />
             <div className="absolute size-full bg-paper/40" />
@@ -91,7 +91,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
             )}
             tabIndex={-1}
             onClick={() => {
-              setPageNumber((prev) => (prev > 0 ? prev - 1 : work.assets!.length - 1));
+              setPageNumber((prev) => (prev > 0 ? prev - 1 : work.imageAssets!.length - 1));
               showControls();
             }}
           >
@@ -105,7 +105,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
             )}
             tabIndex={-1}
             onClick={() => {
-              setPageNumber((prev) => (prev < work.assets!.length - 1 ? prev + 1 : 0));
+              setPageNumber((prev) => (prev < work.imageAssets!.length - 1 ? prev + 1 : 0));
               showControls();
             }}
           >
@@ -118,7 +118,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
               controlsShown ? 'opacity-100' : 'opacity-0',
             )}
           >
-            {pageNumber + 1} / {work.assets.length}
+            {pageNumber + 1} / {work.imageAssets.length}
           </p>
         </>
       )}

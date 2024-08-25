@@ -1,23 +1,13 @@
 export type AgeRestriction = 'all-ages' | 'r-18' | 'r-18g';
 
-export interface ImageDimensions {
-  width: number;
-  height: number;
-}
-
-export interface ImageAsset {
-  name: string;
-  path: string;
-  dimensions: ImageDimensions;
-}
-
 export interface Work {
   key: number;
   path: string;
   relativePath: string;
   title: string;
   userName: string;
-  assets: ImageAsset[];
+  imageAssets: ImageAsset[];
+  novelAsset: NovelAsset;
 
   id: number | null;
   userId: number | null;
@@ -31,6 +21,22 @@ export interface Work {
   dimensions: ImageDimensions | null;
   bookmarks: number | null;
   uploadTime: string | null;
+}
+
+export interface ImageAsset {
+  name: string;
+  path: string;
+  dimensions: ImageDimensions;
+}
+
+export interface NovelAsset {
+  name: string;
+  path: string;
+}
+
+export interface ImageDimensions {
+  width: number;
+  height: number;
 }
 
 export interface WorkRelativePathField {
