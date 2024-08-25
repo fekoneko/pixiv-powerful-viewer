@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { ImageView } from './ImageView';
+import { NovelView } from './NovelView';
 
 const SHOW_CONTROLS_DELAY = 1500;
 
@@ -71,7 +72,16 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
         work && !controlsShown && 'cursor-none',
       )}
     >
-      {work?.imageAssets?.[pageNumber] && (
+      {work?.novelAsset && (
+        <NovelView
+          asset={work.novelAsset}
+          coverAsset={work.imageAssets[0]}
+          className="z-30 size-full"
+        />
+      )}
+
+      {!work?.novelAsset && work?.imageAssets?.[pageNumber] && (
+        // TODO: Make an option to view novel cover as well
         <>
           <ImageView asset={work.imageAssets[pageNumber]} className="z-30 size-full" />
 

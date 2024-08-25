@@ -1,34 +1,6 @@
 import { createThemes } from 'tw-colors';
+import { themeColors } from './src/styles/theme-colors';
 
 /** @type {import('tailwindcss').Config} */
 export const content = ['./index.html', './src/**/*.{js,ts,jsx,tsx}'];
-export const plugins = [
-  createThemes({
-    dark: {
-      primary: '#0096fa',
-      paper: '#303041',
-      'paper-hover': '#3c3c4d',
-      'paper-accent': '#414153',
-      background: '#272738',
-      text: '#9999aa',
-      'text-accent': '#ccccdd',
-      'text-header': '#ffffff',
-      'text-warning': '#ccb900',
-      'text-error': '#dd0000',
-      border: '#4a4a5d',
-    },
-    light: {
-      primary: '#0096fa',
-      paper: '#f6f6fb',
-      'paper-hover': '#f0f0ff',
-      'paper-accent': '#e7eaff',
-      background: '#cfcfdf',
-      text: '#777790',
-      'text-accent': '#444466',
-      'text-header': '#ffffff',
-      'text-warning': '#aa9900',
-      'text-error': '#ff0000',
-      border: '#c7cadd',
-    },
-  }),
-];
+export const plugins = [createThemes(themeColors)];
