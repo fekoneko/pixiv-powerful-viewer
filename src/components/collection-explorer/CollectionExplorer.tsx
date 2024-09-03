@@ -4,8 +4,8 @@ import { useKeyboardEvent, useFullscreen } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
-import { WorksList } from './WorksList';
-import { WorkViewer } from './WorkViewer';
+import { WorksListPanel } from './WorksListPanel';
+import { WorkViewerPanel } from './WorkViewerPanel';
 import { WorkDetailsAccordion } from './WorkDetailsAccordion';
 import { ExitFullscreenButton } from './ExitFullscreenButton';
 import { OutputAccordion } from './OutputAccordion';
@@ -44,14 +44,17 @@ export const CollectionExplorer: FC = () => {
     <>
       <main className="-ml-3.5 grid h-full w-[calc(100%+0.875rem)] grid-cols-2 grid-rows-1 gap-3 overflow-hidden">
         <div className="ml-3.5 flex flex-col">
-          <WorksList onSelectWork={setSelectedWork} allowDeselect={fullscreenState === 'normal'} />
+          <WorksListPanel
+            onSelectWork={setSelectedWork}
+            allowDeselect={fullscreenState === 'normal'}
+          />
           <OutputAccordion />
         </div>
 
         <div className="flex flex-col">
           <div ref={viewerRef} className="my-2 grow">
             <animated.div style={fullscreenStyles} className="flex flex-col">
-              <WorkViewer work={selectedWork} fullscreenState={fullscreenState} />
+              <WorkViewerPanel work={selectedWork} fullscreenState={fullscreenState} />
             </animated.div>
           </div>
 

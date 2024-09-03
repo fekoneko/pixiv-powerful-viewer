@@ -1,18 +1,17 @@
-import { FC, HTMLAttributes, useCallback, useRef } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { NovelAsset } from '@/types/collection';
-
-import { TextNovelDocument } from './TextNovelDocument';
-import { EpubNovelDocument } from './EpubNovelView';
+import { FC, useCallback, useRef } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { Work } from '@/types/collection';
 
-export interface NovelViewProps extends HTMLAttributes<HTMLDivElement> {
-  asset: NovelAsset;
+import { TextView } from './TextView';
+import { EpubView } from './EpubView';
+
+export interface NovelWorkViewerProps {
+  work: Work;
 }
 
-export const NovelView: FC<NovelViewProps> = ({ asset, ...divProps }) => {
-  const scrollContainerRef = useRef<Element | null>(null);
+export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
+  const scrollContainerRef = useRef<Element>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
 
   const scrollBy = useCallback(
@@ -65,12 +64,12 @@ export const NovelView: FC<NovelViewProps> = ({ asset, ...divProps }) => {
   });
 
   return (
-    <div {...divProps} className={twMerge(divProps.className, 'mx-1')}>
-      {asset?.path.endsWith('.txt') && (
-        <TextNovelDocument ref={scrollContainerRef} asset={asset} className="z-30 size-full" />
+    <div className="mx-1 size-full">
+      {work.novelAsset?.path.endsWith('.txt') && (
+        <TextView ref={scrollContainerRef} asset={work.novelAsset} className="z-30 size-full" />
       )}
-      {asset?.path.endsWith('.epub') && (
-        <EpubNovelDocument ref={scrollContainerRef} asset={asset} className="z-30 size-full" />
+      {work.novelAsset?.path.endsWith('.epub') && (
+        <EpubView ref={scrollContainerRef} asset={work.novelAsset} className="z-30 size-full" />
       )}
     </div>
   );
