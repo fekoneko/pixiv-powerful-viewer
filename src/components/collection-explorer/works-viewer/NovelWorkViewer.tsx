@@ -3,8 +3,8 @@ import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
-import { TextView } from './TextView';
-import { EpubView } from './EpubView';
+import { TextView } from '../../common/TextView';
+import { EpubView } from '../../common/EpubView';
 
 export interface NovelWorkViewerProps {
   work: Work;
@@ -66,10 +66,10 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
   return (
     <div className="mx-1 size-full">
       {work.novelAsset?.path.endsWith('.txt') && (
-        <TextView ref={scrollContainerRef} asset={work.novelAsset} className="z-30 size-full" />
+        <TextView ref={scrollContainerRef} src={work.novelAsset.path} className="z-30 size-full" />
       )}
       {work.novelAsset?.path.endsWith('.epub') && (
-        <EpubView ref={scrollContainerRef} asset={work.novelAsset} className="z-30 size-full" />
+        <EpubView ref={scrollContainerRef} src={work.novelAsset.path} className="z-30 size-full" />
       )}
     </div>
   );

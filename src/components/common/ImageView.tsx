@@ -1,18 +1,19 @@
 import { FC, SVGProps, useEffect } from 'react';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { ImageAsset } from '@/types/collection';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
-  asset: ImageAsset;
+  src: string;
+  width: number;
+  height: number;
 }
 
-export const ImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
+export const ImageView: FC<AssetImageViewProps> = ({ src, width, height, ...svgProps }) => {
   useEffect(() => {
     const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    imageElement.setAttribute('id', asset.path);
-    imageElement.setAttribute('width', asset.dimensions.width.toString());
-    imageElement.setAttribute('height', asset.dimensions.height.toString());
-    imageElement.setAttribute('href', convertFileSrc(asset.path));
+    imageElement.setAttribute('id', src);
+    imageElement.setAttribute('width', width.toString());
+    imageElement.setAttribute('height', height.toString());
+    imageElement.setAttribute('href', convertFileSrc(src));
     imageElement.setAttribute('decoding', 'async');
 
     let originElement = document.getElementById('images-origin');
@@ -25,11 +26,11 @@ export const ImageView: FC<AssetImageViewProps> = ({ asset, ...svgProps }) => {
     originElement.appendChild(imageElement);
 
     return () => imageElement.remove();
-  }, [asset]);
+  }, [src, width, height]);
 
   return (
-    <svg {...svgProps} viewBox={`0 0 ${asset.dimensions.width} ${asset.dimensions.height}`}>
-      <use href={'#' + asset.path} />
+    <svg {...svgProps} viewBox={`0 0 ${width} ${height}`}>
+      <use href={'#' + src} />
     </svg>
   );
 };

@@ -4,7 +4,7 @@ import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
-import { ImageView } from './ImageView';
+import { ImageView } from '../../common/ImageView';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 
 interface WorkCardContents {
@@ -17,7 +17,9 @@ const WorkCardContents: FC<WorkCardContents> = memo(({ work }: WorkCardContents)
       <div className="relative size-full">
         <div className="relative flex size-full items-center transition-all [clip-path:rect(0_100%_100%_0_round_0.5rem)] hover:z-20 hover:translate-x-1 hover:[clip-path:rect(-100%_300%_300%_-100%_round_0.5rem)]">
           <ImageView
-            asset={work.imageAssets[0]}
+            src={work.imageAssets[0].path}
+            width={work.imageAssets[0].dimensions.width}
+            height={work.imageAssets[0].dimensions.height}
             className="pointer-events-none absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
           />
         </div>

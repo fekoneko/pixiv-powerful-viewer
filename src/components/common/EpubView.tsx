@@ -4,7 +4,6 @@ import { useTheme } from '@/hooks/use-theme';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { themeColors } from '@/styles/theme-colors';
 import { twMerge } from 'tailwind-merge';
-import { NovelAsset } from '@/types/collection';
 import { Theme } from '@/types/theme';
 
 const getRenditionTheme = (theme: Theme) => ({
@@ -24,10 +23,10 @@ const getRenditionTheme = (theme: Theme) => ({
 });
 
 export interface EpubViewProps extends HTMLAttributes<HTMLDivElement> {
-  asset: NovelAsset;
+  src: string;
 }
 
-export const EpubView = forwardRef<Element, EpubViewProps>(({ asset, ...divProps }, ref) => {
+export const EpubView = forwardRef<Element, EpubViewProps>(({ src, ...divProps }, ref) => {
   const { theme } = useTheme();
   const [rendition, setRendition] = useState<Rendition | null>(null);
   const viewWrapperRef = useRef<HTMLDivElement>(null);
@@ -37,7 +36,7 @@ export const EpubView = forwardRef<Element, EpubViewProps>(({ asset, ...divProps
     if (!viewWrapper) return;
 
     const abortController = new AbortController();
-    const book = epub(convertFileSrc(asset.path));
+    const book = epub(convertFileSrc(src));
     const rendition = book.renderTo(viewWrapper, { manager: 'continuous', flow: 'scrolled' });
     setRendition(rendition);
 
@@ -45,7 +44,7 @@ export const EpubView = forwardRef<Element, EpubViewProps>(({ asset, ...divProps
       abortController.abort();
       book.destroy();
     };
-  }, [asset]);
+  }, [src]);
 
   useEffect(() => {
     rendition?.themes.default(getRenditionTheme(theme));

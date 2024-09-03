@@ -4,11 +4,11 @@ import { useKeyboardEvent, useFullscreen } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
-import { WorksListPanel } from './WorksListPanel';
-import { WorkViewerPanel } from './WorkViewerPanel';
-import { WorkDetailsAccordion } from './WorkDetailsAccordion';
+import { WorksListPanel } from './works-list/WorksListPanel';
+import { WorkViewerPanel } from './works-viewer/WorkViewerPanel';
+import { WorkDetailsAccordion } from './accordions/WorkDetailsAccordion';
 import { ExitFullscreenButton } from './ExitFullscreenButton';
-import { OutputAccordion } from './OutputAccordion';
+import { OutputAccordion } from './accordions/OutputAccordion';
 
 export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);

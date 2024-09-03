@@ -1,19 +1,18 @@
 import { ForwardedRef, forwardRef, HTMLAttributes, useEffect, useState } from 'react';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { twMerge } from 'tailwind-merge';
-import { NovelAsset } from '@/types/collection';
 
 export interface TextViewProps extends HTMLAttributes<HTMLPreElement> {
-  asset: NovelAsset;
+  src: string;
 }
 
-export const TextView = forwardRef<Element, TextViewProps>(({ asset, ...preProps }, ref) => {
+export const TextView = forwardRef<Element, TextViewProps>(({ src, ...preProps }, ref) => {
   const [text, setText] = useState<string | null>(null);
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    fetch(convertFileSrc(asset.path), { signal: abortController.signal })
+    fetch(convertFileSrc(src), { signal: abortController.signal })
       .then((response) => response.text())
       .then((text) => setText(text))
       .catch(() => {
@@ -22,7 +21,7 @@ export const TextView = forwardRef<Element, TextViewProps>(({ asset, ...preProps
       });
 
     return () => abortController.abort();
-  }, [asset]);
+  }, [src]);
 
   return (
     <pre

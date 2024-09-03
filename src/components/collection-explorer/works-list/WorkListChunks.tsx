@@ -4,7 +4,7 @@ import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorkCard } from './WorkCard';
-import { RenderInViewport } from './RenderInViewport';
+import { RenderInViewport } from '../../common/RenderInViewport';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
 
 const CHUNK_SIZE = 20;
