@@ -41,7 +41,8 @@ The app is build with _Tauri_ and uses _Rust_ on backend to load your collection
 ## Hotkeys
 
 - `↑` / `↓` or `W` / `S` - select previous / next work
-- `←` / `→` or `A` / `D` - navigate pages within a work
+- `←` / `→` or `A` / `D` or `PageUp` / `PageDown` - navigate within a work
+- `Home` / `End`go to the start / end of a novel
 - `/` or `\` - go to searchbar (`Esc` to exit)
 - `F` - toggle viewer fullscreen mode
 - `F11` - toggle window fullscreen mode

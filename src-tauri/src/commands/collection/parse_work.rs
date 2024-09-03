@@ -33,7 +33,7 @@ pub async fn parse_work(
         }
     }
 
-    if image_asset_paths.len() == 0 && metafile_path.is_none() {
+    if image_asset_paths.len() == 0 && novel_asset_path.is_none() && metafile_path.is_none() {
         return Ok(None);
     }
 

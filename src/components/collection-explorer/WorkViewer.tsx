@@ -39,7 +39,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
 
   useKeyboardEvent(
     'keydown',
-    ['ArrowLeft', 'KeyA'],
+    ['PageUp', 'ArrowLeft', 'KeyA'],
     (e) => {
       if (checkTextfieldFocused()) return;
       e.preventDefault();
@@ -50,7 +50,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
 
   useKeyboardEvent(
     'keydown',
-    ['ArrowRight', 'KeyD'],
+    ['PageDown', 'ArrowRight', 'KeyD'],
     (e) => {
       if (checkTextfieldFocused()) return;
       e.preventDefault();
@@ -72,13 +72,7 @@ export const WorkViewer: FC<WorkViewProps> = ({ work, fullscreenState }) => {
         work && !controlsShown && 'cursor-none',
       )}
     >
-      {work?.novelAsset && (
-        <NovelView
-          asset={work.novelAsset}
-          coverAsset={work.imageAssets[0]}
-          className="z-30 size-full"
-        />
-      )}
+      {work?.novelAsset && <NovelView asset={work.novelAsset} className="z-30 size-full" />}
 
       {!work?.novelAsset && work?.imageAssets?.[pageNumber] && (
         // TODO: Make an option to view novel cover as well

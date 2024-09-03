@@ -25,7 +25,10 @@ export const TextNovelDocument: FC<TextNovelDocumentProps> = ({ asset, ...prePro
   }, [asset]);
 
   return (
-    <pre {...preProps} className={twMerge(preProps.className, 'px-[10%] py-8 font-[inherit]')}>
+    <pre
+      {...preProps}
+      className={twMerge(preProps.className, 'overflow-y-scroll px-[10%] py-8 font-[inherit]')}
+    >
       {text}
     </pre>
   );
