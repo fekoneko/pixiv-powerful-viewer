@@ -115,7 +115,7 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
           src={coverAsset.path}
           width={coverAsset.dimensions.width}
           height={coverAsset.dimensions.height}
-          className="pointer-events-none absolute z-10 max-h-80 min-h-80 rounded-md"
+          className="pointer-events-none absolute top-2 z-10 max-h-80 min-h-80 rounded-md"
         />
       )}
 
