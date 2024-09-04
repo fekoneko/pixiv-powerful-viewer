@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 import { useCollection, useKeyboardEvent } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorkDetails } from './WorkDetails';

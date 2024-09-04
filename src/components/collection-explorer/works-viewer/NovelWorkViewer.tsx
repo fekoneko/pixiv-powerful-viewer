@@ -1,6 +1,6 @@
 import { FC, useCallback, useRef } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { TextView } from '../../common/TextView';

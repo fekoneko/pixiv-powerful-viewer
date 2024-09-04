@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { ImageView } from '../../common/ImageView';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 
 interface WorkCardContents {
   work: Work;

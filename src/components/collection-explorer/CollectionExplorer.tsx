@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { animated } from '@react-spring/web';
 import { useKeyboardEvent, useFullscreen } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorksListPanel } from './works-list/WorksListPanel';

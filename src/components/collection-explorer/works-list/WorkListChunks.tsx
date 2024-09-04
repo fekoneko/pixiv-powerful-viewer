@@ -1,6 +1,6 @@
 import { FC, memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorkCard } from './WorkCard';

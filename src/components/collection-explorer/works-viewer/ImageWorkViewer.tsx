@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
