@@ -6,6 +6,23 @@ import { Work } from '@/types/collection';
 import { TextView } from '../../common/TextView';
 import { EpubView } from '../../common/EpubView';
 
+const removeMetadataFromEpub = (document: Document) => {
+  const sectionChildren = document.querySelector('section')?.childNodes;
+  if (!sectionChildren) return;
+
+  const metadataEndIndex = [...sectionChildren].findIndex(
+    (node: any) =>
+      node.tagName === 'BR' &&
+      node.previousSibling?.tagName === 'BR' &&
+      node.previousSibling?.previousSibling?.tagName === 'BR',
+  );
+  if (metadataEndIndex === -1) return;
+
+  [...Array(metadataEndIndex - 1).keys()].forEach((index) => {
+    sectionChildren[index + 2]?.replaceWith(document.createElement('span'));
+  });
+};
+
 export interface NovelWorkViewerProps {
   work: Work;
 }
@@ -69,7 +86,12 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
         <TextView ref={scrollContainerRef} src={work.novelAsset.path} className="z-30 size-full" />
       )}
       {work.novelAsset?.path.endsWith('.epub') && (
-        <EpubView ref={scrollContainerRef} src={work.novelAsset.path} className="z-30 size-full" />
+        <EpubView
+          ref={scrollContainerRef}
+          src={work.novelAsset.path}
+          onRender={removeMetadataFromEpub}
+          className="z-30 size-full"
+        />
       )}
     </div>
   );
