@@ -1,11 +1,12 @@
-import { FC, HTMLAttributes } from 'react';
+import { forwardRef, HTMLAttributes } from 'react';
 
 export interface IconProps extends HTMLAttributes<HTMLElement> {
   src: string;
 }
 
-export const Icon: FC<IconProps> = ({ src, ...iProps }) => (
+export const Icon = forwardRef<HTMLElement, IconProps>(({ src, ...iProps }, ref) => (
   <i
+    ref={ref}
     {...iProps}
     className={iProps.className ?? 'size-[1em] bg-text-accent'}
     style={{
@@ -14,4 +15,4 @@ export const Icon: FC<IconProps> = ({ src, ...iProps }) => (
       maskSize: 'contain',
     }}
   />
-);
+));

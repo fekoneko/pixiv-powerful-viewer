@@ -1,10 +1,11 @@
-import { FC, useCallback, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { TextView } from '../../common/TextView';
 import { EpubView } from '../../common/EpubView';
+import { ImageView } from '@/components/common/ImageView';
 
 const removeMetadataFromEpub = (document: Document) => {
   const sectionChildren = document.querySelector('section')?.childNodes;
@@ -28,6 +29,7 @@ export interface NovelWorkViewerProps {
 }
 
 export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
+  const coverImageRef = useRef<SVGSVGElement>(null);
   const scrollContainerRef = useRef<Element>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
 
@@ -56,6 +58,29 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
     [animateScroll],
   );
 
+  const SyncronizeCoverScroll = useCallback(() => {
+    const coverImage = coverImageRef.current;
+    const scrollContainer = scrollContainerRef.current;
+    if (!coverImage || !scrollContainer) return;
+
+    coverImage.style.top = `${-scrollContainer.scrollTop * 1.15 + 8}px`;
+    coverImage.style.opacity = `${1 - scrollContainer.scrollTop / 260}`;
+  }, []);
+
+  useEffect(() => {
+    if (!scrollContainerRef.current) return;
+    (scrollContainerRef.current as HTMLElement).onscroll = SyncronizeCoverScroll;
+  });
+
+  const handleEpubRender = useCallback(
+    (document: Document) => {
+      removeMetadataFromEpub(document);
+      if (!scrollContainerRef.current) return;
+      (scrollContainerRef.current as HTMLElement).onscroll = SyncronizeCoverScroll;
+    },
+    [SyncronizeCoverScroll],
+  );
+
   useKeyboardEvent('keydown', ['PageUp', 'ArrowLeft', 'KeyA'], (e) => {
     if (checkTextfieldFocused()) return;
     e.preventDefault();
@@ -80,17 +105,34 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
     scrollTo(-1);
   });
 
+  const coverAsset = work.imageAssets[0] ?? null;
+
   return (
-    <div className="mx-1 size-full">
-      {work.novelAsset?.path.endsWith('.txt') && (
-        <TextView ref={scrollContainerRef} src={work.novelAsset.path} className="z-30 size-full" />
+    <div className="relative mx-1 flex size-full flex-col items-center">
+      {coverAsset && (
+        <ImageView
+          ref={coverImageRef}
+          src={coverAsset.path}
+          width={coverAsset.dimensions.width}
+          height={coverAsset.dimensions.height}
+          className="pointer-events-none absolute z-10 max-h-80 min-h-80 rounded-md"
+        />
       )}
+
+      {work.novelAsset?.path.endsWith('.txt') && (
+        <TextView
+          ref={scrollContainerRef}
+          src={work.novelAsset.path}
+          className="size-full !pt-[23rem]"
+        />
+      )}
+
       {work.novelAsset?.path.endsWith('.epub') && (
         <EpubView
           ref={scrollContainerRef}
           src={work.novelAsset.path}
-          onRender={removeMetadataFromEpub}
-          className="z-30 size-full"
+          onRender={handleEpubRender}
+          className="size-full *:pt-[22rem]"
         />
       )}
     </div>
