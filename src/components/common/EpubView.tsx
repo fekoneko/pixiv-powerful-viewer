@@ -1,7 +1,7 @@
 import { forwardRef, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import epub, { Rendition } from 'epubjs';
 import { useTheme } from '@/hooks/use-theme';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { themeColors } from '@/styles/theme-colors';
 import { twMerge } from 'tailwind-merge';
 import { Theme } from '@/types/theme';

@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef, HTMLAttributes, useEffect, useState } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { twMerge } from 'tailwind-merge';
 
 export interface TextViewProps extends HTMLAttributes<HTMLPreElement> {

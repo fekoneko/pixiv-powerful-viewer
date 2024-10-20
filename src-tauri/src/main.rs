@@ -18,6 +18,8 @@ pub struct GlobalState {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(GlobalState {
             read_collection_pid: Arc::new(Mutex::new(0)),
             read_collection_finished: Arc::new(Mutex::new(false)),

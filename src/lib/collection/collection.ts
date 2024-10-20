@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 import { Work } from '@/types/collection';
 import { MessageType, SearchWorkerResponse } from '@/lib/collection/search-worker';
 

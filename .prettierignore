@@ -1,2 +1,5 @@
+dist
 public
 modules
+node_modules
+src-tauri

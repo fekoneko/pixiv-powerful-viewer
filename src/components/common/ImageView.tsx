@@ -1,5 +1,5 @@
 import { forwardRef, SVGProps, useEffect } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { convertFileSrc } from '@tauri-apps/api/core';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   src: string;
