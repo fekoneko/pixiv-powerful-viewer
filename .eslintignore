@@ -1,5 +1,7 @@
 dist
 public
-modules
 node_modules
+patched_modules
 src-tauri
+tsconfig.bun.tsbuildinfo
+tsconfig.app.tsbuildinfo

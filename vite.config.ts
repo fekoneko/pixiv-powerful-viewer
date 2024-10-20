@@ -8,7 +8,7 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       '@': resolve('src'),
-      kuromoji: resolve('modules/kuromoji.js'),
+      kuromoji: resolve('patched_modules/kuromoji.js'),
     },
   },
   build: { chunkSizeWarningLimit: 1024 },
@@ -17,8 +17,6 @@ export default defineConfig(async () => ({
   server: {
     port: 1420,
     strictPort: true,
-    watch: {
-      ignored: ['**/src-tauri/**'],
-    },
+    watch: { ignored: ['**/src-tauri/**'] },
   },
 }));
