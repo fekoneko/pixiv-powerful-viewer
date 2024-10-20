@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
-    "format": "prettier .",
+    "format": "prettier . --write",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "tauri": "tauri"

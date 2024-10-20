@@ -10,7 +10,7 @@ import { Sidebar } from '@/components/sidebar';
 import { CollectionExplorer } from '@/components/collection-explorer';
 import { useKeyboardEvent } from '@/hooks';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-const appWindow = getCurrentWebviewWindow()
+const appWindow = getCurrentWebviewWindow();
 
 export const App: FC = () => {
   useKeyboardEvent('keydown', 'F11', async () => {

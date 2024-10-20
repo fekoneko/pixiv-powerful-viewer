@@ -9,7 +9,7 @@ export const ExitFullscreenButton: FC<ExitFullscreenButtonProps> = ({ onClick })
     <button
       onClick={onClick}
       tabIndex={-1}
-      className="bg-paper hover:text-paper size-12 rounded-full pb-1 text-center text-2xl shadow-lg hover:bg-text"
+      className="size-12 rounded-full bg-paper pb-1 text-center text-2xl shadow-lg hover:bg-text hover:text-paper"
     >
       ×
     </button>
