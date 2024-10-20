@@ -7,9 +7,11 @@
   "author": "fekoneko",
   "homepage": "https://github.com/fekoneko/pixiv-powerful-viewer",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "format": "prettier .",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
     "tauri": "tauri"
   },
   "dependencies": {
