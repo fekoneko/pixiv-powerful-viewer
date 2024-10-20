@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { twMerge } from 'tailwind-merge';
 import { Modifiers } from '@/hooks/use-keyboard-event';
 

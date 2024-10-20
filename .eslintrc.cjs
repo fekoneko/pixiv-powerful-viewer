@@ -13,6 +13,7 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh', 'tailwindcss'],
+  settings: { react: { version: 'detect' } },
   rules: {
     'no-irregular-whitespace': 'off',
     'no-empty': 'off',

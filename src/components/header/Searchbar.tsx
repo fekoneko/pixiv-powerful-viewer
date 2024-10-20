@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from 'react';
 import { useKeyboardEvent, useSearchQuery, useWanakana } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { twMerge } from 'tailwind-merge';
 
 export const Searchbar: FC = () => {

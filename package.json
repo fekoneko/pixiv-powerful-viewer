@@ -2,7 +2,7 @@
   "name": "pixiv-powerful-viewer",
   "private": true,
   "type": "module",
-  "version": "1.0.0-3",
+  "version": "1.0.0-4",
   "description": "This app allows you to view and search collections saved by Pixiv Powerful Downloader browser extension locally",
   "author": "fekoneko",
   "homepage": "https://github.com/fekoneko/pixiv-powerful-viewer",
@@ -10,13 +10,17 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "format": "prettier . --write",
+    "typecheck": "tsc -b",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-spring/web": "^9.7.3",
-    "@tauri-apps/api": "^1",
+    "@tauri-apps/api": "2.0.0",
+    "@tauri-apps/plugin-dialog": "^2.0.1",
+    "epubjs": "^0.3.93",
     "flexsearch": "^0.7.43",
-    "image-size": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-in-viewport": "^1.0.0-alpha.30",
@@ -24,7 +28,7 @@
     "wanakana": "^5.3.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^2.0.3",
     "@types/kuromoji": "^0.1.3",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",

@@ -1,17 +1,17 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
+import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 
 import { WorkListChunks } from './WorkListChunks';
-import { WorksListSkeleton } from '@/components/collection-explorer/WorksListSkeleton';
-import { twMerge } from 'tailwind-merge';
+import { WorksListSkeleton } from './WorksListSkeleton';
 
-interface WorksListProps {
+interface WorksListPanelProps {
   onSelectWork: (selectedWork: Work | null) => void;
   allowDeselect?: boolean;
 }
 
-export const WorksList: FC<WorksListProps> = ({ onSelectWork, allowDeselect }) => {
+export const WorksListPanel: FC<WorksListPanelProps> = ({ onSelectWork, allowDeselect }) => {
   const { searchQuery } = useSearchQuery();
   const { searchCollection, clearFavorites, isLoading } = useCollection();
   const [works, setWorks] = useState<Work[] | null>(null);

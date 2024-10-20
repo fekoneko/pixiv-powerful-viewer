@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { useLocalStorage, useKeyboardEvent, useCollection } from '@/hooks';
-import { dialog } from '@tauri-apps/api';
+import { open as openDialog } from '@tauri-apps/plugin-dialog';
 import { CollectionButtonTutorial } from '@/components/header/CollectionButtonTutorial';
 
 export const CollectionButton: FC = () => {
@@ -27,7 +27,7 @@ export const CollectionButton: FC = () => {
   }, [collectionPath, setRecentPaths, setTutorialEnabled]);
 
   const showPickCollectionDialog = async () => {
-    const collectionPath = await dialog.open({ directory: true, multiple: false });
+    const collectionPath = await openDialog({ directory: true, multiple: false });
     if (typeof collectionPath !== 'string') return;
 
     switchCollection(collectionPath);

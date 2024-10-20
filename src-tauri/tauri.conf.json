@@ -1,38 +1,42 @@
 {
-  "package": {
-    "productName": "Pixiv Powerful Viewer"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "fekoneko",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
   "build": {
     "beforeDevCommand": "bun run dev",
     "beforeBuildCommand": "bun run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "dialog": {
-        "open": true
-      },
-      "window": {
-        "setFullscreen": true
-      },
-      "protocol": {
-        "asset": true,
-        "assetScope": [
+  "productName": "Pixiv Powerful Viewer",
+  "mainBinaryName": "Pixiv Powerful Viewer",
+  "identifier": "com.fekoneko.ppv.app",
+  "plugins": {},
+  "app": {
+    "security": {
+      "assetProtocol": {
+        "scope": [
           "**/*.jpg",
           "**/*.png",
           "**/*.gif",
           "**/*.webm",
           "**/*.webp",
           "**/*.apng",
-          "**/*.txt"
-        ]
-      }
+          "**/*.txt",
+          "**/*.epub"
+        ],
+        "enable": true
+      },
+      "csp": "default-src 'self'; img-src 'self' asset: data: https://asset.localhost; connect-src ipc: http://ipc.localhost"
     },
     "windows": [
       {
@@ -43,22 +47,6 @@
         "minHeight": 360,
         "center": true
       }
-    ],
-    "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: data: https://asset.localhost"
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "publisher": "fekoneko",
-      "identifier": "com.fekoneko.ppv.app",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    }
+    ]
   }
 }

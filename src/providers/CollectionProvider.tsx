@@ -38,7 +38,7 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
   const switchCollection = useCallback(
     async (collectionPath: string) => {
       const startTime = Date.now();
-      const collectionName = collectionPath.split(sep).reverse()[0];
+      const collectionName = collectionPath.split(sep()).reverse()[0];
       let works: Work[] | null = null;
 
       setCollectionPath(collectionPath);

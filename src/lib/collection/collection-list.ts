@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 import { Work, WorkRelativePathField } from '@/types/collection';
 
 export const writeCollectionList = async (

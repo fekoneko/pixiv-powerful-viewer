@@ -1,10 +1,10 @@
 import { FC, memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorkCard } from './WorkCard';
-import { RenderInViewport } from './RenderInViewport';
+import { RenderInViewport } from '../../common/RenderInViewport';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
 
 const CHUNK_SIZE = 20;

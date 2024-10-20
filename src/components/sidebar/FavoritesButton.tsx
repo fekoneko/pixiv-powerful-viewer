@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useSearchQuery } from '@/hooks';
-import { checkTextfieldFocused } from '@/utils/is-textfield-focused';
+import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 
 export const FavoritesButton: FC = () => {
   const { searchQuery, setSearchQuery } = useSearchQuery();

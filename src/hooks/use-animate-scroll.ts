@@ -1,10 +1,12 @@
-import { RefObject, useEffect } from 'react';
+import { MutableRefObject, RefObject, useEffect } from 'react';
 import { SpringRef, useSpring } from '@react-spring/web';
 
 export type Scroll = { x: number; y: number };
 export type AnimateScroll = SpringRef<Scroll>;
 
-export const useAnimateScroll = (scrollContainerRef: RefObject<HTMLElement>) => {
+export const useAnimateScroll = (
+  scrollContainerRef: RefObject<Element> | MutableRefObject<Element | null>,
+) => {
   const [, animateScroll] = useSpring(() => ({
     from: { x: 0, y: 0 },
     onChange: (result) => {
