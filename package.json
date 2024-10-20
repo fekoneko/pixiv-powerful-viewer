@@ -7,12 +7,13 @@
   "author": "fekoneko",
   "homepage": "https://github.com/fekoneko/pixiv-powerful-viewer",
   "scripts": {
-    "dev": "tauri dev",
-    "build": "tauri build",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
     "format": "prettier . --write",
     "typecheck": "tsc -b",
-    "lint": "eslint .",
-    "tauri": "tauri"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-spring/web": "^9.7.3",
