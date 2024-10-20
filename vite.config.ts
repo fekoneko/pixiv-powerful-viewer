@@ -11,6 +11,7 @@ export default defineConfig(async () => ({
       kuromoji: resolve('modules/kuromoji.js'),
     },
   },
+  build: { chunkSizeWarningLimit: 1024 },
 
   clearScreen: false,
   server: {
