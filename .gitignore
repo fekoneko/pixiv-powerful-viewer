@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+patched_modules
+tsconfig.bun.tsbuildinfo
+tsconfig.app.tsbuildinfo
 
 # Editor directories and files
 .vscode/*

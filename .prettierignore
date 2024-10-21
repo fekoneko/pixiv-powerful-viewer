@@ -1,5 +1,5 @@
 dist
 public
-modules
 node_modules
+patched_modules
 src-tauri
