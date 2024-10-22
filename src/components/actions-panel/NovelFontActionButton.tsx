@@ -21,7 +21,7 @@ export const NovelFontActionButton: FC<NovelFontActionButtonProps> = ({ fontSrc,
       onClick={onClick}
       tabIndex={4}
       className={twMerge(
-        'order-4 flex size-10 items-center justify-center rounded-md border border-border bg-paper px-[0.58rem] py-2 text-lg shadow-md hover:bg-paper-hover focus:bg-paper-hover focus:outline-none',
+        'order-4 flex size-10 items-center justify-center rounded-md border border-border bg-paper px-[0.58rem] pb-3 pt-2 text-xl shadow-md hover:bg-paper-hover focus:bg-paper-hover focus:outline-none',
         fontSrc && 'font-[novel-font-action-button-font]',
       )}
     >

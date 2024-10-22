@@ -63,7 +63,10 @@ export const EpubView = forwardRef<Element, EpubViewProps>(
         setIsRendered(true);
       });
 
-      return () => abortController.abort();
+      return () => {
+        abortController.abort();
+        setIsRendered(false);
+      };
     }, [rendition]);
 
     useEffect(() => {
