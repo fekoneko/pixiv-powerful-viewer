@@ -5,7 +5,7 @@ import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
 
 import { WorksListPanel } from './works-list/WorksListPanel';
-import { WorkViewerPanel } from './works-viewer/WorkViewerPanel';
+import { WorkViewerPanel } from './work-viewer/WorkViewerPanel';
 import { WorkDetailsAccordion } from './accordions/WorkDetailsAccordion';
 import { ExitFullscreenButton } from './ExitFullscreenButton';
 import { OutputAccordion } from './accordions/OutputAccordion';

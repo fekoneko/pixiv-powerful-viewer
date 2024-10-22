@@ -10,7 +10,7 @@ import { AnimateScroll } from '@/hooks/use-animate-scroll';
 const CHUNK_SIZE = 20;
 const KEYBOARD_DELAY = 150;
 
-interface WorkListChunksProps {
+interface WorksListChunksProps {
   works: Work[];
   onSelectWork: (selectedWork: Work | null) => void;
   allowDeselect?: boolean;
@@ -18,7 +18,7 @@ interface WorkListChunksProps {
   animateScroll: AnimateScroll;
 }
 
-export const WorkListChunks: FC<WorkListChunksProps> = memo(
+export const WorksListChunks: FC<WorksListChunksProps> = memo(
   ({ works, onSelectWork, allowDeselect, scrollContainerRef, animateScroll }) => {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const previousWorksRef = useRef<Work[]>(works);
