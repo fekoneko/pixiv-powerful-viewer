@@ -1,11 +1,10 @@
 import { FC, memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
-import { Work } from '@/types/collection';
-
-import { WorkCard } from './WorkCard';
-import { RenderInViewport } from '../../common/RenderInViewport';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
+import { Work } from '@/types/collection';
+import { WorksListCard } from './WorksListCard';
+import { RenderInViewport } from '@/components/common/RenderInViewport';
 
 const CHUNK_SIZE = 20;
 const KEYBOARD_DELAY = 150;
@@ -137,7 +136,7 @@ export const WorksListChunks: FC<WorksListChunksProps> = memo(
           const workIndex = chunkIndex * CHUNK_SIZE + workIndexInChunk;
 
           return (
-            <WorkCard
+            <WorksListCard
               key={work.key}
               work={work}
               index={workIndex}

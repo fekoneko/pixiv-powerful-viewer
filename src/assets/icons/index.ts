@@ -1,1 +1,1 @@
-export { default as loadingSpinner } from './loading-spinner.svg';
+export { default as loadingSpinnerIcon } from './loading-spinner-icon.svg';

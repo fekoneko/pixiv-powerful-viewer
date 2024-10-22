@@ -30,22 +30,22 @@ const WithHotkey: FC<WithHotkeyProps> = ({ hotkey, toggleExpanded }) => {
   return null;
 };
 
-export interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
+export interface AccordionProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   icon?: (isExpanded: boolean) => ReactNode;
   mainSection: (isExpanded: boolean) => ReactNode;
-  contents: (isExpanded: boolean) => ReactNode;
   rightSection?: (isExpanded: boolean) => ReactNode;
   hotkey?: Hotkey;
   forceCollapsed?: boolean;
+  children: (isExpanded: boolean) => ReactNode;
 }
 
 export const Accordion: FC<AccordionProps> = ({
   icon,
   mainSection,
-  contents,
   rightSection,
   hotkey,
   forceCollapsed,
+  children,
   ...divProps
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -137,7 +137,7 @@ export const Accordion: FC<AccordionProps> = ({
         ref={scrollContainerRef}
         className="scroll-overflow-mask overflow-x-hidden overflow-y-scroll break-words px-2 pb-5 pt-2"
       >
-        {contents(isExpanded)}
+        {children(isExpanded)}
       </div>
 
       {hotkey && !forceCollapsed && <WithHotkey hotkey={hotkey} toggleExpanded={toggleExpanded} />}

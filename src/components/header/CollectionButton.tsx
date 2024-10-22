@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef } from 'react';
 import { useLocalStorage, useKeyboardEvent, useCollection } from '@/hooks';
 import { open as openDialog } from '@tauri-apps/plugin-dialog';
-import { CollectionButtonTutorial } from '@/components/header/CollectionButtonTutorial';
+import { CollectionButtonTutorial } from './CollectionButtonTutorial';
 
 export const CollectionButton: FC = () => {
   const { collectionPath, collectionName, switchCollection } = useCollection();

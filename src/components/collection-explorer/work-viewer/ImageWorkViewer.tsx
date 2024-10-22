@@ -3,8 +3,7 @@ import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
-
-import { ImageView } from '../../common/ImageView';
+import { ImageView } from '@/components/common/ImageView';
 
 const SHOW_CONTROLS_DELAY = 1500;
 

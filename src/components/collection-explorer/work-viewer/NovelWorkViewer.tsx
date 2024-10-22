@@ -2,9 +2,8 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
-
-import { TextView } from '../../common/TextView';
-import { EpubView } from '../../common/EpubView';
+import { TextView } from '@/components/common/TextView';
+import { EpubView } from '@/components/common/EpubView';
 import { ImageView } from '@/components/common/ImageView';
 
 const removeMetadataFromEpub = (document: Document) => {

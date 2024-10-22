@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useKeyboardEvent, useSearchQuery } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 
-export const FavoritesButton: FC = () => {
+export const FavoritesActionButton: FC = () => {
   const { searchQuery, setSearchQuery } = useSearchQuery();
   const [prevSearchRequest, setPrevSearchRequest] = useState('');
 
@@ -32,7 +32,7 @@ export const FavoritesButton: FC = () => {
     <button
       role="button"
       onClick={toggleFavorites}
-      className="flex size-10 items-center justify-center rounded-md border border-border bg-paper px-[0.58rem] py-2 text-lg shadow-md hover:bg-paper-hover focus:bg-paper-hover focus:outline-none"
+      className="order-3 flex size-10 items-center justify-center rounded-md border border-border bg-paper px-[0.58rem] py-2 text-lg shadow-md hover:bg-paper-hover focus:bg-paper-hover focus:outline-none"
     >
       {searchQuery === '#favorites' ? '❌' : '⭐'}
     </button>

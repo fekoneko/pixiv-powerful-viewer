@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
-
 import { WorksListChunks } from './WorksListChunks';
 import { WorksListSkeleton } from './WorksListSkeleton';
 

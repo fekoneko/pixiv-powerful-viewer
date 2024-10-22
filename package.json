@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "format": "prettier . --write",
-    "typecheck": "tsc -b",
+    "check-types": "tsc -b",
     "lint": "eslint ."
   },
   "dependencies": {

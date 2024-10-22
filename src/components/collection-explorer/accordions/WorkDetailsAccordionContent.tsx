@@ -2,12 +2,15 @@ import { FC, Fragment } from 'react';
 import { openExternal } from '@/utils/open-external';
 import { Work } from '@/types/collection';
 
-interface WorkDetailsProps {
+interface WorkDetailsAccordionContentProps {
   work: Work;
   isExpanded: boolean;
 }
 
-export const WorkDetails: FC<WorkDetailsProps> = ({ work, isExpanded }) => (
+export const WorkDetailsAccordionContent: FC<WorkDetailsAccordionContentProps> = ({
+  work,
+  isExpanded,
+}) => (
   <div className="flex flex-col gap-1.5">
     <div className="flex flex-wrap items-baseline justify-center gap-x-3 text-lg font-semibold text-text-accent">
       <h3 className="text-center">{work.title}</h3>

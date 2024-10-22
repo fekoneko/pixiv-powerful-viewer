@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { FullscreenState } from '@/hooks/use-fullscreen';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
-
 import { NovelWorkViewer } from './NovelWorkViewer';
 import { ImageWorkViewer } from './ImageWorkViewer';
 

@@ -2,9 +2,8 @@ import { FC, useMemo } from 'react';
 import { useCollection, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
-
-import { WorkDetails } from './WorkDetails';
-import { Accordion } from './Accordion';
+import { WorkDetailsAccordionContent } from './WorkDetailsAccordionContent';
+import { Accordion } from '@/components/common/Accordion';
 
 interface WorkDetailsAccordionProps {
   work: Work | null;
@@ -54,7 +53,8 @@ export const WorkDetailsAccordion: FC<WorkDetailsAccordionProps> = ({
           </button>
         </>
       )}
-      contents={(isExpanded) => <WorkDetails work={work} isExpanded={isExpanded} />}
-    />
+    >
+      {(isExpanded) => <WorkDetailsAccordionContent work={work} isExpanded={isExpanded} />}
+    </Accordion>
   );
 };
