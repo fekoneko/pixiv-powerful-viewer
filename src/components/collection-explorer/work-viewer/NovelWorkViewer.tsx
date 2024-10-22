@@ -58,7 +58,7 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
     [animateScroll],
   );
 
-  const SyncronizeCoverScroll = useCallback(() => {
+  const syncronizeCoverScroll = useCallback(() => {
     const coverImage = coverImageRef.current;
     const scrollContainer = scrollContainerRef.current;
     if (!coverImage || !scrollContainer) return;
@@ -69,16 +69,16 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
 
   useEffect(() => {
     if (!scrollContainerRef.current) return;
-    (scrollContainerRef.current as HTMLElement).onscroll = SyncronizeCoverScroll;
+    (scrollContainerRef.current as HTMLElement).onscroll = syncronizeCoverScroll;
   });
 
   const handleEpubRender = useCallback(
     (document: Document) => {
       removeMetadataFromEpub(document);
       if (!scrollContainerRef.current) return;
-      (scrollContainerRef.current as HTMLElement).onscroll = SyncronizeCoverScroll;
+      (scrollContainerRef.current as HTMLElement).onscroll = syncronizeCoverScroll;
     },
-    [SyncronizeCoverScroll],
+    [syncronizeCoverScroll],
   );
 
   useKeyboardEvent('keydown', ['PageUp', 'ArrowLeft', 'KeyA'], (e) => {
