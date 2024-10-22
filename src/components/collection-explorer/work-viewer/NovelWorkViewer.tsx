@@ -5,6 +5,20 @@ import { Work } from '@/types/collection';
 import { TextView } from '@/components/common/TextView';
 import { EpubView } from '@/components/common/EpubView';
 import { ImageView } from '@/components/common/ImageView';
+import { RenderActions } from '@/components/actions-panel/RenderActions';
+import { NovelFontActionButton } from '@/components/actions-panel/NovelFontActionButton';
+import { convertFileSrc } from '@tauri-apps/api/core';
+import { kiwiMaruFontSrc, notoSansJpFontSrc, notoSerifJpFontSrc } from '@/assets/fonts';
+import { segoeUiFontSrc, zenAntiqueSoftFontSrc, zenKurenaidoFontSrc } from '@/assets/fonts';
+
+const FONT_SRCS = [
+  notoSansJpFontSrc,
+  notoSerifJpFontSrc,
+  zenKurenaidoFontSrc,
+  zenAntiqueSoftFontSrc,
+  kiwiMaruFontSrc,
+  segoeUiFontSrc,
+];
 
 const removeMetadataFromEpub = (document: Document) => {
   const sectionChildren = document.querySelector('section')?.childNodes;
@@ -31,7 +45,7 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
   const coverImageRef = useRef<SVGSVGElement>(null);
   const scrollContainerRef = useRef<Element>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
-  const [fontSrc, setFontSrc] = useState<string | null>(null);
+  const [fontIndex, setFontIndex] = useState(0);
 
   const scrollBy = useCallback(
     (offset: number) => {
@@ -81,6 +95,10 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
     [syncronizeCoverScroll],
   );
 
+  const switchFont = useCallback(() => {
+    setFontIndex((prev) => (prev + 1) % FONT_SRCS.length);
+  }, []);
+
   useKeyboardEvent('keydown', ['PageUp', 'ArrowLeft', 'KeyA'], (e) => {
     if (checkTextfieldFocused()) return;
     e.preventDefault();
@@ -112,7 +130,7 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
       {coverAsset && (
         <ImageView
           ref={coverImageRef}
-          src={coverAsset.path}
+          src={convertFileSrc(coverAsset.path)}
           width={coverAsset.dimensions.width}
           height={coverAsset.dimensions.height}
           className="pointer-events-none absolute top-2 z-10 max-h-80 min-h-80 rounded-md"
@@ -122,7 +140,8 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
       {work.novelAsset?.path.endsWith('.txt') && (
         <TextView
           ref={scrollContainerRef}
-          src={work.novelAsset.path}
+          src={convertFileSrc(work.novelAsset.path)}
+          fontSrc={FONT_SRCS[fontIndex]}
           className="size-full !pt-[23rem]"
         />
       )}
@@ -130,11 +149,16 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
       {work.novelAsset?.path.endsWith('.epub') && (
         <EpubView
           ref={scrollContainerRef}
-          src={work.novelAsset.path}
+          src={convertFileSrc(work.novelAsset.path)}
+          fontSrc={FONT_SRCS[fontIndex]}
           onRender={handleEpubRender}
           className="size-full *:pt-[22rem]"
         />
       )}
+
+      <RenderActions>
+        <NovelFontActionButton fontSrc={FONT_SRCS[fontIndex]} onClick={switchFont} />
+      </RenderActions>
     </div>
   );
 };

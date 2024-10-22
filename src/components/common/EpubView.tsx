@@ -1,7 +1,6 @@
 import { forwardRef, HTMLAttributes, useEffect, useRef, useState } from 'react';
 import epub, { Rendition } from 'epubjs';
 import { useTheme } from '@/hooks/use-theme';
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { themeColors } from '@/styles/theme-colors';
 import { twMerge } from 'tailwind-merge';
 import { Theme } from '@/types/theme';
@@ -41,63 +40,73 @@ export const EpubView = forwardRef<Element, EpubViewProps>(
   ({ src, fontSrc, onRender, ...divProps }, ref) => {
     const { theme } = useTheme();
     const [rendition, setRendition] = useState<Rendition | null>(null);
+    const [isRendered, setIsRendered] = useState(false);
     const viewWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
       const viewWrapper = viewWrapperRef.current;
       if (!viewWrapper) return;
 
-      const abortController = new AbortController();
-      const book = epub(convertFileSrc(src));
+      const book = epub(src);
       const rendition = book.renderTo(viewWrapper, { manager: 'continuous', flow: 'scrolled' });
       setRendition(rendition);
 
-      return () => {
-        abortController.abort();
-        book.destroy();
-      };
+      return () => book.destroy();
     }, [src]);
-
-    useEffect(() => {
-      rendition?.themes.default(getRenditionTheme(theme));
-    }, [rendition, theme]);
 
     useEffect(() => {
       if (!rendition) return;
       const abortController = new AbortController();
 
       rendition.display(0).then(() => {
-        if (!ref || abortController.signal.aborted) return;
-
-        const scrollContainer =
-          viewWrapperRef.current?.getElementsByClassName('epub-container')[0] ?? null;
-        if (typeof ref === 'function') ref(scrollContainer);
-        else ref.current = scrollContainer;
-      });
-
-      rendition.on('rendered', () => {
         if (abortController.signal.aborted) return;
-
-        const viewWrapper = viewWrapperRef.current;
-        const iframeDocument = viewWrapper?.getElementsByTagName('iframe')[0]?.contentDocument;
-        if (!iframeDocument) return;
-
-        if (fontSrc) {
-          const styleElement = iframeDocument.createElement('style');
-          styleElement.textContent = `
-            @font-face {
-              font-family: 'epub-view-font';
-              src: url(${convertFileSrc(fontSrc)});
-            }`;
-          iframeDocument.head.appendChild(styleElement);
-          iframeDocument.body.style.setProperty('font-family', 'epub-view-font');
-        }
-
-        onRender?.(iframeDocument);
+        setIsRendered(true);
       });
 
       return () => abortController.abort();
-    }, [rendition, ref, onRender, fontSrc]);
+    }, [rendition]);
+
+    useEffect(() => {
+      rendition?.themes.default(getRenditionTheme(theme));
+    }, [rendition, theme]);
+
+    useEffect(() => {
+      if (!ref || !isRendered) return;
+
+      const scrollContainer =
+        viewWrapperRef.current?.getElementsByClassName('epub-container')[0] ?? null;
+      if (typeof ref === 'function') ref(scrollContainer);
+      else ref.current = scrollContainer;
+    }, [isRendered, ref]);
+
+    useEffect(() => {
+      if (!isRendered) return;
+
+      const viewWrapper = viewWrapperRef.current;
+      const iframeDocument = viewWrapper?.getElementsByTagName('iframe')[0]?.contentDocument;
+      if (!iframeDocument) return;
+
+      onRender?.(iframeDocument);
+    }, [isRendered, onRender]);
+
+    useEffect(() => {
+      if (!fontSrc || !isRendered) return;
+
+      const viewWrapper = viewWrapperRef.current;
+      const iframeDocument = viewWrapper?.getElementsByTagName('iframe')[0]?.contentDocument;
+      if (!iframeDocument) return;
+
+      const styleElement = iframeDocument.createElement('style');
+      styleElement.textContent = `
+        @font-face {
+          font-family: 'epub-view-font';
+          src: url(${fontSrc});
+        }`;
+      iframeDocument.head.appendChild(styleElement);
+      iframeDocument.body.style.setProperty('font-family', 'epub-view-font');
+
+      return () => styleElement.remove();
+    }, [isRendered, fontSrc]);
 
     return (
       <div

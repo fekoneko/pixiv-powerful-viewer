@@ -4,6 +4,7 @@ import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
 import { ImageView } from '@/components/common/ImageView';
+import { convertFileSrc } from '@tauri-apps/api/core';
 
 const SHOW_CONTROLS_DELAY = 1500;
 
@@ -70,7 +71,7 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
       )}
     >
       <ImageView
-        src={asset.path}
+        src={convertFileSrc(asset.path)}
         width={asset.dimensions.width}
         height={asset.dimensions.height}
         className="z-30 size-full"
@@ -79,7 +80,7 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
       <div className="absolute z-20 flex size-full items-center justify-center">
         <div className="absolute size-full bg-paper" />
         <ImageView
-          src={asset.path}
+          src={convertFileSrc(asset.path)}
           width={asset.dimensions.width}
           height={asset.dimensions.height}
           className="size-full scale-[3] blur-[0.4rem]"

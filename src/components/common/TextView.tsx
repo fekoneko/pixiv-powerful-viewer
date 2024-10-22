@@ -1,5 +1,4 @@
 import { ForwardedRef, forwardRef, HTMLAttributes, useEffect, useState } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { twMerge } from 'tailwind-merge';
 
 export interface TextViewProps extends HTMLAttributes<HTMLPreElement> {
@@ -13,7 +12,7 @@ export const TextView = forwardRef<Element, TextViewProps>(({ src, fontSrc, ...p
   useEffect(() => {
     const abortController = new AbortController();
 
-    fetch(convertFileSrc(src), { signal: abortController.signal })
+    fetch(src, { signal: abortController.signal })
       .then((response) => response.text())
       .then((text) => setText(text))
       .catch(() => {
@@ -30,7 +29,7 @@ export const TextView = forwardRef<Element, TextViewProps>(({ src, fontSrc, ...p
         <style>
           {`@font-face {
             font-family: 'text-view-font';
-            src: url(${convertFileSrc(fontSrc)});
+            src: url(${fontSrc});
           }`}
         </style>
       )}
@@ -40,7 +39,8 @@ export const TextView = forwardRef<Element, TextViewProps>(({ src, fontSrc, ...p
         {...preProps}
         className={twMerge(
           preProps.className,
-          'overflow-y-scroll px-[10%] py-8 font-[text-view-font]',
+          'overflow-y-scroll px-[10%] py-8',
+          fontSrc && 'font-[text-view-font]',
         )}
       >
         {text}

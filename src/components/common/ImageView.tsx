@@ -1,5 +1,4 @@
-import { forwardRef, SVGProps, useEffect } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { forwardRef, SVGProps, useEffect, useId } from 'react';
 
 export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
   src: string;
@@ -9,12 +8,14 @@ export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
 
 export const ImageView = forwardRef<SVGSVGElement, AssetImageViewProps>(
   ({ src, width, height, ...svgProps }, ref) => {
+    const imageViewId = useId();
+
     useEffect(() => {
       const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-      imageElement.setAttribute('id', src);
+      imageElement.setAttribute('id', imageViewId);
       imageElement.setAttribute('width', width.toString());
       imageElement.setAttribute('height', height.toString());
-      imageElement.setAttribute('href', convertFileSrc(src));
+      imageElement.setAttribute('href', src);
       imageElement.setAttribute('decoding', 'async');
 
       let originElement = document.getElementById('images-origin');
@@ -27,11 +28,11 @@ export const ImageView = forwardRef<SVGSVGElement, AssetImageViewProps>(
       originElement.appendChild(imageElement);
 
       return () => imageElement.remove();
-    }, [src, width, height]);
+    }, [imageViewId, src, width, height]);
 
     return (
       <svg ref={ref} {...svgProps} viewBox={`0 0 ${width} ${height}`}>
-        <use href={'#' + src} />
+        <use href={'#' + imageViewId} />
       </svg>
     );
   },
