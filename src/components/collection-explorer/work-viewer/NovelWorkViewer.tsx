@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useKeyboardEvent } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
@@ -32,6 +32,7 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
   const coverImageRef = useRef<SVGSVGElement>(null);
   const scrollContainerRef = useRef<Element>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
+  const [fontSrc, setFontSrc] = useState<string | null>(null);
 
   const scrollBy = useCallback(
     (offset: number) => {

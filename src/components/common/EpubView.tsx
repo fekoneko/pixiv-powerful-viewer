@@ -33,11 +33,12 @@ const getRenditionTheme = (theme: Theme) => ({
 
 export interface EpubViewProps extends HTMLAttributes<HTMLDivElement> {
   src: string;
+  fontSrc?: string;
   onRender?: (document: Document) => void;
 }
 
 export const EpubView = forwardRef<Element, EpubViewProps>(
-  ({ src, onRender, ...divProps }, ref) => {
+  ({ src, fontSrc, onRender, ...divProps }, ref) => {
     const { theme } = useTheme();
     const [rendition, setRendition] = useState<Rendition | null>(null);
     const viewWrapperRef = useRef<HTMLDivElement>(null);
@@ -81,11 +82,22 @@ export const EpubView = forwardRef<Element, EpubViewProps>(
         const iframeDocument = viewWrapper?.getElementsByTagName('iframe')[0]?.contentDocument;
         if (!iframeDocument) return;
 
+        if (fontSrc) {
+          const styleElement = iframeDocument.createElement('style');
+          styleElement.textContent = `
+            @font-face {
+              font-family: 'epub-view-font';
+              src: url(${convertFileSrc(fontSrc)});
+            }`;
+          iframeDocument.head.appendChild(styleElement);
+          iframeDocument.body.style.setProperty('font-family', 'epub-view-font');
+        }
+
         onRender?.(iframeDocument);
       });
 
       return () => abortController.abort();
-    }, [rendition, ref, onRender]);
+    }, [rendition, ref, onRender, fontSrc]);
 
     return (
       <div

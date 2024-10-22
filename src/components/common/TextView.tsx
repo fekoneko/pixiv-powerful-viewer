@@ -4,9 +4,10 @@ import { twMerge } from 'tailwind-merge';
 
 export interface TextViewProps extends HTMLAttributes<HTMLPreElement> {
   src: string;
+  fontSrc?: string;
 }
 
-export const TextView = forwardRef<Element, TextViewProps>(({ src, ...preProps }, ref) => {
+export const TextView = forwardRef<Element, TextViewProps>(({ src, fontSrc, ...preProps }, ref) => {
   const [text, setText] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,12 +25,26 @@ export const TextView = forwardRef<Element, TextViewProps>(({ src, ...preProps }
   }, [src]);
 
   return (
-    <pre
-      ref={ref as ForwardedRef<HTMLPreElement>}
-      {...preProps}
-      className={twMerge(preProps.className, 'overflow-y-scroll px-[10%] py-8 font-[inherit]')}
-    >
-      {text}
-    </pre>
+    <>
+      {fontSrc && (
+        <style>
+          {`@font-face {
+            font-family: 'text-view-font';
+            src: url(${convertFileSrc(fontSrc)});
+          }`}
+        </style>
+      )}
+
+      <pre
+        ref={ref as ForwardedRef<HTMLPreElement>}
+        {...preProps}
+        className={twMerge(
+          preProps.className,
+          'overflow-y-scroll px-[10%] py-8 font-[text-view-font]',
+        )}
+      >
+        {text}
+      </pre>
+    </>
   );
 });
