@@ -61,6 +61,7 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
   }, [work]);
 
   const asset = work.imageAssets[pageNumber];
+  if (!asset) return null;
 
   return (
     <div

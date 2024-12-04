@@ -10,7 +10,7 @@ export const CollectionButton: FC = () => {
   const recentSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
-    if (!recentPaths || recentPaths.length === 0 || collectionName !== null) return;
+    if (!recentPaths || recentPaths[0] === undefined || collectionName !== null) return;
     switchCollection(recentPaths[0]);
   }, [recentPaths, collectionName, switchCollection]);
 
@@ -51,7 +51,7 @@ export const CollectionButton: FC = () => {
           <select
             ref={recentSelectRef}
             className="mt-0.5 w-[16.5px] cursor-pointer bg-transparent [zoom:1.4] focus:outline-none"
-            onChange={(e) => switchCollection(recentPaths[e.target.selectedIndex])}
+            onChange={(e) => switchCollection(recentPaths[e.target.selectedIndex]!)}
           >
             {recentPaths.map((path) => (
               <option key={path} className="bg-background px-3 text-text [zoom:0.65]">
