@@ -3,12 +3,14 @@ import { animated } from '@react-spring/web';
 import { useKeyboardEvent, useFullscreen } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { Work } from '@/types/collection';
-
 import { WorksListPanel } from './works-list/WorksListPanel';
-import { WorkViewerPanel } from './works-viewer/WorkViewerPanel';
+import { WorkViewerPanel } from './work-viewer/WorkViewerPanel';
 import { WorkDetailsAccordion } from './accordions/WorkDetailsAccordion';
-import { ExitFullscreenButton } from './ExitFullscreenButton';
 import { OutputAccordion } from './accordions/OutputAccordion';
+import { ExitFullscreenButton } from '@/components/common/ExitFullscreenButton';
+import { RenderActions } from '../actions-panel/RenderActions';
+import { FavoritesActionButton } from '../actions-panel/FavoritesActionButton';
+import { OutputActionButton } from '../actions-panel/OutputActionButton';
 
 export const CollectionExplorer: FC = () => {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
@@ -63,6 +65,11 @@ export const CollectionExplorer: FC = () => {
       </main>
 
       {fullscreenState === 'fullscreen' && <ExitFullscreenButton onClick={exitFullscreen} />}
+
+      <RenderActions>
+        <FavoritesActionButton />
+        <OutputActionButton />
+      </RenderActions>
     </>
   );
 };

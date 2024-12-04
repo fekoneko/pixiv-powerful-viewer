@@ -1,5 +1,4 @@
 import { FC } from 'react';
-
 import { Searchbar } from './Searchbar';
 import { CollectionButton } from './CollectionButton';
 

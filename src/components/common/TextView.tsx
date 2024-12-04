@@ -1,18 +1,18 @@
 import { ForwardedRef, forwardRef, HTMLAttributes, useEffect, useState } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { twMerge } from 'tailwind-merge';
 
 export interface TextViewProps extends HTMLAttributes<HTMLPreElement> {
   src: string;
+  fontSrc?: string;
 }
 
-export const TextView = forwardRef<Element, TextViewProps>(({ src, ...preProps }, ref) => {
+export const TextView = forwardRef<Element, TextViewProps>(({ src, fontSrc, ...preProps }, ref) => {
   const [text, setText] = useState<string | null>(null);
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    fetch(convertFileSrc(src), { signal: abortController.signal })
+    fetch(src, { signal: abortController.signal })
       .then((response) => response.text())
       .then((text) => setText(text))
       .catch(() => {
@@ -24,12 +24,27 @@ export const TextView = forwardRef<Element, TextViewProps>(({ src, ...preProps }
   }, [src]);
 
   return (
-    <pre
-      ref={ref as ForwardedRef<HTMLPreElement>}
-      {...preProps}
-      className={twMerge(preProps.className, 'overflow-y-scroll px-[10%] py-8 font-[inherit]')}
-    >
-      {text}
-    </pre>
+    <>
+      {fontSrc && (
+        <style>
+          {`@font-face {
+            font-family: 'text-view-font';
+            src: url(${fontSrc});
+          }`}
+        </style>
+      )}
+
+      <pre
+        ref={ref as ForwardedRef<HTMLPreElement>}
+        {...preProps}
+        className={twMerge(
+          preProps.className,
+          'overflow-y-scroll px-[10%] py-8',
+          fontSrc && 'font-[text-view-font]',
+        )}
+      >
+        {text}
+      </pre>
+    </>
   );
 });

@@ -2,10 +2,9 @@ import { FC, useEffect } from 'react';
 import { useKeyboardEvent, useOutput } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { OutputLog } from '@/providers/OutputProvider';
-
-import { Accordion } from './Accordion';
+import { Accordion } from '@/components/common/Accordion';
 import { Icon } from '@/components/common/Icon';
-import { loadingSpinner } from '@/assets/icons';
+import { loadingSpinnerIconSrc } from '@/assets/icons';
 
 const LogMessage: FC<{ log: OutputLog }> = ({ log }) => {
   let badgeTextColor;
@@ -65,7 +64,9 @@ export const OutputAccordion: FC = () => {
       forceCollapsed={!isOutputShown || !output?.logs.length}
       icon={
         output?.status === 'pending'
-          ? () => <Icon src={loadingSpinner} className="size-full self-center bg-text-accent" />
+          ? () => (
+              <Icon src={loadingSpinnerIconSrc} className="size-full self-center bg-text-accent" />
+            )
           : undefined
       }
       mainSection={(isExpanded) => {
@@ -96,11 +97,12 @@ export const OutputAccordion: FC = () => {
           </button>
         </>
       )}
-      contents={() => (
+    >
+      {() => (
         <div className="flex flex-col gap-2">
           {output?.logs.map((log, index) => <LogMessage key={index} log={log} />)}
         </div>
       )}
-    />
+    </Accordion>
   );
 };

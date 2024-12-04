@@ -2,8 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
-
-import { WorkListChunks } from './WorkListChunks';
+import { WorksListChunks } from './WorksListChunks';
 import { WorksListSkeleton } from './WorksListSkeleton';
 
 interface WorksListPanelProps {
@@ -39,7 +38,7 @@ export const WorksListPanel: FC<WorksListPanelProps> = ({ onSelectWork, allowDes
             )}
           >
             {works && (
-              <WorkListChunks
+              <WorksListChunks
                 works={works}
                 onSelectWork={onSelectWork}
                 allowDeselect={allowDeselect}
