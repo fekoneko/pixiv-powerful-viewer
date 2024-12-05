@@ -1,4 +1,4 @@
-use crate::lib::{ImageAsset, ImageDimensions, NovelAsset, Work};
+use crate::lib::{Asset, ImageDimensions, Work};
 use std::{
     path::{Path, PathBuf},
     u64, vec,
@@ -219,22 +219,16 @@ fn parse_metafile_field(field_name: &str, field_data: &Vec<&str>, work: &mut Wor
 
 fn add_image_asset(imageasset_path: &PathBuf, work: &mut Work) {
     if let Some(image_name) = imageasset_path.file_name() {
-        if let Ok(image_dimensions) = imagesize::size(imageasset_path) {
-            work.image_assets.push(ImageAsset {
-                name: image_name.to_string_lossy().to_string(),
-                path: imageasset_path.to_string_lossy().to_string(),
-                dimensions: ImageDimensions {
-                    width: image_dimensions.width,
-                    height: image_dimensions.height,
-                },
-            });
-        };
+        work.image_assets.push(Asset {
+            name: image_name.to_string_lossy().to_string(),
+            path: imageasset_path.to_string_lossy().to_string(),
+        });
     };
 }
 
 fn add_novel_asset(novel_asset_path: &PathBuf, work: &mut Work) {
     if let Some(novel_asset_name) = novel_asset_path.file_name() {
-        work.novel_asset = Some(NovelAsset {
+        work.novel_asset = Some(Asset {
             name: novel_asset_name.to_string_lossy().to_string(),
             path: novel_asset_path.to_string_lossy().to_string(),
         });

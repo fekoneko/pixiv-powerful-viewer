@@ -6,8 +6,8 @@ export interface Work {
   relativePath: string;
   title: string;
   userName: string;
-  imageAssets: ImageAsset[];
-  novelAsset: NovelAsset;
+  imageAssets: Asset[];
+  novelAsset: Asset;
 
   id: number | null;
   userId: number | null;
@@ -23,13 +23,7 @@ export interface Work {
   uploadTime: string | null;
 }
 
-export interface ImageAsset {
-  name: string;
-  path: string;
-  dimensions: ImageDimensions;
-}
-
-export interface NovelAsset {
+export interface Asset {
   name: string;
   path: string;
 }

@@ -16,7 +16,6 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 futures = "0.3.30"
 tokio = "1.39.1"
-imagesize = "0.13.0"
 opener = "0.7.1"
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"

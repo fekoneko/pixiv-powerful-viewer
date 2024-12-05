@@ -42,7 +42,7 @@ export interface NovelWorkViewerProps {
 }
 
 export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
-  const coverImageRef = useRef<SVGSVGElement>(null);
+  const coverImageRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<Element>(null);
   const animateScroll = useAnimateScroll(scrollContainerRef);
   const [fontIndex, setFontIndex] = useState(0);
@@ -128,13 +128,13 @@ export const NovelWorkViewer: FC<NovelWorkViewerProps> = ({ work }) => {
   return (
     <div className="relative mx-1 flex size-full flex-col items-center">
       {coverAsset && (
-        <ImageView
-          ref={coverImageRef}
-          src={convertFileSrc(coverAsset.path)}
-          width={coverAsset.dimensions.width}
-          height={coverAsset.dimensions.height}
-          className="pointer-events-none absolute top-2 z-10 max-h-80 min-h-80 rounded-md"
-        />
+        <div ref={coverImageRef}>
+          <ImageView
+            src={convertFileSrc(coverAsset.path)}
+            maxResolution={1000}
+            className="pointer-events-none absolute top-2 z-10 max-h-80 min-h-80 rounded-md"
+          />
+        </div>
       )}
 
       {work.novelAsset?.path.endsWith('.txt') && (

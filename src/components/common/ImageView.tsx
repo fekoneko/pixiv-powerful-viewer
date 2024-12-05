@@ -1,39 +1,60 @@
-import { forwardRef, SVGProps, useEffect, useId } from 'react';
+import { FC, useEffect, useRef } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export interface AssetImageViewProps extends SVGProps<SVGSVGElement> {
+const RENDER_STEP = 200;
+
+export interface ImageViewProps {
   src: string;
-  width: number;
-  height: number;
+  resolution?: number;
+  maxResolution?: number;
+  className?: string;
 }
 
-export const ImageView = forwardRef<SVGSVGElement, AssetImageViewProps>(
-  ({ src, width, height, ...svgProps }, ref) => {
-    const imageViewId = useId();
+export const ImageView: FC<ImageViewProps> = ({
+  src,
+  resolution,
+  maxResolution = Infinity,
+  className,
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-      const imageElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-      imageElement.setAttribute('id', imageViewId);
-      imageElement.setAttribute('width', width.toString());
-      imageElement.setAttribute('height', height.toString());
-      imageElement.setAttribute('href', src);
-      imageElement.setAttribute('decoding', 'async');
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
+    if (!canvasElement) return;
 
-      let originElement = document.getElementById('images-origin');
-      if (!originElement) {
-        originElement = document.createElement('svg');
-        document.body.appendChild(originElement);
-        originElement.id = 'images-origin';
-        originElement.style.display = 'none';
-      }
-      originElement.appendChild(imageElement);
+    const abortController = new AbortController();
+    const image = new Image();
+    image.src = src;
 
-      return () => imageElement.remove();
-    }, [imageViewId, src, width, height]);
+    image.onload = () => {
+      const context = canvasElement.getContext('2d');
+      if (!context || abortController.signal.aborted) return;
 
-    return (
-      <svg ref={ref} {...svgProps} viewBox={`0 0 ${width} ${height}`}>
-        <use href={'#' + imageViewId} />
-      </svg>
-    );
-  },
-);
+      const width = Math.min(resolution ?? image.naturalWidth, maxResolution);
+      const height = width * (image.naturalHeight / image.naturalWidth);
+      canvasElement.width = width;
+      canvasElement.height = height;
+
+      const sw = image.naturalWidth;
+      const dw = width;
+      const dh = RENDER_STEP;
+      const sh = dh * (image.naturalHeight / height);
+      let dy = 0;
+
+      const interval = setInterval(() => {
+        if (dy >= height || abortController.signal.aborted) {
+          clearInterval(interval);
+          return;
+        }
+
+        const sy = dy * (image.naturalHeight / height);
+        context.drawImage(image, 0, sy, sw, sh, 0, dy, dw, dh);
+        dy += RENDER_STEP;
+      }, 0);
+    };
+
+    return () => abortController.abort();
+  }, [src, resolution, maxResolution]);
+
+  return <canvas ref={canvasRef} className={twMerge(className, 'object-contain')} />;
+};

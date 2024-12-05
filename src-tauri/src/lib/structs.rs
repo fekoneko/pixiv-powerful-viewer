@@ -5,8 +5,8 @@ pub struct Work {
     pub relative_path: String,
     pub title: String,
     pub user_name: String,
-    pub image_assets: Vec<ImageAsset>,
-    pub novel_asset: Option<NovelAsset>,
+    pub image_assets: Vec<Asset>,
+    pub novel_asset: Option<Asset>,
 
     pub id: Option<u64>,
     pub user_id: Option<u64>,
@@ -24,15 +24,7 @@ pub struct Work {
 
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ImageAsset {
-    pub name: String,
-    pub path: String,
-    pub dimensions: ImageDimensions,
-}
-
-#[derive(serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NovelAsset {
+pub struct Asset {
     pub name: String,
     pub path: String,
 }

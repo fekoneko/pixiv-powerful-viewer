@@ -71,23 +71,7 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
         !controlsShown && 'cursor-none',
       )}
     >
-      <ImageView
-        src={convertFileSrc(asset.path)}
-        width={asset.dimensions.width}
-        height={asset.dimensions.height}
-        className="z-30 size-full"
-      />
-
-      <div className="absolute z-20 flex size-full items-center justify-center">
-        <div className="absolute size-full bg-paper" />
-        <ImageView
-          src={convertFileSrc(asset.path)}
-          width={asset.dimensions.width}
-          height={asset.dimensions.height}
-          className="size-full scale-[3] blur-[0.4rem]"
-        />
-        <div className="absolute size-full bg-paper/40" />
-      </div>
+      <ImageView src={convertFileSrc(asset.path)} className="z-30 size-full" />
 
       <button
         className={twMerge(

@@ -16,8 +16,7 @@ export const WorksListCardContent: FC<WorksListCardContentProps> = memo(({ work 
           {work.imageAssets[0] && (
             <ImageView
               src={convertFileSrc(work.imageAssets[0].path)}
-              width={work.imageAssets[0].dimensions.width}
-              height={work.imageAssets[0].dimensions.height}
+              resolution={200}
               className="pointer-events-none absolute w-full rounded-lg transition-transform [:hover>&]:scale-[1.2] [:hover>&]:shadow-md"
             />
           )}
