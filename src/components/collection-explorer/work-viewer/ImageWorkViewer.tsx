@@ -71,7 +71,11 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
         !controlsShown && 'cursor-none',
       )}
     >
-      <ImageView src={convertFileSrc(asset.path)} className="z-30 size-full" />
+      <ImageView
+        src={convertFileSrc(asset.path)}
+        animateAsGif={asset.name.endsWith('.gif')}
+        className="z-30 size-full"
+      />
 
       <button
         className={twMerge(
