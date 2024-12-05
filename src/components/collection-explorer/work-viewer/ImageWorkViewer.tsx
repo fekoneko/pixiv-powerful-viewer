@@ -73,7 +73,7 @@ export const ImageWorkViewer: FC<ImageWorkViewerProps> = ({ work }) => {
     >
       <ImageView
         src={convertFileSrc(asset.path)}
-        animateAsGif={asset.name.endsWith('.gif')}
+        format={asset.name.endsWith('.gif')}
         className="z-30 size-full"
       />
 
