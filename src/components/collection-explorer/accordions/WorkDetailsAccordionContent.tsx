@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { openExternal } from '@/utils/open-external';
+import { openExternal } from '@/lib/application/open-external';
 import { Work } from '@/types/collection';
 
 interface WorkDetailsAccordionContentProps {
