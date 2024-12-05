@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, memo, useEffect, useRef, useState } from 'react';
 import { useAnimateScroll, useCollection, useSearchQuery } from '@/hooks';
 import { twMerge } from 'tailwind-merge';
 import { Work } from '@/types/collection';
@@ -10,7 +10,7 @@ interface WorksListPanelProps {
   allowDeselect?: boolean;
 }
 
-export const WorksListPanel: FC<WorksListPanelProps> = ({ onSelectWork, allowDeselect }) => {
+export const WorksListPanel: FC<WorksListPanelProps> = memo(({ onSelectWork, allowDeselect }) => {
   const { searchQuery } = useSearchQuery();
   const { searchCollection, clearFavorites, isLoading } = useCollection();
   const [works, setWorks] = useState<Work[] | null>(null);
@@ -62,4 +62,4 @@ export const WorksListPanel: FC<WorksListPanelProps> = ({ onSelectWork, allowDes
       )}
     </div>
   );
-};
+});
