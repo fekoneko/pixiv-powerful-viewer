@@ -8,14 +8,14 @@ import { WorksListCardContent } from './WorksListCardContents';
 export interface WorksListCardProps {
   work: Work;
   index: number;
-  onSelect: (index: number) => void;
+  onSelectIndex: (index: number) => void;
   scrollContainerRef: RefObject<HTMLDivElement>;
   animateScroll: AnimateScroll;
-  active?: boolean;
+  selected?: boolean;
 }
 
 export const WorksListCard: FC<WorksListCardProps> = memo(
-  ({ work, index, onSelect, scrollContainerRef, animateScroll, active }) => {
+  ({ work, index, onSelectIndex, scrollContainerRef, animateScroll, selected }) => {
     const cardRef = useRef<HTMLButtonElement>(null);
 
     const focusOnThisCard = useCallback(() => {
@@ -37,17 +37,17 @@ export const WorksListCard: FC<WorksListCardProps> = memo(
     }, [cardRef, scrollContainerRef, animateScroll]);
 
     useEffect(() => {
-      if (active) focusOnThisCard();
-    }, [active, focusOnThisCard]);
+      if (selected) focusOnThisCard();
+    }, [selected, focusOnThisCard]);
 
     return (
       <button
         ref={cardRef}
-        onClick={() => onSelect(index)}
+        onClick={() => onSelectIndex(index)}
         tabIndex={-1}
         className={twMerge(
           'grid w-full grid-cols-[3fr_8fr] items-center gap-2 rounded-lg border border-border p-1 shadow-md focus:outline-none',
-          active ? 'bg-paper-accent' : 'bg-paper hover:bg-paper-hover',
+          selected ? 'bg-paper-accent' : 'bg-paper hover:bg-paper-hover',
         )}
       >
         <WorksListCardContent work={work} />

@@ -84,6 +84,8 @@ export const ImageView: FC<ImageViewProps> = memo(
       [src, resolution, maxResolution],
     );
 
+    console.log('render');
+
     useEffect(() => {
       const canvasElement = canvasRef.current;
       if (!canvasElement) return;

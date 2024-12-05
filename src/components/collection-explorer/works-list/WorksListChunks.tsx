@@ -3,8 +3,7 @@ import { useKeyboardEvent, useTimeout } from '@/hooks';
 import { checkTextfieldFocused } from '@/utils/check-textfield-focused';
 import { AnimateScroll } from '@/hooks/use-animate-scroll';
 import { Work } from '@/types/collection';
-import { WorksListCard } from './WorksListCard';
-import { RenderInViewport } from '@/components/common/RenderInViewport';
+import { WorksListChunk } from './WorksListChunk';
 
 const CHUNK_SIZE = 20;
 const KEYBOARD_DELAY = 150;
@@ -121,33 +120,30 @@ export const WorksListChunks: FC<WorksListChunksProps> = memo(
       if (selectedIndex === null) animateScroll.start({ y: 0, immediate: true });
     }, [selectedIndex, animateScroll]);
 
-    return workCardsChunks.map((chunk, chunkIndex) => (
-      <RenderInViewport
-        key={chunkIndex}
-        fallbackHeight={chunk.length * 8 + 'rem'}
-        forceRender={
-          selectedIndex !== null &&
-          selectedIndex >= (chunkIndex - 1) * CHUNK_SIZE &&
-          selectedIndex <= (chunkIndex + 1) * CHUNK_SIZE
-        }
-        className="flex flex-col gap-2"
-      >
-        {chunk.map((work, workIndexInChunk) => {
-          const workIndex = chunkIndex * CHUNK_SIZE + workIndexInChunk;
+    return workCardsChunks.map((chunk, chunkIndex) => {
+      const chunkStartIndex = chunkIndex * CHUNK_SIZE;
+      const chunkEndIndex = chunkStartIndex + CHUNK_SIZE - 1;
+      const selectedLocalIndex =
+        selectedIndex !== null && selectedIndex >= chunkStartIndex && selectedIndex <= chunkEndIndex
+          ? selectedIndex - chunkStartIndex
+          : null;
 
-          return (
-            <WorksListCard
-              key={work.key}
-              work={work}
-              index={workIndex}
-              onSelect={setSelectedIndex}
-              scrollContainerRef={scrollContainerRef}
-              animateScroll={animateScroll}
-              active={workIndex === selectedIndex}
-            />
-          );
-        })}
-      </RenderInViewport>
-    ));
+      return (
+        <WorksListChunk
+          key={chunkIndex}
+          works={chunk}
+          chunkStartIndex={chunkStartIndex}
+          selectedLocalIndex={selectedLocalIndex}
+          onSelectGlobalIndex={setSelectedIndex}
+          scrollContainerRef={scrollContainerRef}
+          animateScroll={animateScroll}
+          forceRender={
+            selectedIndex !== null &&
+            selectedIndex >= (chunkIndex - 1) * works.length &&
+            selectedIndex <= (chunkIndex + 1) * works.length
+          }
+        />
+      );
+    });
   },
 );
