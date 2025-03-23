@@ -1,8 +1,16 @@
 # Pixiv Powerful Viewer
 
-This app allows you to locally view and search collection saved by [Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh) browser extension.
+This app allows you to locally view and search collection saved by
+[Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh)
+browser extension.
 
 The app is build with _Tauri_ and uses _Rust_ on backend to load your collections faster.
+
+> [!WARNING]
+> This project is now put on halt as I'm experimenting with other solutions to make the app more performant.
+> At the moment I develop _Go_ app that combines batch **downloader** and local **viewer** and gonna use GTK platform.
+>
+> [piximan](https://github.com/fekoneko/piximan)
 
 ## Download
 
@@ -24,7 +32,9 @@ The app is build with _Tauri_ and uses _Rust_ on backend to load your collection
 ## Creating collection
 
 > [!IMPORTANT]
-> Pixiv Powerful Viewer parses specific folder structure inside collections. Follow the steps below to configure [Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh) extension properly.
+> Pixiv Powerful Viewer parses specific folder structure inside collections. Follow the steps below to configure
+> [Powerful Pixiv Downloader](https://chromewebstore.google.com/detail/powerful-pixiv-downloader/dkndmhgdcmjdmkdonmbgjpijejdcilfh)
+> extension properly.
 
 - You can use any folder structure as long as every work has _it's own folder with metadata file and all the assets directly in it_
 - If metadata file wasn't found, program assumes folder name to be _the title of the work_ and its parent folder to represent _the author's name_
@@ -50,8 +60,8 @@ The app is build with _Tauri_ and uses _Rust_ on backend to load your collection
 - `Shift + Enter` - add selected work to favorites
 - `Ctrl + Enter` - view favorite works
 - `` Ctrl + ` `` - show / hide output console
-- `Ctrl + Space` - expand output console (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll inside it)
-- `Space` - expand work details panel (use `Ctr + ↑ / ↓` or `Ctrl + W / S` to scroll inside the panel)
+- `Ctrl + Space` - expand output console (use `Ctrl + ↑ / ↓` or `Ctrl + W / S` to scroll inside it)
+- `Space` - expand work details panel (use `Ctrl + ↑ / ↓` or `Ctrl + W / S` to scroll inside the panel)
 - `Ctrl + O` - open collection
 - `Ctrl + Tab` - focus on _recent collections_ button
 
